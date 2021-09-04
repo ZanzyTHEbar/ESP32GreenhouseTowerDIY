@@ -25,7 +25,7 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 __*Materials for purchase*__
 
 1. Raspberrypi - any model
-  1. Install Mosquitto broker to the pi and connect it to your network
+   1. Install Mosquitto broker to the pi and connect it to your network
 2. 12V submersable water pump
 3. 3m or more of Vinyl tubing with 10mm ID and 13mm OD
 
