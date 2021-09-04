@@ -32,9 +32,9 @@ __*Materials for purchase*__
 
 __*SETUP*__
 
-1. Acquire PCB and ESP32 (WROVER and WROOM has both been tested. 
-2. Acquire The remaining sensors and components - assemmble 
-3. Plug ESP32 into computer - open your IDE (i used Thonny for this project) Flash the micropython firware to the esp32
+1. Acquire PCB and ESP32 (WROVER and WROOM has both been tested). 
+2. Acquire The remaining sensors and components - assemble 
+3. Plug ESP32 into computer - open your IDE (i used Thonny for this project) Flash the micropython firmware to the esp32
    1. Upload ESP32MicropytyhonLibraries ---> rename to ESP32Micro
    2. Upload boot.py and greenhouse.py to root directory
 
