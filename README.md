@@ -38,5 +38,5 @@ __*SETUP*__
    1. Upload ESP32MicropytyhonLibraries ---> rename to ESP32Micro
    2. Upload boot.py and greenhouse.py to root directory
 
-![tower garden](/3D Printing Files/Modular Hydroponic Tower Garden/images/IMG_20190523_094749.jpg)
+![tower garden](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg)
 Format: ![Alt Text](url)
