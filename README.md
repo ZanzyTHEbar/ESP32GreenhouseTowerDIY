@@ -39,4 +39,3 @@ __*SETUP*__
    2. Upload boot.py and greenhouse.py to root directory
 
 ![tower garden](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg)
-Format: ![Alt Text](url)
