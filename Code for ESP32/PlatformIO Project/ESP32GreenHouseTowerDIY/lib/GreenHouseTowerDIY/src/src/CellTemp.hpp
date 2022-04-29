@@ -1,6 +1,6 @@
 /*
  celltemp.h - HBAT library
- Copyright (c) 2021 Zacariah Austin Heim.
+ Copyright (c) 2021 ZanzyTHEbar
  */
 
 #ifndef CELLTEMP_HPP

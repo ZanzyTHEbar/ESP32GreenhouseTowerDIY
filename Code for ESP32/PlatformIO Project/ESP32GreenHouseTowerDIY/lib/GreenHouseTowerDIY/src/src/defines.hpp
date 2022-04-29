@@ -1,6 +1,6 @@
 /*
  defines.hpp - HBAT library
- Copyright (c) 2021 Zacariah Austin Heim.
+ Copyright (c) 2021 ZanzyTHEbar
  */
 #ifndef DEFINES_hpp
 #define DEFINES_hpp
@@ -14,7 +14,6 @@
 #include <stdio.h>  /* printf, NULL */
 #include <stdlib.h> /* strtoul */
 #include <ArduinoJson.h>
-#include <MD5.h>
 #include <strTools.h>
 #include <PID_v1.h>
 
@@ -29,7 +28,6 @@
 #include "i2cscan.hpp"
 
 // Data stack
-#include "HMS.hpp"
 #include "celltemp.hpp"
 #include "Humidity.hpp"
 // Humidity Sensors
@@ -39,8 +37,6 @@
 
 // wifi definitions
 #include "HMSnetwork.hpp"
-#include "mdns.hpp"
-#include "OTA.hpp"
 
 // Accumulate Data
 #include "accumulatedata.hpp"

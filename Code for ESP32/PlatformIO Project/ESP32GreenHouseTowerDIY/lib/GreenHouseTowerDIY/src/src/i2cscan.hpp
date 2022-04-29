@@ -1,6 +1,6 @@
 /*
  i2cscan.h - HBAT library
- Copyright (c) 2021 Zacariah Austin Heim.
+ Copyright (c) 2021 ZanzyTHEbar
  */
 
 #ifndef I2CSCAN_HPP

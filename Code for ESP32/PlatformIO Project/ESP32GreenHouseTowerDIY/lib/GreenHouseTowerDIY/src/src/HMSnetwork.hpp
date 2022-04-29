@@ -1,19 +1,14 @@
 /*
  Network.h - HBAT library
- Copyright (c) 2021 Zacariah Austin Heim.
+ Copyright (c) 2021 ZanzyTHEbar
 */
 #pragma once
 #ifndef HMSNETWORK_hpp
 #define HMSNETWORK_hpp
 
 #include "defines.hpp"
-#include "SecureOTA.hpp"
-#include <ESPmDNS.h>
 #include <WiFi.h>
-#include <ESPAsyncWebServer.h>
-#include <AsyncTCP.h>
 
-extern AsyncWebServer server;
 extern WiFiClient espClient;
 
 class HMSnetwork
