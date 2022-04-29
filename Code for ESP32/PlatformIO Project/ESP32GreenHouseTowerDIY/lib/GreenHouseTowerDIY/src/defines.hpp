@@ -87,6 +87,11 @@ extern bool mqttProcessing;
 #endif
 /*###################### MQTT Configuration END ######################*/
 
+/*###################### Distance Sensor Values ######################*/
+#define ECHO 13
+#define TRIGGER 14
+/*###################### Distance Sensor Values END ######################*/
+
 // Variables
 extern int period;
 extern unsigned long time_now;
