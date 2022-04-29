@@ -22,8 +22,8 @@ esp.osdebug(None)
 
 gc.collect()
 
-ssid = 'LoveHouse2G'
-password = 'vxwbywtswp'
+ssid = 'SSID'
+password = 'PASSWORD'
 
 station = network.WLAN(network.STA_IF)
 
