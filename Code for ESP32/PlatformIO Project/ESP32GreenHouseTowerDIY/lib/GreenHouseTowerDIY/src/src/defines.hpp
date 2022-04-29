@@ -54,20 +54,18 @@
 #endif
 
 #ifdef PRODUCTION
-_Pragma (STR(message (PRODUCTION)))
+_Pragma(STR(message(PRODUCTION)))
 #endif
 
-#define maxCellCount 10 // max number of cells
-
-// Globally available functions
-char *StringtoChar(String inputString);
+    // Globally available functions
+    char *StringtoChar(String inputString);
 char *appendChartoChar(const char *hostname, const char *def_host);
 void my_delay(volatile long delay_time);
 String generateDeviceID();
 
 /*######################## MQTT Configuration ########################*/
-#ifdef ENABLE_MQTT_SUPPORT
-_Pragma (STR(message (ENABLE_MQTT_SUPPORT)))
+#if ENABLE_MQTT_SUPPORT
+_Pragma(STR(message(ENABLE_MQTT_SUPPORT)))
 // these are deafault settings which can be changed in the web interface "settings" page
 #define MQTT_SECURE_ENABLED 0
 #define MQTT_PORT 1883
@@ -90,15 +88,10 @@ extern bool mqttProcessing;
 /*###################### MQTT Configuration END ######################*/
 
 // Variables
-extern const char *mqtt_mDNS_clientId;
-extern char mDNS_hostname[4];
-
 extern int period;
 extern unsigned long time_now;
-extern bool Charge_State;
 
 // Wifi Variables
-extern bool wifiMangerPortalRunning;
 extern bool wifiConnected;
 
 #endif
