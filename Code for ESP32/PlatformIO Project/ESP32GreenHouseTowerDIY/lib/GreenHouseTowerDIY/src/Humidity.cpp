@@ -105,6 +105,7 @@ int Humidity::setupSensor()
   return 0;
 }
 
+#if USE_DHT_SENSOR
 void Humidity::readDHT()
 {
   // Delay between measurements.
@@ -131,6 +132,7 @@ void Humidity::readDHT()
     log_d("Humidity: %.3f%%", event.relative_humidity);
   }
 }
+#endif // USE_DHT_SENSOR
 
 #if USE_SHT31_SENSOR
 bool Humidity::checkHeaterEnabled()
