@@ -45,7 +45,6 @@ String generateDeviceID()
 }
 
 // Variables for MQTT
-
 #if ENABLE_MQTT_SUPPORT
 const char *MQTT_TOPIC = "hms/data/";
 const String HOMEASSISTANT_MQTT_HOSTNAME = "homeassistant.local";

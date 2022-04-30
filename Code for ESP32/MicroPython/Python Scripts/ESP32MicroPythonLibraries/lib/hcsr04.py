@@ -2,12 +2,12 @@ import machine, time
 from machine import Pin
 
 __version__ = '0.2.0'
-__author__ = 'Roberto Sánchez'
+__author__ = 'ZanzyTHEbar'
 __license__ = "Apache License 2.0. https://www.apache.org/licenses/LICENSE-2.0"
 
 class HCSR04:
     """
-    Driver to use the untrasonic sensor HC-SR04.
+    Driver to use the ultrasonic sensor HC-SR04.
     The sensor range is between 2cm and 4m.
     The timeouts received listening to echo pin are converted to OSError('Out of range')
     """
@@ -48,12 +48,12 @@ class HCSR04:
 
     def distance_mm(self):
         """
-        Get the distance in milimeters without floating point operations.
+        Get the distance in millimeters without floating point operations.
         """
         pulse_time = self._send_pulse_and_wait()
 
         # To calculate the distance we get the pulse_time and divide it by 2 
-        # (the pulse walk the distance twice) and by 29.1 becasue
+        # (the pulse walk the distance twice) and by 29.1 because
         # the sound speed on air (343.2 m/s), that It's equivalent to
         # 0.34320 mm/us that is 1mm each 2.91us
         # pulse_time // 2 // 2.91 -> pulse_time // 5.82 -> pulse_time * 100 // 582 
@@ -68,7 +68,7 @@ class HCSR04:
         pulse_time = self._send_pulse_and_wait()
 
         # To calculate the distance we get the pulse_time and divide it by 2 
-        # (the pulse walk the distance twice) and by 29.1 becasue
+        # (the pulse walk the distance twice) and by 29.1 because
         # the sound speed on air (343.2 m/s), that It's equivalent to
         # 0.034320 cm/us that is 1cm each 29.1us
         cms = (pulse_time / 2) / 29.1
