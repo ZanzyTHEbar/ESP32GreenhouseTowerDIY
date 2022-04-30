@@ -1,12 +1,12 @@
 /**
  * @file HMSmqtt.cpp
  * @author ZanzyTHEbar (https://github.com/ZanzyTHEbar)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2022-04-30
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #include "HMSmqtt.hpp"
 
@@ -53,7 +53,7 @@ bool mqttProcessing = false;
 
 /**
  * @brief Construct a new HMSMqtt::HMSMqtt object
- * 
+ *
  */
 HMSMqtt::HMSMqtt()
 {
@@ -61,7 +61,7 @@ HMSMqtt::HMSMqtt()
 
 /**
  * @brief Destroy the HMSMqtt::HMSMqtt object
- * 
+ *
  */
 HMSMqtt::~HMSMqtt()
 {
