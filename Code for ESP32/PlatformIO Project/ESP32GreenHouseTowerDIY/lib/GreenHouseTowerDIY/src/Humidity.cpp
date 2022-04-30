@@ -7,8 +7,8 @@ Adafruit_SHT31 sht31_2;
 bool enableHeater = false;
 int loopCnt = 0;
 int HUMIDITY_SENSORS_ACTIVE = 0;
-Hum result;
 #endif // USE_SHT31_SENSOR
+Hum result;
 
 #if USE_DHT_SENSOR
 DHT_Unified dht(DHTPIN, DHTTYPE);
@@ -106,7 +106,7 @@ int Humidity::setupSensor()
 }
 
 #if USE_DHT_SENSOR
-void Humidity::readDHT()
+Hum Humidity::readDHT()
 {
   // Delay between measurements.
   my_delay(delayS);
@@ -131,6 +131,9 @@ void Humidity::readDHT()
   {
     log_d("Humidity: %.3f%%", event.relative_humidity);
   }
+  result.temp = event.temperature;
+  result.humidity = event.relative_humidity;
+  return result;
 }
 #endif // USE_DHT_SENSOR
 
@@ -234,8 +237,32 @@ bool Humidity::checkHeaterEnabled()
  ******************************************************************************/
 float Humidity::AverageStackTemp()
 {
-  float stack_temp = result.temp + result.temp_2;
-  return stack_temp / 2; // Read the _temperature from the sensor and average the two sensors.
+  switch (HUMIDITY_SENSORS_ACTIVE)
+  {
+  case 0:
+    result = {0, 0, 0, 0};
+    float stack_humidity = 0;
+    return stack_humidity; // return 0 if no sensors are active
+    break;
+
+  case 1:
+    float stack_temp = result.temp;
+    return stack_temp; // Only one sensor - return the value of that sensor
+    break;
+
+  case 2:
+    float stack_temp = result.temp_2;
+    return stack_temp; // Only one sensor - return the value of that sensor
+    break;
+
+  case 3:
+    float stack_temp = result.temp + result.temp_2;
+    return stack_temp / 2; // Read the _temperature from the sensor and average the two sensors.
+    break;
+
+  default:
+    break;
+  }
 }
 
 /******************************************************************************
@@ -247,8 +274,32 @@ float Humidity::AverageStackTemp()
  ******************************************************************************/
 float Humidity::StackHumidity()
 {
-  float stack_humidity = result.humidity + result.humidity_2;
-  return stack_humidity / 2;
+  switch (HUMIDITY_SENSORS_ACTIVE)
+  {
+  case 0:
+    result = {0, 0, 0, 0};
+    float stack_humidity = 0;
+    return stack_humidity; // return 0 if no sensors are active
+    break;
+
+  case 1:
+    float stack_humidity = result.humidity;
+    return stack_humidity; // Only one sensor - return the value of that sensor
+    break;
+
+  case 2:
+    float stack_humidity = result.humidity_2;
+    return stack_humidity; // Only one sensor - return the value of that sensor
+    break;
+
+  case 3:
+    float stack_humidity = result.humidity + result.humidity_2;
+    return stack_humidity / 2; // Read the _humidity from the sensor and average the two sensors.
+    break;
+
+  default:
+    break;
+  }
 }
 
 /******************************************************************************
@@ -295,7 +346,8 @@ Hum Humidity::ReadSensor()
     // An ~3.0 degC _temperature increase can be noted when heater is enabled
     // This is needed due to the high operating humidity of the system
     checkHeaterEnabled();
-    result = {temp, hum, 0, 0};
+    result.temp = temp;
+    result.humidity = hum;
     return result;
     break;
   }
@@ -326,7 +378,8 @@ Hum Humidity::ReadSensor()
     // An ~3.0 degC _temperature increase can be noted when heater is enabled
     // This is needed due to the high operating humidity of the system
     checkHeaterEnabled();
-    result = {0, 0, temp_2, hum_2};
+    result.temp_2 = temp_2;
+    result.humidity_2 = hum_2;
     return result;
     break;
   }
@@ -372,7 +425,7 @@ Hum Humidity::ReadSensor()
     {
       log_d("Failed to read humidity");
     }
-    my_delay(0.1L); // delay in between reads for stability
+    my_delay(1L); // delay in between reads for stability
     result = {temp_1, hum_1, temp_2, hum_2};
     return result;
     break;

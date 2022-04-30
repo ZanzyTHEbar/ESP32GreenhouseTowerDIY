@@ -27,6 +27,10 @@ void AccumulateData::InitAccumulateData()
     cfg.config.stack_temp = humidity.AverageStackTemp();
 #endif // USE_SHT31_SENSOR
 
+#if USE_DHT_SENSOR
+
+#endif // USE_DHT_SENSOR
+
     cfg.config.numSensors = numSensors;
 
     // loop through and store temp data
@@ -45,7 +49,7 @@ void AccumulateData::InitAccumulateData()
 
 bool AccumulateData::SendData()
 {
-    // Send the data to the server
+    // Send the data to the server - Use ArduinoJson library
 }
 
 AccumulateData accumulatedata;

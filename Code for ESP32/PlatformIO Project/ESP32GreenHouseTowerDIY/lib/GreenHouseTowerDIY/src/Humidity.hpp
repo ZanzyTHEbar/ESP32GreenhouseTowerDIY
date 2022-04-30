@@ -10,16 +10,9 @@
 #include <Wire.h>
 #if USE_SHT31_SENSOR
 #include <Adafruit_SHT31.h>
-struct Hum
-{
-  float temp;
-  float humidity;
-  float temp_2;
-  float humidity_2;
-};
 
-extern Hum result;
 #endif // USE_SHT31_SENSOR
+
 #if USE_DHT_SENSOR
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
@@ -39,6 +32,15 @@ extern Hum result;
 
 #endif // USE_DHT_SENSOR
 
+struct Hum
+{
+  float temp;
+  float humidity;
+  float temp_2;
+  float humidity_2;
+};
+extern Hum result;
+
 class Humidity
 {
 public:
@@ -46,9 +48,10 @@ public:
   Humidity();
   virtual ~Humidity();
   // Initialize the library
-#if USE_DHT_SENSOR
   int setupSensor();
-  void readDHT();
+  
+#if USE_DHT_SENSOR
+  Hum readDHT();
 #endif // USE_DHT_SENSOR
 
 #if USE_SHT31_SENSOR
