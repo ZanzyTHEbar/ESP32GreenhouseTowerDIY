@@ -4,22 +4,16 @@
 #if USE_SHT31_SENSOR
 Adafruit_SHT31 sht31;
 Adafruit_SHT31 sht31_2;
-#endif // USE_SHT31_SENSOR
-
 bool enableHeater = false;
-int status = 0;
 int loopCnt = 0;
-int _offset = 32000; // _Offset for the sensor
 int HUMIDITY_SENSORS_ACTIVE = 0;
-float _scale = 140.0; // _Scale factor for Air and N2 is 140.0, O2 is 142.8
+Hum result;
+#endif // USE_SHT31_SENSOR
 
 #if USE_DHT_SENSOR
 DHT_Unified dht(DHTPIN, DHTTYPE);
+int status = 0;
 #endif // USE_DHT_SENSOR
-
-#if USE_SHT31_SENSOR
-Hum result;
-#endif // USE_SHT31_SENSOR
 
 Humidity::Humidity()
 {
