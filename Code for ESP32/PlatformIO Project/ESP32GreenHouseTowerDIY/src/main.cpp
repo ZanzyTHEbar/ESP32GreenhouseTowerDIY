@@ -15,7 +15,7 @@ void setup()
 
   timedTasks.setupTimers();
 
-  Serial.println("Setting up the program, standby...");
+  Serial.println(F("Setting up the program, standby..."));
   // Setup the main loop
   // Initialize the relay pins
   int temp[5] = {45, 38, 36, 35, 48};
@@ -38,26 +38,26 @@ void setup()
 
   Wire.begin();
 
-  Serial.println("HMS booting - please wait");
-  Serial.println("Starting...");
+  Serial.println(F("HMS booting - please wait"));
+  Serial.println(F("Starting..."));
   Cell_Temp.SetupSensors();
 
   switch (humidity.setupSensor())
   {
   case 0:
-    Serial.println("Humidity Sensor Setup Failed - No sensors present");
+    Serial.println(F("Humidity Sensor Setup Failed - No sensors present"));
     break;
   case 1:
-    Serial.println("Humidity Sensor Setup Failed - initialised sensor one");
+    Serial.println(F("Humidity Sensor Setup Failed - initialised sensor one"));
     break;
   case 2:
-    Serial.println("Humidity Sensor Setup Failed - initialised sensor two");
+    Serial.println(F("Humidity Sensor Setup Failed - initialised sensor two"));
     break;
   case 3:
-    Serial.println("Humidity Sensor Setup Successful");
+    Serial.println(F("Humidity Sensor Setup Successful"));
     break;
   default:
-    Serial.println("Humidity Sensor Setup Failed - Unknown Error");
+    Serial.println(F("Humidity Sensor Setup Failed - Unknown Error"));
     break;
   }
 
@@ -68,8 +68,8 @@ void setup()
   network.SetupWebServer();
   Serial.println(F("Starting Webserver"));
   network.SetupServer();
-  Serial.println("Setting up WiFi");
-  Serial.println("Setting up MQTT");
+  Serial.println(F("Setting up WiFi"));
+  Serial.println(F("Setting up MQTT"));
   HMSmqtt.loadMQTTConfig();
 
 #if ENABLE_MDNS_SUPPORT
@@ -84,16 +84,16 @@ void setup()
   Serial.println("");
   if (network.SetupNetworkStack())
   {
-    Serial.println("Network Stack Setup Successful");
-    Serial.println("INFO: HTTP web server started");
+    Serial.println(F("Network Stack Setup Successful"));
+    Serial.println(F("INFO: HTTP web server started"));
   }
   else
   {
-    Serial.println("Network Stack Setup Failed - Activating Access-Point Mode");
+    Serial.println(F("Network Stack Setup Failed - Activating Access-Point Mode"));
   }
 
-  Serial.print("\n===================================\n");
-  Serial.println("Setup Complete");
+  Serial.print(F("\n===================================\n"));
+  Serial.println(F("Setup Complete"));
   my_delay(1L);
 }
 
@@ -109,11 +109,11 @@ void loop()
     cfg.config.data_json = false;
     if (accumulatedata.SendData())
     {
-      Serial.println("Data Sent");
+      Serial.println(F("Data Sent"));
     }
     else
     {
-      Serial.println("Data Not Sent");
+      Serial.println(F("Data Not Sent"));
     }
   }
 

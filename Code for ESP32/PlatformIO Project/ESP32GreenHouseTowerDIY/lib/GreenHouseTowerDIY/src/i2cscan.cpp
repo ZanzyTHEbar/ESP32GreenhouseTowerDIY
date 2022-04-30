@@ -10,16 +10,14 @@ Scanner::~Scanner(void)
 
 void Scanner::SetupScan()
 {
-  Wire.begin();
-  //Serial.begin(115200);
-  Serial.println("\nI2C Scanner");
+  Serial.println(F("\nI2C Scanner Setup"));
 }
 
 void Scanner::BeginScan()
 {
   byte error, address;
   int nDevices;
-  Serial.println("Scanning...");
+  Serial.println(F("Scanning..."));
   nDevices = 0;
   for (address = 1; address < 127; address++)
   {
@@ -27,7 +25,7 @@ void Scanner::BeginScan()
     error = Wire.endTransmission();
     if (error == 0)
     {
-      Serial.print("I2C device found at address 0x");
+      Serial.print(F("I2C device found at address 0x"));
       if (address < 16)
       {
         Serial.print("0");
@@ -37,7 +35,7 @@ void Scanner::BeginScan()
     }
     else if (error == 4)
     {
-      Serial.print("Unknow error at address 0x");
+      Serial.print(F("Unknow error at address 0x"));
       if (address < 16)
       {
         Serial.print("0");
@@ -47,13 +45,13 @@ void Scanner::BeginScan()
   }
   if (nDevices == 0)
   {
-    Serial.println("No I2C devices found\n");
+    Serial.println(F("No I2C devices found\n"));
   }
   else
   {
-    Serial.println("done\n");
+    Serial.println(F("done\n"));
   }
-  delay(5000);
+  my_delay(5L);
 }
 
 Scanner Scan;
