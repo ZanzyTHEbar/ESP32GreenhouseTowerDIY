@@ -1,4 +1,13 @@
-
+/**
+ * @file HMSmqtt.cpp
+ * @author ZanzyTHEbar (https://github.com/ZanzyTHEbar)
+ * @brief 
+ * @version 0.1
+ * @date 2022-04-30
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "HMSmqtt.hpp"
 
 PubSubClient mqttClient(espClient);
@@ -15,6 +24,23 @@ long lastReconnectAttempt = 0;
 #define MQTT_RECONNECT_RETRY_TIMEOUT 1000
 #define MQTT_RECONNECT_RETRY_COUNT 3
 
+/**
+ * @brief Initialize the MQTT client
+ * @param clientId The client ID to use
+ * @param host The host to connect to
+ * @param port The port to connect to
+ * @param secure Whether to use TLS or not
+ * @param callback The callback to use
+ * <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+ * <component>: One of the supported MQTT components, eg. binary_sensor.
+ * <node_id> (Optional): ID of the node providing the topic, this is not used by Home Assistant but may be used to structure the MQTT topic.
+ * The ID of the node must only consist of characters from the character class [a-zA-Z0-9_-] (alphanumerics, underscore and hyphen).
+ * <object_id>: The ID of the device. This is only to allow for separate topics for each device and is not used for the entity_id.
+ * The ID of the device must only consist of characters from the character class [a-zA-Z0-9_-] (alphanumerics, underscore and hyphen).
+ * Best practice for entities with a unique_id is to set <object_id> to unique_id and omit the <node_id>.
+ **/
+#define MQTT_DISCOVERY_PREFIX "homeassistant"
+
 const char *MQTT_TOPIC = "hms/data/";
 const String HOMEASSISTANT_MQTT_HOSTNAME = "homeassistant.local";
 const String MQTT_USER = "MyUserName";
@@ -25,10 +51,18 @@ String MQTT_DEVICE_NAME = "HBAT_HMS";                              // MQTT Topic
 bool mqttProcessing = false;
 /*###################### MQTT Configuration END ######################*/
 
+/**
+ * @brief Construct a new HMSMqtt::HMSMqtt object
+ * 
+ */
 HMSMqtt::HMSMqtt()
 {
 }
 
+/**
+ * @brief Destroy the HMSMqtt::HMSMqtt object
+ * 
+ */
 HMSMqtt::~HMSMqtt()
 {
 }
@@ -53,7 +87,7 @@ int HMSMqtt::DiscovermDNSBroker()
       log_i("[OK]\n");
       log_i("[mDNS Broker Discovery]: Querying MQTT broker: ");
 
-      int n = MDNS.queryService("mqtt", "tcp");
+      int n = MDNS.queryService("mqtt", "tcp") || MDNS.queryService("_mqtt", "_tcp");
 
       if (n == 0)
       {
@@ -64,19 +98,36 @@ int HMSMqtt::DiscovermDNSBroker()
       else
       {
         int mqttPort;
-        // Found one or more MQTT service - use the first one.
+        // Found one or more MQTT services - use the first one.
         log_i("[OK]\n");
         mqttServer = MDNS.IP(0);
         mqttPort = MDNS.port(0);
         heapStr(&(cfg.config.MQTTBroker), mqttServer.toString().c_str());
-        log_i("[mDNS Broker Discovery]: The port is:%d\n", mqttPort);
         cfg.config.MQTTPort = mqttPort;
-        log_i("[mDNS Broker Discovery]: MQTT broker found at: %s\n", mqttServer.toString().c_str());
-        log_i("%s", cfg.config.MQTTBroker);
+
+        switch (mqttPort)
+        {
+        case MQTT_PORT:
+          log_i("[mDNS Broker Discovery]: MQTT port is insecure - running on port: %d\n", mqttPort);
+          break;
+
+        case MQTT_PORT_SECURE:
+          log_i("[mDNS Broker Discovery]: MQTT port is secure - running on port: %d\n", mqttPort);
+          break;
+
+        case 0:
+          log_i("[mDNS Broker Discovery]: MQTT port is not set - running on port: %d\n", mqttPort);
+          break;
+
+        default:
+          log_i("[mDNS Broker Discovery]: MQTT port is on an unusual port - running on port: %d\n", mqttPort);
+          break;
+        }
+
+        log_i("[mDNS Broker Discovery]: MQTT broker found at: %s\n: %d", cfg.config.MQTTBroker, cfg.config.MQTTPort);
         return 1;
       }
     }
-    return 1;
   }
   return 0;
 }
