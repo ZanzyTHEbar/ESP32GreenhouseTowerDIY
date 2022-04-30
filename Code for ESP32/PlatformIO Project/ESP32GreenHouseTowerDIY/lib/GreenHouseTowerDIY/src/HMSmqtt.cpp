@@ -5,6 +5,26 @@ PubSubClient mqttClient(espClient);
 
 long lastReconnectAttempt = 0;
 
+// Variables for MQTT
+#define MQTT_SECURE_ENABLED 0
+#define MQTT_PORT 1883
+#define MQTT_PORT_SECURE 8883
+#define MQTT_MAX_TRANSFER_SIZE 1024
+#define MQTT_KEEPALIVE 60
+#define MQTT_RECONNECT_TIMEOUT 10000
+#define MQTT_RECONNECT_RETRY_TIMEOUT 1000
+#define MQTT_RECONNECT_RETRY_COUNT 3
+
+const char *MQTT_TOPIC = "hms/data/";
+const String HOMEASSISTANT_MQTT_HOSTNAME = "homeassistant.local";
+const String MQTT_USER = "MyUserName";
+const String MQTT_PASS = "";
+const String MQTT_HOMEASSISTANT_TOPIC_SET = "/set";                // MQTT Topic to subscribe to for changes(Home Assistant)
+const String MQTT_HOMEASSISTANT_TOPIC = "homeassistant/HBAT/data"; // MQTT Topic to Publish to for state and config (Home Assistant);
+String MQTT_DEVICE_NAME = "HBAT_HMS";     // MQTT Topic to Publish to for state and config (Any MQTT Broker)
+bool mqttProcessing = false;
+/*###################### MQTT Configuration END ######################*/
+
 HMSMqtt::HMSMqtt()
 {
 }
@@ -14,50 +34,52 @@ HMSMqtt::~HMSMqtt()
 }
 
 // ############## functions to update current server settings ###################
+#if ENABLE_MDNS_SUPPORT
 int HMSMqtt::DiscovermDNSBroker()
 {
-    // check if there is a WiFi connection
-    if (WiFi.status() == WL_CONNECTED)
+  // check if there is a WiFi connection
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    log_i("[mDNS Broker Discovery]: connected!\n");
+
+    log_i("[mDNS Broker Discovery]: Setting up mDNS: ");
+    if (!MDNS.begin(mqtt_mDNS_clientId))
     {
-        log_i("[mDNS Broker Discovery]: connected!\n");
-
-        log_i("[mDNS Broker Discovery]: Setting up mDNS: ");
-        if (!MDNS.begin(mqtt_mDNS_clientId))
-        {
-            log_i("[Fail]\n");
-        }
-        else
-        {
-            log_i("[OK]\n");
-            log_i("[mDNS Broker Discovery]: Querying MQTT broker: ");
-
-            int n = MDNS.queryService("mqtt", "tcp");
-
-            if (n == 0)
-            {
-                // No service found
-                log_i("[Fail]\n");
-                return 0;
-            }
-            else
-            {
-                int mqttPort;
-                // Found one or more MQTT service - use the first one.
-                log_i("[OK]\n");
-                mqttServer = MDNS.IP(0);
-                mqttPort = MDNS.port(0);
-                heapStr(&(cfg.config.MQTTBroker), mqttServer.toString().c_str());
-                log_i("[mDNS Broker Discovery]: The port is:%d\n", mqttPort);
-                cfg.config.MQTTPort = mqttPort;
-                log_i("[mDNS Broker Discovery]: MQTT broker found at: %s\n", mqttServer.toString().c_str());
-                log_i("%s", cfg.config.MQTTBroker);
-                return 1;
-            }
-        }
-        return 1;
+      log_i("[Fail]\n");
     }
-    return 0;
+    else
+    {
+      log_i("[OK]\n");
+      log_i("[mDNS Broker Discovery]: Querying MQTT broker: ");
+
+      int n = MDNS.queryService("mqtt", "tcp");
+
+      if (n == 0)
+      {
+        // No service found
+        log_i("[Fail]\n");
+        return 0;
+      }
+      else
+      {
+        int mqttPort;
+        // Found one or more MQTT service - use the first one.
+        log_i("[OK]\n");
+        mqttServer = MDNS.IP(0);
+        mqttPort = MDNS.port(0);
+        heapStr(&(cfg.config.MQTTBroker), mqttServer.toString().c_str());
+        log_i("[mDNS Broker Discovery]: The port is:%d\n", mqttPort);
+        cfg.config.MQTTPort = mqttPort;
+        log_i("[mDNS Broker Discovery]: MQTT broker found at: %s\n", mqttServer.toString().c_str());
+        log_i("%s", cfg.config.MQTTBroker);
+        return 1;
+      }
+    }
+    return 1;
+  }
+  return 0;
 }
+#endif // ENABLE_MDNS_SUPPORT
 
 /**
  * @brief Check if the current hostname is the same as the one in the config file

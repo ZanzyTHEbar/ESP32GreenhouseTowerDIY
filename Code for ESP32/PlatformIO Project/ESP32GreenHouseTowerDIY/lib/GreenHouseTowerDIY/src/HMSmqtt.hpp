@@ -7,6 +7,9 @@
 #define HMSMQTT_HPP
 #include <PubSubClient.h>
 #include "defines.hpp"
+#if ENABLE_MDNS_SUPPORT
+#include <ESPmDNS.h>
+#endif // ENABLE_MDNS_SUPPORT
 
 extern PubSubClient mqttClient;
 class HMSMqtt
@@ -15,7 +18,7 @@ public:
   // Constructor
   HMSMqtt();
   virtual ~HMSMqtt();
-  
+
   // Initialize the library
   void loadMQTTConfig();
   bool MQTTSetup();

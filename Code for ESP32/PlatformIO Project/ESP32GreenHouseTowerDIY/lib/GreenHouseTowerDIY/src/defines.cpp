@@ -44,23 +44,6 @@ String generateDeviceID()
   return deviceID;
 }
 
-// Variables for MQTT
-#if ENABLE_MQTT_SUPPORT
-const char *MQTT_TOPIC = "hms/data/";
-const String HOMEASSISTANT_MQTT_HOSTNAME = "homeassistant.local";
-const String MQTT_USER = "MyUserName";
-const String MQTT_PASS = "";
-const String MQTT_HOMEASSISTANT_TOPIC_SET = "/set";                // MQTT Topic to subscribe to for changes(Home Assistant)
-const String MQTT_HOMEASSISTANT_TOPIC = "homeassistant/HBAT/data"; // MQTT Topic to Publish to for state and config (Home Assistant);
-String MQTT_DEVICE_NAME = "HBAT_HMS";     // MQTT Topic to Publish to for state and config (Any MQTT Broker)
-bool mqttProcessing = false;
-#endif
-/*###################### MQTT Configuration END ######################*/
-
-/* // Tasks for the Task Scheduler
-TaskHandle_t runserver;
-TaskHandle_t accumulatedata; */
-
 // Variables
 const char *mqtt_mDNS_clientId = StringtoChar(DEFAULT_HOSTNAME);
 char mDNS_hostname[4] = {'h', 'b', 'a', 't'};
