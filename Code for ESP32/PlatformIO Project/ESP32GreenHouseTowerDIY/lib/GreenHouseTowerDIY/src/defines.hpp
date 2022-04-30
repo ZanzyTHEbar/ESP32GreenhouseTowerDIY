@@ -75,7 +75,9 @@ _Pragma(STR(message(ENABLE_MQTT_SUPPORT)))
 #define TRIGGER 14
 /*###################### Distance Sensor Values END ######################*/
 
+
 // Variables
+extern const char *mqtt_mDNS_clientId;
 extern int period;
 extern unsigned long time_now;
 

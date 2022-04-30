@@ -81,8 +81,7 @@ void Config::CreateDefaultConfig()
     config.hostname = NULL;
     config.MQTTClientID = NULL;
     config.MQTTBroker = NULL;
-    config.MQTTPort = 0; // Port to use for unsecured MQTT
-    config.MQTTEnabled = false;     
+    config.MQTTPort = 0; // Port to use for unsecured MQTT   
     config.MQTTPort_Secure = 0; // port to use if Secured MQTT is enabled
     config.MQTTUser = NULL;
     config.MQTTPass = NULL;
@@ -229,7 +228,6 @@ bool Config::loadConfig()
 
     heapStr(&config.hostname, jsonBuffer["hostname"]);
     heapStr(&config.MQTTClientID, jsonBuffer["MQTTClientID"]);
-    config.MQTTEnabled = jsonBuffer["MQTTEnabled"];
     config.MQTTPort = jsonBuffer["MQTTPort"];
     config.MQTTPort_Secure = jsonBuffer["MQTTPort_Secure"];
     heapStr(&config.MQTTUser, jsonBuffer["MQTTUser"]);
@@ -295,7 +293,6 @@ bool Config::saveConfig()
     // create a json file from the config struct
     json["hostname"] = config.hostname;
     json["MQTTClientID"] = config.MQTTClientID;
-    json["MQTTEnabled"] = config.MQTTEnabled;
     json["MQTTPort"] = config.MQTTPort;
     json["MQTTPort_Secure"] = config.MQTTPort_Secure;
     json["MQTTUser"] = config.MQTTUser;

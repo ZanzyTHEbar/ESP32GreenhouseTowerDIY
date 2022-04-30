@@ -17,7 +17,6 @@ public:
     {
         // Variables
         char *hostname;
-        bool MQTTEnabled;
         char *MQTTClientID;
         int MQTTPort;        // Port to use for unsecured MQTT
         int MQTTPort_Secure; // port to use if Secured MQTT is enabled

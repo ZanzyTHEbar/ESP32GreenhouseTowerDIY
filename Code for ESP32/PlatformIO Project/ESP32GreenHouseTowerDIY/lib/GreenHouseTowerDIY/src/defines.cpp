@@ -46,7 +46,6 @@ String generateDeviceID()
 
 // Variables
 const char *mqtt_mDNS_clientId = StringtoChar(DEFAULT_HOSTNAME);
-char mDNS_hostname[4] = {'h', 'b', 'a', 't'};
 
 int period = 500;
 unsigned long time_now = 0;

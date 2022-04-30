@@ -21,7 +21,7 @@ const String MQTT_USER = "MyUserName";
 const String MQTT_PASS = "";
 const String MQTT_HOMEASSISTANT_TOPIC_SET = "/set";                // MQTT Topic to subscribe to for changes(Home Assistant)
 const String MQTT_HOMEASSISTANT_TOPIC = "homeassistant/HBAT/data"; // MQTT Topic to Publish to for state and config (Home Assistant);
-String MQTT_DEVICE_NAME = "HBAT_HMS";     // MQTT Topic to Publish to for state and config (Any MQTT Broker)
+String MQTT_DEVICE_NAME = "HBAT_HMS";                              // MQTT Topic to Publish to for state and config (Any MQTT Broker)
 bool mqttProcessing = false;
 /*###################### MQTT Configuration END ######################*/
 
@@ -37,6 +37,7 @@ HMSMqtt::~HMSMqtt()
 #if ENABLE_MDNS_SUPPORT
 int HMSMqtt::DiscovermDNSBroker()
 {
+  IPAddress mqttServer;
   // check if there is a WiFi connection
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -97,7 +98,6 @@ void HMSMqtt::loadMQTTConfig()
     cfg.setConfigChanged();
   }
   String MQTT_CLIENT_ID = generateDeviceID();
-  cfg.config.MQTTEnabled = ENABLE_MQTT_SUPPORT;
   char *mqtt_user = StringtoChar(MQTT_USER);
   char *mqtt_pass = StringtoChar(MQTT_PASS);
   char *mqtt_topic = StringtoChar(MQTT_TOPIC);
@@ -121,7 +121,6 @@ void HMSMqtt::loadMQTTConfig()
 
   log_i("Loaded config: hostname %s, MQTT enabled %s, MQTT host %s, MQTT port %d, MQTT user %s, MQTT pass %s, MQTT topic %s, MQTT set topic %s, MQTT device name %s",
         cfg.config.hostname,
-        (cfg.config.MQTTEnabled == ENABLE_MQTT_SUPPORT) ? "true" : "false",
         cfg.config.MQTTBroker,
         cfg.config.MQTTPort,
         cfg.config.MQTTUser,
@@ -255,8 +254,8 @@ bool HMSMqtt::MQTTSetup()
     {
       return secure ? MQTT_PORT_SECURE : MQTT_PORT;
     };
-    auto port = getPort(cfg.config.MQTTSecureState);
-    auto host = cfg.config.MQTTBroker;
+    int port = getPort(cfg.config.MQTTSecureState);
+    char *host = cfg.config.MQTTBroker;
     mqttClient.setServer(host, port);
     mqttClient.setCallback(callback);
     lastReconnectAttempt = 0;
