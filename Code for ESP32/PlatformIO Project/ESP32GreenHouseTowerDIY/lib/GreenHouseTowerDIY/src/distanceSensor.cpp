@@ -54,11 +54,9 @@ double DistanceSensor::readWaterLevel()
         }
 
         my_delay(readings);
-        // client.publish(topic_pub_stocklevel, String(stock).c_str());
 
         if (*((char *)typeid(p).name()) == 'f' || *(typeid(p).name()) == 'i')
         {
-            // client.publish(topic_pub_waterlevel, p);
             return p;
         }
         else
