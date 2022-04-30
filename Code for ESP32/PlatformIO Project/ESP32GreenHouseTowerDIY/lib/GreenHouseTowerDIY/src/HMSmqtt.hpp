@@ -20,6 +20,7 @@ public:
   void loadMQTTConfig();
   bool MQTTSetup();
   bool MQTTLoop();
+  int DiscovermDNSBroker();
   void RunMqttService();
   void MessageReceived(char topic[], char payload[]);
   void MQTTPublish(char topic[], char payload[]);

@@ -14,6 +14,51 @@ HMSMqtt::~HMSMqtt()
 }
 
 // ############## functions to update current server settings ###################
+int HMSMqtt::DiscovermDNSBroker()
+{
+    // check if there is a WiFi connection
+    if (WiFi.status() == WL_CONNECTED)
+    {
+        log_i("[mDNS Broker Discovery]: connected!\n");
+
+        log_i("[mDNS Broker Discovery]: Setting up mDNS: ");
+        if (!MDNS.begin(mqtt_mDNS_clientId))
+        {
+            log_i("[Fail]\n");
+        }
+        else
+        {
+            log_i("[OK]\n");
+            log_i("[mDNS Broker Discovery]: Querying MQTT broker: ");
+
+            int n = MDNS.queryService("mqtt", "tcp");
+
+            if (n == 0)
+            {
+                // No service found
+                log_i("[Fail]\n");
+                return 0;
+            }
+            else
+            {
+                int mqttPort;
+                // Found one or more MQTT service - use the first one.
+                log_i("[OK]\n");
+                mqttServer = MDNS.IP(0);
+                mqttPort = MDNS.port(0);
+                heapStr(&(cfg.config.MQTTBroker), mqttServer.toString().c_str());
+                log_i("[mDNS Broker Discovery]: The port is:%d\n", mqttPort);
+                cfg.config.MQTTPort = mqttPort;
+                log_i("[mDNS Broker Discovery]: MQTT broker found at: %s\n", mqttServer.toString().c_str());
+                log_i("%s", cfg.config.MQTTBroker);
+                return 1;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+
 /**
  * @brief Check if the current hostname is the same as the one in the config file
  * Call in the Setup BEFORE the WiFi.begin()

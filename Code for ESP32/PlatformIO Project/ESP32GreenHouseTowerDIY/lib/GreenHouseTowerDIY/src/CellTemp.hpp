@@ -26,6 +26,8 @@ public:
     void readAddresses(DeviceAddress deviceAddress);
     void printAddress(DeviceAddress deviceAddress);
     Temp ReadTempSensorData();
+    Temp GetTempF();
+    Temp checkSensors();
 
 private:
 };

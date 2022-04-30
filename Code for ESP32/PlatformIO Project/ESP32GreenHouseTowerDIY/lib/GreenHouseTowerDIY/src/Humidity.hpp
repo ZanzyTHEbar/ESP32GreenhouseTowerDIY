@@ -46,12 +46,15 @@ public:
   Humidity();
   virtual ~Humidity();
   // Initialize the library
+#if USE_DHT_SENSOR
   int setupSensor();
   void readDHT();
+#endif // USE_DHT_SENSOR
+
+#if USE_SHT31_SENSOR
   bool checkHeaterEnabled();
   float StackHumidity();
   float AverageStackTemp();
-#if USE_SHT31_SENSOR
   Hum ReadSensor();
 #endif // USE_SHT31_SENSOR
 

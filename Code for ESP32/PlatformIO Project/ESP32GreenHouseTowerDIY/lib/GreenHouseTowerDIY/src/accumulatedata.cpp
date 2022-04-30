@@ -21,17 +21,12 @@ AccumulateData::~AccumulateData()
 void AccumulateData::InitAccumulateData()
 {
     // Initialize the library
+#if USE_SHT31_SENSOR
     humidity.ReadSensor();
-
-    /******************************************************************************
-     * Function: Setup the Stack Climate Data
-     * Description: This function setups the stack climate data.
-     * Parameters: None
-     * Return: The mean Stack Climate Data
-     ******************************************************************************/
-    // Stack Data to send
     cfg.config.stack_humidity = humidity.StackHumidity();
     cfg.config.stack_temp = humidity.AverageStackTemp();
+#endif // USE_SHT31_SENSOR
+
     cfg.config.numSensors = numSensors;
 
     // loop through and store temp data

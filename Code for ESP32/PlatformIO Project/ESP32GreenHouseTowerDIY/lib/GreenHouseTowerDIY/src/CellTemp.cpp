@@ -81,15 +81,8 @@ void CellTemp::printAddress(DeviceAddress deviceAddress)
     }
 }
 
-/******************************************************************************
- * Function: Get Temperature
- * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
- * Parameters: None
- * Return: float array - Temperature of the sensors
- ******************************************************************************/
-Temp CellTemp::ReadTempSensorData()
+Temp CellTemp::checkSensors()
 {
-    // handle the case where no sensors are connected
     if (sensors_count == 0)
     {
         float no_sensors[] = {0};
@@ -100,13 +93,52 @@ Temp CellTemp::ReadTempSensorData()
         log_i("No temperature sensors found - please connect them and restart the device");
         return cell_temp_sensor_results;
     }
+}
 
+/******************************************************************************
+ * Function: Get Temperature
+ * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
+ * Parameters: None
+ * Return: float array - Temperature of the sensors
+ ******************************************************************************/
+Temp CellTemp::ReadTempSensorData()
+{
+    // handle the case where no sensors are connected
+    checkSensors();
     for (int i = 0; i < sensors_count; i++)
     {
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
         {
             cell_temp_sensor_results.temp[i] = sensors.getTempC(temp_sensor_addresses);
+            printAddress(temp_sensor_addresses);
+            log_i("\n");
+        }
+        else
+        {
+            log_w("Found ghost device at %d but could not detect address. Check power and cabling", i, DEC);
+        }
+    }
+    return cell_temp_sensor_results;
+}
+
+/******************************************************************************
+ * Function: Get Temperature
+ * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
+ * Parameters: None
+ * Return: float array - Temperature of the sensors in fahrenheit
+ ******************************************************************************/
+Temp CellTemp::GetTempF()
+{
+    // handle the case where no sensors are connected
+    checkSensors();
+
+    for (int i = 0; i < sensors_count; i++)
+    {
+        // Search the wire for address
+        if (sensors.getAddress(temp_sensor_addresses, i))
+        {
+            cell_temp_sensor_results.temp[i] = sensors.getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0;
             printAddress(temp_sensor_addresses);
             log_i("\n");
         }
