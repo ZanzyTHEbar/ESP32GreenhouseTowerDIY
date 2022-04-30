@@ -314,12 +314,12 @@ void HMSMqtt::RunMqttService()
 {
   bool mqttConnected = false;
 
-  if (!mqttClient.connected() && cfg.config.MQTTEnabled)
+  if (!mqttClient.connected())
   {
     log_i("MQTT not connected, attempting to reconnect...");
     MQTTLoop();
   }
-  if (mqttClient.connected() && cfg.config.MQTTEnabled)
+  if (mqttClient.connected())
   {
     log_i("\n");
     log_i("Connecting to MQTT...");
