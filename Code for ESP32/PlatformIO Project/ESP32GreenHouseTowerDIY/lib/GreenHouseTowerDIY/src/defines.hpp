@@ -64,11 +64,9 @@ void my_delay(volatile long delay_time);
 String generateDeviceID();
 
 /*######################## MQTT Configuration ########################*/
-#if ENABLE_MQTT_SUPPORT
 _Pragma(STR(message(ENABLE_MQTT_SUPPORT)))
 // MQTT includes
 #include "HMSmqtt.hpp"
-#endif // ENABLE_MQTT_SUPPORT
 
 /*###################### MQTT Configuration END ######################*/
 

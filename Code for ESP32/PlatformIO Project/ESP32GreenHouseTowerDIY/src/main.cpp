@@ -37,7 +37,6 @@ void setup()
   } */
 
   Wire.begin();
-  HMSmain.setupSensor();
 
   Serial.println("HMS booting - please wait");
   Serial.println("Starting...");
@@ -70,24 +69,17 @@ void setup()
   Serial.println(F("Starting Webserver"));
   network.SetupServer();
   Serial.println("Setting up WiFi");
-
-#if ENABLE_MQTT_SUPPORT
   Serial.println("Setting up MQTT");
   HMSmqtt.loadMQTTConfig();
-#endif // ENABLE_MQTT_SUPPORT
 
-  if (ENABLE_MDNS_SUPPORT)
+#if ENABLE_MDNS_SUPPORT
+  if (ENABLE_MQTT_SUPPORT)
   {
-    Mdns.SetupmDNSServer(); // setup the mDNS server for the future web-front-end
-    if (ENABLE_MQTT_SUPPORT)
-    {
-      Mdns.DiscovermDNSBroker(); // discover the mDNS broker for mqtt
-    }
+    HMSmqtt.DiscovermDNSBroker(); // discover the mDNS broker for mqtt
   }
+#endif // ENABLE_MDNS_SUPPORT
 
-#if ENABLE_MQTT_SUPPORT
   HMSmqtt.MQTTSetup();
-#endif // ENABLE_MQTT_SUPPORT
 
   Serial.println("");
   if (network.SetupNetworkStack())
@@ -125,16 +117,9 @@ void loop()
     }
   }
 
-#if ENABLE_MQTT_SUPPORT
   if (WiFi.status() == WL_CONNECTED)
   {
     HMSmqtt.RunMqttService();
-  }
-#endif // ENABLE_MQTT_SUPPORT
-
-  if (ENABLE_MDNS_SUPPORT)
-  {
-    Mdns.mDNSLoop();
   }
   my_delay(1L);
 }
