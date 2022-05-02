@@ -26,6 +26,15 @@
  *23 SYSTEM_EVENT_ETH_DISCONNECTED         < ESP32 ethernet phy link down
  *24 SYSTEM_EVENT_ETH_GOT_IP               < ESP32 ethernet got IP from connected AP
  *25 SYSTEM_EVENT_MAX
+
+ WiFi.status() return values:
+    *0  WL_IDLE_STATUS                       < ESP32 station is in idle state
+    *1  WL_NO_SSID_AVAIL                     < ESP32 station cannot find any SSID in scan results
+    *2  WL_SCAN_COMPLETED                    < ESP32 station has finished the scan
+    *3  WL_CONNECTED                         < ESP32 station has a connection to an AP
+    *4  WL_CONNECT_FAILED                    < ESP32 station failed to connect to an AP
+    *5  WL_CONNECTION_LOST                   < ESP32 station has lost connection to an AP
+    *6  WL_DISCONNECTED                      < ESP32 station is in disconnected state
  */
 
 #include "network.hpp"
