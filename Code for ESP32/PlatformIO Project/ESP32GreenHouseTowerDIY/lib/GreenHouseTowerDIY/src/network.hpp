@@ -3,26 +3,27 @@
  Copyright (c) 2021 ZanzyTHEbar
 */
 #pragma once
-#ifndef HMSNETWORK_hpp
-#define HMSNETWORK_hpp
+#ifndef Network_hpp
+#define Network_hpp
 
 #include "defines.hpp"
 #include <WiFi.h>
 
 extern WiFiClient espClient;
 
-class HMSnetwork
+class Network
 {
 public:
     // constructors
-    HMSnetwork();
-    virtual ~HMSnetwork();
+    Network();
+    virtual ~Network();
     // Functions
     bool SetupNetworkStack();
     bool connectToApWithFailToStation();
     void SetupWebServer();
     void SetupServer();
     void CheckNetworkLoop();
+    void CheckConnectionLoop_Active();
     void SetupWifiScan();
     void networkRoutes();
     bool LoopWifiScan();
@@ -34,5 +35,5 @@ private:
     int maxTemp;
 };
 
-extern HMSnetwork network;
+extern Network network;
 #endif
