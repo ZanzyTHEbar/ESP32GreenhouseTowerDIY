@@ -8,6 +8,8 @@
 
 #include "defines.hpp"
 #include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
 
 extern WiFiClient espClient;
 

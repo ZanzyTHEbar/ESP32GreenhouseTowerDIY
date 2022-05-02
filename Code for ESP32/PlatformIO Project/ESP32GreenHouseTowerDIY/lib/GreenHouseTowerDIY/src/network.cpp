@@ -39,7 +39,11 @@
 
 #include "network.hpp"
 
+AsyncWebServer server(80);
+
 WiFiClient espClient;
+
+const size_t MAX_FILESIZE = 1024 * 1024 * 2; // 2MB
 
 // Timer variables
 unsigned long previousMillis = 0;
@@ -65,6 +69,107 @@ Network::~Network()
     // destructor
     log_i("[INFO]: Network::~Network()\n");
     log_i("[INFO]: Destroying network object\n");
+}
+
+String humanReadableSize(const size_t bytes)
+{
+    if (bytes < 1024)
+        return String(bytes) + " B";
+    else if (bytes < (1024 * 1024))
+        return String(bytes / 1024.0) + " KB";
+    else if (bytes < (1024 * 1024 * 1024))
+        return String(bytes / 1024.0 / 1024.0) + " MB";
+    else
+        return String(bytes / 1024.0 / 1024.0 / 1024.0) + " GB";
+}
+
+void notFound(AsyncWebServerRequest *request)
+{
+    log_i("NOT_FOUND: ");
+    if (request->method() == HTTP_GET)
+        log_i("GET");
+    else if (request->method() == HTTP_POST)
+        log_i("POST");
+    else if (request->method() == HTTP_DELETE)
+        log_i("DELETE");
+    else if (request->method() == HTTP_PUT)
+        log_i("PUT");
+    else if (request->method() == HTTP_PATCH)
+        log_i("PATCH");
+    else if (request->method() == HTTP_HEAD)
+        log_i("HEAD");
+    else if (request->method() == HTTP_OPTIONS)
+        log_i("OPTIONS");
+    else
+        log_i("UNKNOWN");
+    log_i(" http://%s%s\n", request->host().c_str(), request->url().c_str());
+    request->send(404, "text/plain", "Not found.");
+}
+
+void Network::networkRoutes()
+{
+    static const char *MIMETYPE_HTML{"text/html"};
+    /* static const char *MIMETYPE_CSS{"text/css"}; */
+    /* static const char *MIMETYPE_JS{"application/javascript"}; */
+    /* static const char *MIMETYPE_PNG{"image/png"}; */
+    /* static const char *MIMETYPE_JPG{"image/jpeg"}; */
+    /* static const char *MIMETYPE_ICO{"image/x-icon"}; */
+    static const char *MIMETYPE_JSON{"application/json"};
+
+    // Web Server Root URL
+    server.on("/", HTTP_GET, [&](AsyncWebServerRequest *request)
+              { request->send(200); });
+
+    // preflight cors check
+    server.on("/", HTTP_OPTIONS, [&](AsyncWebServerRequest *request)
+              {
+        AsyncWebServerResponse* response = request->beginResponse(204);
+        response->addHeader("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS");
+        response->addHeader("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization, FileSize");
+        response->addHeader("Access-Control-Allow-Credentials", "true");
+        request->send(response); });
+
+    // Route to set GPIO state to LOW
+    server.on("/toggle", HTTP_GET, [&](AsyncWebServerRequest *request)
+              {
+                    int params = request->params();
+                    for(int i=0;i<params;i++)
+                    {
+                        AsyncWebParameter* p = request->getParam(i);
+                            // HTTP POST Relay Value
+                        if (p->name() == "pin") 
+                        {
+                            String relay = p->value().c_str();
+                            log_i("switching state of pin: %s\n", relay.c_str());
+                            cfg.config.relays[relay.toInt()] = (cfg.config.relays[relay.toInt()] == true) ? false : true;
+                        }
+                        log_i("GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
+                    }
+                    request->send(200, MIMETYPE_JSON, "toggled"); });
+
+    server.on("/data.json", HTTP_GET, [&](AsyncWebServerRequest *request)
+              {
+                  cfg.config.data_json = true;
+                  my_delay(1L);
+                  String temp = cfg.config.data_json_string;
+                  request->send(200, MIMETYPE_JSON, temp);
+                  temp = ""; });
+
+    server.on("/api/reset/config", HTTP_GET, [&](AsyncWebServerRequest *request)
+              {
+                  cfg.resetConfig();
+                  request->send(200); });
+
+    server.on("/api/reset/device", HTTP_GET, [&](AsyncWebServerRequest *request)
+              {
+                  request->send(200);
+                  my_delay(1L);
+                  ESP.restart(); });
+
+    DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
+
+    server.onNotFound(notFound);
+    server.begin();
 }
 
 /**
@@ -122,6 +227,7 @@ bool Network::SetupNetworkStack()
                 return false;
             }
 
+            WiFi.setHostname(cfg.config.hostname); // define hostname
             WiFi.begin(cfg.config.WIFISSID, cfg.config.WIFIPASS);
 
             unsigned long currentMillis = millis();
