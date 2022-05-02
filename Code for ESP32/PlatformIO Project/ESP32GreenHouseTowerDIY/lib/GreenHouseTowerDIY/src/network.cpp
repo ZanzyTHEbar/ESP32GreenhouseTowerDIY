@@ -38,7 +38,7 @@ const long interval = 30000; // interval to wait for Wi-Fi connection (milliseco
 
 /**
  * @brief Construct a new Network:: Network object
- * 
+ *
  */
 Network::Network()
 {
@@ -49,7 +49,7 @@ Network::Network()
 
 /**
  * @brief Destroy the Network:: Network object
- * 
+ *
  */
 Network::~Network()
 {
@@ -59,10 +59,10 @@ Network::~Network()
 }
 
 /**
- * @brief 
- * 
- * @return true 
- * @return false 
+ * @brief
+ *
+ * @return true
+ * @return false
  */
 bool Network::SetupNetworkStack()
 {
@@ -138,7 +138,7 @@ bool Network::SetupNetworkStack()
 
 /**
  * @brief Setup the network stack and routes - fail to AP mode if STA fails
- * 
+ *
  */
 void Network::SetupWebServer()
 {
@@ -286,7 +286,30 @@ bool Network::LoopWifiScan()
         for (int i = 0; i < n; ++i)
         {
             // Print SSID and RSSI for each network found
-            log_i("%d: %s (%d) %s", i + 1, WiFi.SSID(i).c_str(), WiFi.RSSI(i), (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
+            switch (WiFi.encryptionType(i))
+            {
+            case WIFI_AUTH_OPEN:
+                log_i("%d: %s (%d) %s", i + 1, WiFi.SSID(i).c_str(), WiFi.RSSI(i), "OPEN");
+                break;
+            case WIFI_AUTH_WEP:
+                log_i("%d: %s (%d) %s", i + 1, WiFi.SSID(i).c_str(), WiFi.RSSI(i), "WEP");
+                break;
+            case WIFI_AUTH_WPA_PSK:
+                log_i("%d: %s (%d) %s", i + 1, WiFi.SSID(i).c_str(), WiFi.RSSI(i), "WPA");
+                break;
+            case WIFI_AUTH_WPA2_PSK:
+                log_i("%d: %s (%d) %s", i + 1, WiFi.SSID(i).c_str(), WiFi.RSSI(i), "WPA2");
+                break;
+            case WIFI_AUTH_WPA_WPA2_PSK:
+                log_i("%d: %s (%d) %s", i + 1, WiFi.SSID(i).c_str(), WiFi.RSSI(i), "WPA_WPA2");
+                break;
+            case WIFI_AUTH_WPA2_ENTERPRISE:
+                log_i("%d: %s (%d) %s", i + 1, WiFi.SSID(i).c_str(), WiFi.RSSI(i), "WPA2_ENTERPRISE");
+                break;
+            default:
+                log_i("%d: %s (%d) %s", i + 1, WiFi.SSID(i).c_str(), WiFi.RSSI(i), "UNKNOWN");
+                break;
+            }
             my_delay(0.1L);
             return true;
         }
