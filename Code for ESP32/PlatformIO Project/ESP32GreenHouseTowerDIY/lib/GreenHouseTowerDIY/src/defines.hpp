@@ -28,7 +28,7 @@
 #include "i2cscan.hpp"
 
 // Data stack
-#include "celltemp.hpp"
+#include "CellTemp.hpp"
 #include "Humidity.hpp"
 // Humidity Sensors
 //#include <sfm3003.hpp>
@@ -36,7 +36,7 @@
 // Temp Sensors
 
 // wifi definitions
-#include "HMSnetwork.hpp"
+#include "network.hpp"
 
 // Accumulate Data
 #include "accumulatedata.hpp"
