@@ -78,53 +78,43 @@ Config::~Config()
 
 void Config::CreateDefaultConfig()
 {
-    config.hostname = NULL;
-    config.MQTTClientID = NULL;
-    config.MQTTBroker = NULL;
-    config.MQTTPort = 0; // Port to use for unsecured MQTT   
-    config.MQTTPort_Secure = 0; // port to use if Secured MQTT is enabled
-    config.MQTTUser = NULL;
-    config.MQTTPass = NULL;
-    config.MQTTTopic = NULL;
-    config.MQTTSetTopic = NULL;
-    config.MQTTDeviceName = NULL;
-    config.data_json = false;
-    config.data_json_string = "";
-    config.last_mqtt_connect_attempt = 0;
-    config.last_mqtt_publish_attempt = 0;
-    config.lastMillis = 0;
-    config.IP = NULL;
-    config.netmask = NULL;
-    config.gateway = NULL;
-    config.MQTTSecureState = false;
-    config.lastMsg = 0;
-    config.msg = NULL;
-    config.value = 0;
-    config.WIFISSID = NULL;
-    config.WIFIPASS = NULL;
-    config.MQTTConnectedState = false;
-    config.NTPTIME = NULL;
-    config.NTPTIMEOFFSET = NULL;
-    config.MDNS = NULL;
-    config.DHCPCHECK = NULL;
-    config.numSensors = 0;
-    config.cell_count_max = 0;
-
-    for (int i = 0; i < 5; i++)
-    {
-        config.relays[i] = false;
-    }
-
-    config.stack_humidity = 0;
-    config.stack_temp = 0;
-    config.stack_voltage = 0;
-    config.stack_current = 0;
-
-    for (int i = 0; i < 10; i++)
-    {
-        config.cell_temp[i] = 0;
-        config.cell_voltage[i] = 0;
-    }
+    config = {
+        NULL,                                // hostname
+        NULL,                                // MQTTBroker
+        1883,                                // MQTTPort
+        8883,                                // MQTTPort_Secure
+        NULL,                                // MQTTUser
+        NULL,                                // MQTTPass
+        NULL,                                // MQTTTopic
+        NULL,                                // MQTTSetTopic
+        NULL,                                // MQTTDeviceName
+        0,                                   // last_mqtt_connect_attempt
+        0,                                   // last_mqtt_publish_attempt
+        0,                                   // lastMillis
+        NULL,                                // IP
+        NULL,                                // netmask
+        NULL,                                // gateway
+        false,                               // MQTTSecureState
+        NULL,                                // MQTTBroker
+        0,                                   // lastMsg
+        NULL,                                // msg
+        0,                                   // value
+        NULL,                                // WIFISSID
+        NULL,                                // WIFIPASS
+        false,                               // MQTTConnectedState
+        NULL,                                // MDNS
+        false,                               // data_json
+        "",                                  // data_json_string
+        {false, false, false, false, false}, // relays
+        {0, 0, 0, 0, 0},                     // relays_pin
+        0,                                   // humidity
+        0,                                   // temp
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},      // temp
+        0,                                   // numSensors
+        0,                                   // cell_count_max
+        0,                                   // flow_rate
+        0,                                   // flow_rate_sensor_temp
+    };
 }
 
 // Initialize SPIFFS
@@ -249,10 +239,7 @@ bool Config::loadConfig()
     heapStr(&config.WIFISSID, jsonBuffer["WIFISSID"]);
     heapStr(&config.WIFIPASS, jsonBuffer["WIFIPASS"]);
     config.MQTTConnectedState = jsonBuffer["MQTTConnectedState"];
-    heapStr(&config.NTPTIME, jsonBuffer["NTPTIME"]);
-    heapStr(&config.NTPTIMEOFFSET, jsonBuffer["NTPTIMEOFFSET"]);
     heapStr(&config.MDNS, jsonBuffer["MDNS"]);
-    heapStr(&config.DHCPCHECK, jsonBuffer["DHCPCHECK"]);
     config.numSensors = jsonBuffer["Number_of_Sensors"];
     config.cell_count_max = jsonBuffer["Max_Cell_Count"];
 
@@ -314,10 +301,7 @@ bool Config::saveConfig()
     json["WIFISSID"] = config.WIFISSID;
     json["WIFIPASS"] = config.WIFIPASS;
     json["MQTTConnectedState"] = config.MQTTConnectedState;
-    json["NTPTIME"] = config.NTPTIME;
-    json["NTPTIMEOFFSET"] = config.NTPTIMEOFFSET;
     json["MDNS"] = config.MDNS;
-    json["DHCPCHECK"] = config.DHCPCHECK;
     json["Number_of_Sensors"] = config.numSensors;
     json["Max_Cell_Count"] = config.cell_count_max;
 
