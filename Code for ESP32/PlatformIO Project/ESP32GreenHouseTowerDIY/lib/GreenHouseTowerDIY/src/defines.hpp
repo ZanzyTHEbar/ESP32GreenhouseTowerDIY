@@ -71,7 +71,7 @@ _Pragma(STR(message(ENABLE_MQTT_SUPPORT)))
 //! Deprecated - TODO: REMOVE ME 
 // #include "Oldmqtt.hpp"
 
-#include "mqtt/hamqtt.hpp"
+#include "mqtt/hassmqtt.hpp"
 
 /*###################### MQTT Configuration END ######################*/
 

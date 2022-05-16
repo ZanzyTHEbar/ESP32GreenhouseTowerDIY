@@ -19,15 +19,15 @@ public:
   virtual ~HASSMQTT();
 
   void loadMQTTConfig();
-  /* bool MQTTSetup();
-  bool MQTTLoop();
+  void mqttSetup();
+  void mqttLoop();
+
+#if ENABLE_MDNS_SUPPORT
   int DiscovermDNSBroker();
-  void RunMqttService();
-  void MessageReceived(char topic[], char payload[]);
-  void MQTTPublish(char topic[], char payload[]);
-  bool ReConnect(); */
+#endif // ENABLE_MDNS_SUPPORT
 
 private:
+  int pump_relay_pin;
 };
 
 extern HASSMQTT hassmqtt;
