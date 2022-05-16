@@ -34,8 +34,6 @@
 #include "sensors/humidity/Humidity.hpp"
 //#include <sfm3003.hpp>
 
-// Relays
-#include "io/Relays.hpp"
 
 // wifi definitions
 #include "network/network.hpp"
@@ -45,6 +43,9 @@
 
 // Timed tasks
 #include "data/timedtasks.hpp"
+
+// Relays
+#include "io/Relays.hpp"
 
 #define STR(x) #x
 #define XSTR(x) STR(x)

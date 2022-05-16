@@ -6,7 +6,7 @@
 #ifndef HMSMQTT_HPP
 #define HMSMQTT_HPP
 #include <PubSubClient.h>
-#include "defines.hpp"
+#include <defines.hpp>
 #if ENABLE_MDNS_SUPPORT
 #include <ESPmDNS.h>
 #endif // ENABLE_MDNS_SUPPORT

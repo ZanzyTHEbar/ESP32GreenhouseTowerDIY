@@ -1,4 +1,4 @@
-#include "defines.hpp"
+#include <defines.hpp>
 
 // Globally available functions
 char *StringtoChar(String inputString)
