@@ -1,5 +1,5 @@
 /*
- defines.hpp - HBAT library
+ defines.hpp - ESP32GreenHouseDIY library
  Copyright (c) 2021 ZanzyTHEbar
  */
 #ifndef DEFINES_hpp
@@ -21,29 +21,30 @@
 #include <SPIFFS.h>
 
 // data Struct
-#include "config.hpp"
+#include "data/config.hpp"
 
 // IO
 #include <Wire.h>
-#include "i2cscan.hpp"
-
-// Data stack
-#include "CellTemp.hpp"
-#include "Humidity.hpp"
-// Humidity Sensors
-//#include <sfm3003.hpp>
+#include "io/i2cscan.hpp"
 
 // Temp Sensors
+#include "sensors/temperature/CellTemp.hpp"
+
+// Humidity Sensors
+#include "sensors/humidity/Humidity.hpp"
+//#include <sfm3003.hpp>
+
+// Relays
+#include "io/Relays.hpp"
 
 // wifi definitions
-#include "network.hpp"
+#include "network/network.hpp"
 
 // Accumulate Data
-#include "accumulatedata.hpp"
+#include "data/accumulatedata.hpp"
 
 // Timed tasks
-#include "Relays.hpp"
-#include "timedtasks.hpp"
+#include "data/timedtasks.hpp"
 
 #define STR(x) #x
 #define XSTR(x) STR(x)
@@ -66,7 +67,11 @@ String generateDeviceID();
 /*######################## MQTT Configuration ########################*/
 _Pragma(STR(message(ENABLE_MQTT_SUPPORT)))
 // MQTT includes
-#include "HMSmqtt.hpp"
+
+//! Deprecated - TODO: REMOVE ME 
+// #include "Oldmqtt.hpp"
+
+#include "mqtt/hamqtt.hpp"
 
 /*###################### MQTT Configuration END ######################*/
 

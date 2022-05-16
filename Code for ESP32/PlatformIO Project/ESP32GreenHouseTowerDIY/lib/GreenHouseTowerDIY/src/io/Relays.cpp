@@ -61,6 +61,7 @@ void Relays::SetupPID()
  * Below PID Relay code is an example of how to use the PID controller
  * This code should only be used during the Charging phase. Integrate State Machine to use this code
  ******************************************************************************/
+#if USE_SHT31_SENSOR
 void Relays::HumRelayOnOff()
 {
     float climate_data = humidity.StackHumidity();
@@ -78,5 +79,6 @@ void Relays::HumRelayOnOff()
     else
         digitalWrite(cfg.config.relays_pin[0], LOW);
 }
+#endif
 
 Relays Relay;

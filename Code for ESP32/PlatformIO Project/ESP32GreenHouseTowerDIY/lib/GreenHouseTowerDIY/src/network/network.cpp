@@ -248,7 +248,7 @@ void Network::SetupWebServer()
     if (SetupNetworkStack())
     {
         networkRoutes();
-        log_i("HBAT HMS server started\n");
+        log_i("ESP32GreenHouseDIY HMS server started\n");
     }
     else
     {

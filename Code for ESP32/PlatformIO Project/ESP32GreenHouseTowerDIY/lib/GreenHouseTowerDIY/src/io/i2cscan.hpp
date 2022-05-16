@@ -1,11 +1,11 @@
 /*
- i2cscan.h - HBAT library
+ i2cscan.h - ESP32GreenHouseDIY library
  Copyright (c) 2021 ZanzyTHEbar
  */
 
 #ifndef I2CSCAN_HPP
 #define I2CSCAN_HPP
-#include "defines.hpp"
+#include <defines.hpp>
 #include <Arduino.h>
 #include <Wire.h>
 

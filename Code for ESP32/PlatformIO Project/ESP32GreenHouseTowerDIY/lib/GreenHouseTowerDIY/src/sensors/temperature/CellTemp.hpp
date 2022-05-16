@@ -1,5 +1,5 @@
 /*
- celltemp.h - HBAT library
+ celltemp.h - ESP32GreenHouseDIY library
  Copyright (c) 2021 ZanzyTHEbar
  */
 
@@ -7,7 +7,7 @@
 #define CELLTEMP_HPP
 // Data wire is plugged into port 42 on the ESP32
 #define ONE_WIRE_BUS 42
-#include "defines.hpp"
+#include <defines.hpp>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 

@@ -1,11 +1,11 @@
 /*
- Humidity.hpp - HBAT Humidity library
+ Humidity.hpp - ESP32GreenHouseDIY Humidity library
  Copyright (c) 2021 ZanzyTHEbar
  */
 
 #ifndef HUMIDITY_HPP
 #define HUMIDITY_HPP
-#include "defines.hpp"
+#include <defines.hpp>
 #include <Arduino.h>
 #include <Wire.h>
 #if USE_SHT31_SENSOR

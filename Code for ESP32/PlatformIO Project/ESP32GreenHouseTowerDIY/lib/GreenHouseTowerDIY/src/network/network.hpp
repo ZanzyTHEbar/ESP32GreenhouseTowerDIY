@@ -1,12 +1,12 @@
 /*
- Network.h - HBAT library
+ Network.h - ESP32GreenHouseDIY library
  Copyright (c) 2021 ZanzyTHEbar
 */
 #pragma once
 #ifndef Network_hpp
 #define Network_hpp
 
-#include "defines.hpp"
+#include <defines.hpp>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>

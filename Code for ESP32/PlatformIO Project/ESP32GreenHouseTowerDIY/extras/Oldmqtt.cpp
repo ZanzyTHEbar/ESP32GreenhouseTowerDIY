@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2022
  *
  */
-#include "HMSmqtt.hpp"
+#include "Oldmqtt.hpp"
 
 PubSubClient mqttClient(espClient);
 
@@ -46,7 +46,7 @@ const String HOMEASSISTANT_MQTT_HOSTNAME = "homeassistant.local";
 const String MQTT_USER = "MyUserName";
 const String MQTT_PASS = "";
 const String MQTT_HOMEASSISTANT_TOPIC_SET = "/set";                // MQTT Topic to subscribe to for changes(Home Assistant)
-const String MQTT_HOMEASSISTANT_TOPIC = "homeassistant/HBAT/data"; // MQTT Topic to Publish to for state and config (Home Assistant);
+const String MQTT_HOMEASSISTANT_TOPIC = "homeassistant/ESP32GreenHouseDIY/data"; // MQTT Topic to Publish to for state and config (Home Assistant);
 String MQTT_DEVICE_NAME = "HBAT_HMS";                              // MQTT Topic to Publish to for state and config (Any MQTT Broker)
 bool mqttProcessing = false;
 /*###################### MQTT Configuration END ######################*/
@@ -407,7 +407,7 @@ void HMSMqtt::RunMqttService()
       JSONencoder["MQTT_Broker"] = cfg.config.MQTTBroker,
       JSONencoder["MQTT_Port"] = cfg.config.MQTTPort,
       JSONencoder["MQTT_User"] = cfg.config.MQTTUser,
-      JSONencoder["Device"] = "HBAT",
+      JSONencoder["Device"] = "ESP32GreenHouseDIY",
       JSONencoder["schema"] = "json";
 
       size_t n = measureJson(JSONencoder);

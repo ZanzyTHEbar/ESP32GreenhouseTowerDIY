@@ -1,11 +1,11 @@
 /*
- HMSMqtt.h - HBAT MQTT library
+ HMSMqtt.h - ESP32GreenHouseDIY MQTT library
  Copyright (c) 2021 ZanzyTHEbar
  */
 #pragma once
 #ifndef HCSR04_HPP
 #define HCSR04_HPP
-#include "defines.hpp"
+#include <defines.hpp>
 #include <HCSR04.h>
 
 class DistanceSensor

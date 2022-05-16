@@ -1,12 +1,12 @@
 /*
- config.hpp - HBAT library
+ config.hpp - ESP32GreenHouseDIY library
  Copyright (c) 2021 ZanzyTHEbar
 */
 
 #pragma once
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
-#include "defines.hpp"
+#include <defines.hpp>
 
 class Config
 {

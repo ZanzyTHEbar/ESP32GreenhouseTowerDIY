@@ -1,5 +1,5 @@
 /*
- HMSMqtt.h - HBAT MQTT library
+ HMSMqtt.h - ESP32GreenHouseDIY MQTT library
  Copyright (c) 2021 ZanzyTHEbar
  */
 #pragma once

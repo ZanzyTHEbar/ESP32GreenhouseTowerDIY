@@ -1,6 +1,6 @@
 #ifndef ACCUMULATEDATA_HPP
 #define ACCUMULATEDATA_HPP
-#include "defines.hpp"
+#include <defines.hpp>
 
 class AccumulateData
 {
