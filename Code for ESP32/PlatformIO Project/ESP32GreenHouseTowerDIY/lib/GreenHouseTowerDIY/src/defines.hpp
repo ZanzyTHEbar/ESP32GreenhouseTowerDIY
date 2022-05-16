@@ -34,7 +34,6 @@
 #include "sensors/humidity/Humidity.hpp"
 //#include <sfm3003.hpp>
 
-
 // wifi definitions
 #include "network/network.hpp"
 
