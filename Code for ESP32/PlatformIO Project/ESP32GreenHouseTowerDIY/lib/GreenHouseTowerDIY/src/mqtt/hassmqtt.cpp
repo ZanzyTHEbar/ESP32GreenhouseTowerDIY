@@ -3,14 +3,14 @@
 long lastReconnectAttempt = 0;
 
 // Variables for MQTT
-#define MQTT_SECURE_ENABrelay 0
+/* #define MQTT_SECURE_ENABLED 0
 #define MQTT_PORT 1883
 #define MQTT_PORT_SECURE 8883
 #define MQTT_MAX_TRANSFER_SIZE 1024
 #define MQTT_KEEPALIVE 60
 #define MQTT_RECONNECT_TIMEOUT 10000
 #define MQTT_RECONNECT_RETRY_TIMEOUT 1000
-#define MQTT_RECONNECT_RETRY_COUNT 3
+#define MQTT_RECONNECT_RETRY_COUNT 3 */
 
 /**
  * @brief Initialize the MQTT client
@@ -27,13 +27,14 @@ long lastReconnectAttempt = 0;
  * The ID of the device must only consist of characters from the character class [a-zA-Z0-9_-] (alphanumerics, underscore and hyphen).
  * Best practice for entities with a unique_id is to set <object_id> to unique_id and omit the <node_id>.
  **/
-#define MQTT_DISCOVERY_PREFIX "homeassistant/"
+/* #define MQTT_DISCOVERY_PREFIX "homeassistant/"
 
-bool mqttProcessing = false;
+bool mqttProcessing = false; */
 
 unsigned long lastReadAt = millis();
 unsigned long lastAvailabilityToggleAt = millis();
 bool lastInputState = false;
+unsigned long lastSentAt = millis();
 
 #if !ENABLE_MDNS_SUPPORT
 #define BROKER_ADDR IPAddress(192, 168, 0, 17) // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
@@ -43,15 +44,19 @@ WiFiClient client;
 HADevice device;
 HAMqtt mqtt(client, device);
 HASwitch relay("pump_relay", false); // is unique ID.
+HASensor water_temp("water_temp");
+#if USE_DHT_SENSOR
+HASensor tower_humidity("tower_humidity");
+HASensor tower_humidity_temp("tower_humidity_temp");
+#endif // USE_DHT_SENSOR
+HASensor light("light");
 
-enum class MQTT_STATE
-{
-    DISCONNECTED,
-    CONNECTING,
-    CONNECTED,
-    DISCONNECTING,
-};
-
+#if USE_SHT31_SENSOR
+HASensor sht31_humidity("tower_humidity_sht31");
+HASensor sht31_humidity_temp("tower_humidity_temp_sht31");
+HASensor sht31_humidity_2("tower_humidity_sht31");
+HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
+#endif // USE_SHT31_SENSOR
 HASSMQTT::HASSMQTT()
 {
     pump_relay_pin = PUMP_RELAY_PIN; // change this to your pin in the platformio.ini file
@@ -223,6 +228,52 @@ void HASSMQTT::mqttSetup()
     // to the broker, all device types related to it will be marked as offline in
     // the Home Assistant Panel.
     device.enableLastWill();
+
+    // configure sensors
+#if USE_DHT_SENSOR
+    tower_humidity_temp.setUnitOfMeasurement("°C");
+    tower_humidity_temp.setDeviceClass("temperature");
+    tower_humidity_temp.setIcon("mdi:thermometer-lines");
+    tower_humidity_temp.setName("Tower temperature");
+
+    tower_humidity.setUnitOfMeasurement("%");
+    tower_humidity.setDeviceClass("humidity");
+    tower_humidity.setIcon("mdi:water-percent");
+    tower_humidity.setName("Tower Humidity");
+#endif // USE_DHT_SENSOR
+
+    water_temp.setUnitOfMeasurement("°C");
+    water_temp.setDeviceClass("temperature");
+    water_temp.setIcon("mdi:coolant-temperature");
+    water_temp.setName("Tower water temperature");
+
+#if USE_SHT31_SENSOR
+    sht31_humidity.setUnitOfMeasurement("%");
+    sht31_humidity.setDeviceClass("humidity");
+    sht31_humidity.setIcon("mdi:water-percent");
+    sht31_humidity.setName("Tower Humidity");
+
+    sht31_humidity_temp.setUnitOfMeasurement("°C");
+    sht31_humidity_temp.setDeviceClass("temperature");
+    sht31_humidity_temp.setIcon("mdi:thermometer-lines");
+    sht31_humidity_temp.setName("Tower Temperature");
+
+    sht31_humidity_2.setUnitOfMeasurement("%");
+    sht31_humidity_2.setDeviceClass("humidity");
+    sht31_humidity_2.setIcon("mdi:water-percent");
+    sht31_humidity_2.setName("Tower Humidity Sensor 2");
+
+    sht31_humidity_temp_2.setUnitOfMeasurement("°C");
+    sht31_humidity_temp_2.setDeviceClass("humidity");
+    sht31_humidity_temp_2.setIcon("mdi:thermometer-lines");
+    sht31_humidity_temp_2.setName("Tower Temperature Sensor 2");
+#endif // USE_SHT31_SENSOR
+
+    light.setUnitOfMeasurement("lx");
+    light.setDeviceClass("illuminance");
+    light.setIcon("mdi:lightbulb");
+    light.setName("Light");
+
 #if !MQTT_SECURE
 #if ENABLE_MDNS_SUPPORT
     DiscovermDNSBroker();
@@ -261,6 +312,28 @@ void HASSMQTT::mqttLoop()
     {
         device.setAvailability(!device.isOnline());
         lastAvailabilityToggleAt = millis();
+    }
+
+    if ((millis() - lastSentAt) >= 5000)
+    {
+        lastSentAt = millis();
+        tower_humidity_temp.setValue(accumulatedata.config.humidity_temp);
+        tower_humidity.setValue(accumulatedata.config.humidity);
+        water_temp.setValue(accumulatedata.config.temp_sensors[0]);
+        light.setValue(ldr.getLux());
+#if USE_SHT31_SENSOR
+        sht31_humidity.setValue(lastValue);
+        sht31_humidity_temp.setValue(lastValue);
+        sht31_humidity_2.setValue(lastValue);
+        sht31_humidity_temp_2.setValue(lastValue);
+#endif // USE_SHT31_SENSOR
+
+        // Supported data types:
+        // uint32_t (uint16_t, uint8_t)
+        // int32_t (int16_t, int8_t)
+        // double
+        // float
+        // const char*
     }
 }
 

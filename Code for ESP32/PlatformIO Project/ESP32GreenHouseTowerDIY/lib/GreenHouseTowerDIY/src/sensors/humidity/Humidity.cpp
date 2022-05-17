@@ -8,12 +8,13 @@ bool enableHeater = false;
 int loopCnt = 0;
 int HUMIDITY_SENSORS_ACTIVE = 0;
 #endif // USE_SHT31_SENSOR
-Hum result;
 
 #if USE_DHT_SENSOR
 DHT_Unified dht(DHTPIN, DHTTYPE);
 int status = 0;
 #endif // USE_DHT_SENSOR
+
+Humidity::Hum result;
 
 Humidity::Humidity()
 {
@@ -38,7 +39,6 @@ int Humidity::setupSensor()
   {
     log_i("DHT Sensor connected!");
     status = 1;
-    log_d("DHTxx Unified Sensor Example");
     // Print temperature sensor details.
     sensor_t sensor;
     dht.temperature().getSensor(&sensor);
@@ -82,15 +82,13 @@ int Humidity::setupSensor()
   }
   else if (!sht31.begin(0x44) && sht31_2.begin(0x45))
   {
-    log_d("Couldn't find SHT31 sensor #1");
-    log_d("SHT31 Sensors Setup did not complete successfully, check your wiring and try again");
+    log_d("Found 1 SHT31 Sensor");
     HUMIDITY_SENSORS_ACTIVE = 1;
     return 1;
   }
   else if (!sht31_2.begin(0x45) && sht31.begin(0x44))
   {
-    log_d("Couldn't find SHT31 sensor #2");
-    log_d("SHT31 Sensors Setup did not complete successfully, check your wiring and try again");
+    log_d("Found 2 SHT31 Sensor");
     HUMIDITY_SENSORS_ACTIVE = 2;
     return 2;
   }
@@ -106,7 +104,7 @@ int Humidity::setupSensor()
 }
 
 #if USE_DHT_SENSOR
-Hum Humidity::readDHT()
+Humidity::Hum Humidity::readDHT()
 {
   // Delay between measurements.
   my_delay(delayS);
@@ -156,7 +154,7 @@ bool Humidity::checkHeaterEnabled()
       log_d("Heater Enabled State: %s", enableHeater ? "Enabled" : "Disabled");
       if (_sensor1)
       {
-        log_d("Sensor 1 Heater Heater ENABLED");
+        log_d("Sensor 1 Heater ENABLED");
         heaterenabled = true;
       }
       else
@@ -240,23 +238,22 @@ float Humidity::AverageStackTemp()
   switch (HUMIDITY_SENSORS_ACTIVE)
   {
   case 0:
-    result = {0, 0, 0, 0};
-    float stack_humidity = 0;
-    return stack_humidity; // return 0 if no sensors are active
+    float stack_temp = 0;
+    return stack_temp; // return 0 if no sensors are active
     break;
 
   case 1:
-    float stack_temp = result.temp;
+    float stack_temp = result.temp_sht31;
     return stack_temp; // Only one sensor - return the value of that sensor
     break;
 
   case 2:
-    float stack_temp = result.temp_2;
+    float stack_temp = result.temp_sht31_2;
     return stack_temp; // Only one sensor - return the value of that sensor
     break;
 
   case 3:
-    float stack_temp = result.temp + result.temp_2;
+    float stack_temp = result.temp_sht31 + result.temp_sht31_2;
     return stack_temp / 2; // Read the _temperature from the sensor and average the two sensors.
     break;
 
@@ -277,28 +274,37 @@ float Humidity::StackHumidity()
   switch (HUMIDITY_SENSORS_ACTIVE)
   {
   case 0:
-    result = {0, 0, 0, 0};
+  {
     float stack_humidity = 0;
     return stack_humidity; // return 0 if no sensors are active
     break;
+  }
 
   case 1:
+  {
     float stack_humidity = result.humidity;
     return stack_humidity; // Only one sensor - return the value of that sensor
     break;
+  }
 
   case 2:
+  {
     float stack_humidity = result.humidity_2;
     return stack_humidity; // Only one sensor - return the value of that sensor
     break;
+  }
 
   case 3:
+  {
     float stack_humidity = result.humidity + result.humidity_2;
     return stack_humidity / 2; // Read the _humidity from the sensor and average the two sensors.
     break;
+  }
 
   default:
+  {
     break;
+  }
   }
 }
 
@@ -314,7 +320,10 @@ Hum Humidity::ReadSensor()
   {
   case 0:
   {
-    result = {0, 0, 0, 0};
+    result.temp_sht31 = 0;
+    result.humidity_sht31 = 0;
+    result.temp_sht31_2 = 0;
+    result.humidity_sht31_2 = 0;
     return result;
     break;
   }
@@ -346,8 +355,8 @@ Hum Humidity::ReadSensor()
     // An ~3.0 degC _temperature increase can be noted when heater is enabled
     // This is needed due to the high operating humidity of the system
     checkHeaterEnabled();
-    result.temp = temp;
-    result.humidity = hum;
+    result.temp_sht31 = temp;
+    result.humidity_sht31 = hum;
     return result;
     break;
   }
@@ -378,8 +387,8 @@ Hum Humidity::ReadSensor()
     // An ~3.0 degC _temperature increase can be noted when heater is enabled
     // This is needed due to the high operating humidity of the system
     checkHeaterEnabled();
-    result.temp_2 = temp_2;
-    result.humidity_2 = hum_2;
+    result.temp_sht31_2 = temp_2;
+    result.humidity_sht31_2 = hum_2;
     return result;
     break;
   }
@@ -431,11 +440,14 @@ Hum Humidity::ReadSensor()
     break;
   }
   default: // Should never get here
-    result = {0, 0, 0, 0};
+    result.temp_sht31 = 0;
+    result.humidity_sht31 = 0;
+    result.temp_sht31_2 = 0;
+    result.humidity_sht31_2 = 0;
     return result;
     break;
   }
 }
-#endif // #if USE_HUMIDITY_SENSOR
+#endif // USE_HUMIDITY_SENSOR
 
 Humidity humidity;

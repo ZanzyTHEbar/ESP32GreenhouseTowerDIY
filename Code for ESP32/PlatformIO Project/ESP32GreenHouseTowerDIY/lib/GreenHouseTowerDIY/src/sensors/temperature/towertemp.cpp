@@ -1,4 +1,4 @@
-#include "CellTemp.hpp"
+#include "towertemp.hpp"
 
 // Setup a oneWire instance to communicate with any OneWire devices
 OneWire oneWire(ONE_WIRE_BUS);
@@ -9,14 +9,14 @@ DallasTemperature sensors(&oneWire);
 
 DeviceAddress temp_sensor_addresses;
 
-Temp cell_temp_sensor_results;
+TowerTemp::Temp temp_sensor_results;
 
 int sensors_count = 0;
-CellTemp::CellTemp()
+TowerTemp::TowerTemp()
 {
 }
 
-CellTemp::~CellTemp()
+TowerTemp::~TowerTemp()
 {
 }
 
@@ -31,7 +31,7 @@ int setSensorCount()
  * Parameters: None
  * Return: None
  ******************************************************************************/
-void CellTemp::SetupSensors()
+void TowerTemp::SetupSensors()
 {
     // Start up the ds18b20 library
     sensors.begin();
@@ -71,7 +71,7 @@ void CellTemp::SetupSensors()
  * Return: None
  ******************************************************************************/
 // function to print a device address
-void CellTemp::printAddress(DeviceAddress deviceAddress)
+void TowerTemp::printAddress(DeviceAddress deviceAddress)
 {
     for (uint8_t i = 0; i < sensors_count; i++)
     {
@@ -81,17 +81,17 @@ void CellTemp::printAddress(DeviceAddress deviceAddress)
     }
 }
 
-Temp CellTemp::checkSensors()
+TowerTemp::Temp TowerTemp::checkSensors()
 {
     if (sensors_count == 0)
     {
         float no_sensors[] = {0};
         for (int i = 0; i < sensors_count; i++)
         {
-            cell_temp_sensor_results.temp[i] = no_sensors[i];
+            temp_sensor_results.temp[i] = no_sensors[i];
         }
         log_i("No temperature sensors found - please connect them and restart the device");
-        return cell_temp_sensor_results;
+        return temp_sensor_results;
     }
 }
 
@@ -101,7 +101,7 @@ Temp CellTemp::checkSensors()
  * Parameters: None
  * Return: float array - Temperature of the sensors
  ******************************************************************************/
-Temp CellTemp::ReadTempSensorData()
+TowerTemp::Temp TowerTemp::ReadTempSensorData()
 {
     // handle the case where no sensors are connected
     checkSensors();
@@ -110,7 +110,7 @@ Temp CellTemp::ReadTempSensorData()
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
         {
-            cell_temp_sensor_results.temp[i] = sensors.getTempC(temp_sensor_addresses);
+            temp_sensor_results.temp[i] = sensors.getTempC(temp_sensor_addresses);
             printAddress(temp_sensor_addresses);
             log_i("\n");
         }
@@ -119,7 +119,7 @@ Temp CellTemp::ReadTempSensorData()
             log_w("Found ghost device at %d but could not detect address. Check power and cabling", i, DEC);
         }
     }
-    return cell_temp_sensor_results;
+    return temp_sensor_results;
 }
 
 /******************************************************************************
@@ -128,7 +128,7 @@ Temp CellTemp::ReadTempSensorData()
  * Parameters: None
  * Return: float array - Temperature of the sensors in fahrenheit
  ******************************************************************************/
-Temp CellTemp::GetTempF()
+TowerTemp::Temp TowerTemp::GetTempF()
 {
     // handle the case where no sensors are connected
     checkSensors();
@@ -138,7 +138,7 @@ Temp CellTemp::GetTempF()
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
         {
-            cell_temp_sensor_results.temp[i] = sensors.getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0;
+            temp_sensor_results.temp[i] = sensors.getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0;
             printAddress(temp_sensor_addresses);
             log_i("\n");
         }
@@ -147,7 +147,7 @@ Temp CellTemp::GetTempF()
             log_w("Found ghost device at %d but could not detect address. Check power and cabling", i, DEC);
         }
     }
-    return cell_temp_sensor_results;
+    return temp_sensor_results;
 }
 
-CellTemp Cell_Temp;
+TowerTemp Tower_Temp;

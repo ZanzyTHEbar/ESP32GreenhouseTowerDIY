@@ -6,7 +6,7 @@ UltraSonicDistanceSensor _distanceSensor(ECHO, TRIGGER); // Initialize sensor th
 // Constructor
 DistanceSensor::DistanceSensor()
 {
-    distance = _distanceSensor.measureDistanceCm(cell_temp_sensor_results.temp[0]);
+    distance = _distanceSensor.measureDistanceCm(temp_sensor_results.temp[0]);
     // Every 1 second, do a measurement using the sensor and print the distance in centimeters.
     my_delay(1L);
 }

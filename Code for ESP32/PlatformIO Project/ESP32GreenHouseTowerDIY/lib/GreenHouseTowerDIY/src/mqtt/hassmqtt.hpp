@@ -26,8 +26,8 @@ public:
   int DiscovermDNSBroker();
 #endif // ENABLE_MDNS_SUPPORT
 
-private:
   int pump_relay_pin;
+private:
 };
 
 extern HASSMQTT hassmqtt;

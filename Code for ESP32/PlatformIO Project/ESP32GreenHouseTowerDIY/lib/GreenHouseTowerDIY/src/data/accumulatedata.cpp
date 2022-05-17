@@ -14,7 +14,7 @@ AccumulateData::~AccumulateData()
 
 /******************************************************************************
  * Function: Accumulate Data to send from sensors and store in json
- * Description: This function accumulates all sensor data and stores it in the main json data structure.
+ * Description: This function accumulates all sensor data and stores it in the main data structure.
  * Parameters: None
  * Return: None
  ******************************************************************************/
@@ -23,12 +23,43 @@ void AccumulateData::InitAccumulateData()
     // Initialize the library
 #if USE_SHT31_SENSOR
     humidity.ReadSensor();
-    cfg.config.stack_humidity = humidity.StackHumidity();
-    cfg.config.stack_temp = humidity.AverageStackTemp();
+    config.humidity_sht31_average = humidity.StackHumidity();
+    config.humidity_temp_sht31_average = humidity.AverageStackTemp();
+    switch (HUMIDITY_SENSORS_ACTIVE)
+    {
+    case 0:
+        config.humidity_sht31 = 0;
+        config.humidity_sht31_2 = 0;
+        config.humidity_temp_sht31 = 0;
+        config.humidity_temp_sht31_2 = 0;
+        break;
+    case 1:
+        config.humidity_sht31 = humidity.result.humidity_sht31;
+        config.humidity_sht31 = humidity.result.temp_sht31;
+        break;
+    case 2:
+        config.humidity_sht31_2 = humidity.result.humidity_sht31_2;
+        config.humidity_temp_sht31_2 = humidity.result.temp_sht31_2;
+        break;
+    case 3:
+        config.humidity_sht31 = humidity.result.humidity_sht31;
+        config.humidity_sht31 = humidity.result.temp_sht31;
+        config.humidity_sht31_2 = humidity.result.humidity_sht31_2;
+        config.humidity_temp_sht31_2 = humidity.result.temp_sht31_2;
+        break;
+    default:
+        config.humidity_sht31 = 0;
+        config.humidity_sht31_2 = 0;
+        config.humidity_temp_sht31 = 0;
+        config.humidity_temp_sht31_2 = 0;
+        break;
+    }
 #endif // USE_SHT31_SENSOR
 
 #if USE_DHT_SENSOR
-
+    humidity.readDHT();
+    config.humidity = humidity.result.humidity;
+    config.humidity_temp = humidity.result.temp;
 #endif // USE_DHT_SENSOR
 
     cfg.config.numSensors = numSensors;
@@ -36,7 +67,7 @@ void AccumulateData::InitAccumulateData()
     // loop through and store temp data
     for (int i = 0; i < numSensors; i++)
     {
-        cfg.config.cell_temp[i] = cell_temp_sensor_results.temp[i];
+        config.temp_sensors[i] = Tower_Temp.temp_sensor_results.temp[i];
     }
 
     // Relays

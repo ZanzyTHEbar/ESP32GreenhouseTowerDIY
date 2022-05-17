@@ -6,7 +6,6 @@
 #ifndef I2CSCAN_HPP
 #define I2CSCAN_HPP
 #include <defines.hpp>
-#include <Arduino.h>
 #include <Wire.h>
 
 class Scanner

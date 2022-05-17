@@ -1,30 +1,32 @@
 /*
- celltemp.h - ESP32GreenHouseDIY library
+ TowerTemp.h - ESP32GreenHouseDIY library
  Copyright (c) 2021 ZanzyTHEbar
  */
 
-#ifndef CELLTEMP_HPP
-#define CELLTEMP_HPP
+#ifndef TOWERTEMP_HPP
+#define TOWERTEMP_HPP
 // Data wire is plugged into port 42 on the ESP32
 #define ONE_WIRE_BUS 42
 #include <defines.hpp>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-struct Temp
-{
-    float temp[10];
-};
-
-extern Temp cell_temp_sensor_results;
-class CellTemp
+class TowerTemp
 {
 public:
-    CellTemp();
-    virtual ~CellTemp();
+    TowerTemp();
+    virtual ~TowerTemp();
     void SetupSensors();
     void readAddresses(DeviceAddress deviceAddress);
     void printAddress(DeviceAddress deviceAddress);
+
+    struct Temp
+    {
+        float temp[10];
+    };
+
+    Temp temp_sensor_results;
+
     Temp ReadTempSensorData();
     Temp GetTempF();
     Temp checkSensors();
@@ -33,5 +35,5 @@ private:
 };
 
 extern int sensors_count;
-extern CellTemp Cell_Temp;
+extern TowerTemp Tower_Temp;
 #endif

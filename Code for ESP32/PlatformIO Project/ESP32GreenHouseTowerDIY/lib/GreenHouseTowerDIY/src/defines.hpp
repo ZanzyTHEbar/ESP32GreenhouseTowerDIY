@@ -26,9 +26,10 @@
 // IO
 #include <Wire.h>
 #include "io/i2cscan.hpp"
+#include "io/ldr.hpp"
 
 // Temp Sensors
-#include "sensors/temperature/CellTemp.hpp"
+#include "sensors/temperature/towertemp.hpp"
 
 // Humidity Sensors
 #include "sensors/humidity/Humidity.hpp"

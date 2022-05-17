@@ -6,7 +6,6 @@
 #ifndef HUMIDITY_HPP
 #define HUMIDITY_HPP
 #include <defines.hpp>
-#include <Arduino.h>
 #include <Wire.h>
 #if USE_SHT31_SENSOR
 #include <Adafruit_SHT31.h>
@@ -32,15 +31,6 @@
 
 #endif // USE_DHT_SENSOR
 
-struct Hum
-{
-  float temp;
-  float humidity;
-  float temp_2;
-  float humidity_2;
-};
-extern Hum result;
-
 class Humidity
 {
 public:
@@ -49,7 +39,20 @@ public:
   virtual ~Humidity();
   // Initialize the library
   int setupSensor();
-  
+  struct Hum
+  {
+    float temp;
+    float humidity;
+    float temp_2;
+    float humidity_2;
+    float humidity_sht31;
+    float temp_sht31;
+    float humidity_sht31_2;
+    float temp_sht31_2;
+  };
+
+  Hum result;
+
 #if USE_DHT_SENSOR
   Hum readDHT();
 #endif // USE_DHT_SENSOR
