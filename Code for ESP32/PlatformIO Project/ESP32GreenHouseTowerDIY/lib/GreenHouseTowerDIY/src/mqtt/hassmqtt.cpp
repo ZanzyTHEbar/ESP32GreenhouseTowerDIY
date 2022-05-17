@@ -66,9 +66,33 @@ HASSMQTT::~HASSMQTT()
 {
 }
 
+void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
+{
+    // This callback is called when message from MQTT broker is received.
+    // Please note that you should always verify if the message's topic is the one you expect.
+    // For example: if (memcmp(topic, "myCustomTopic") == 0) { ... }
+
+    log_i("New message on topic: %s", topic);
+    log_i("Data: %s", (const char *)payload);
+
+    mqtt.publish("greenhouse_tower_pub", "hello");
+}
+
+void onMqttConnected()
+{
+    log_i("Connected to the broker!");
+    // You can subscribe to custom topic if you need
+    //mqtt.subscribe("myCustomTopic");
+}
+
+void onMqttConnectionFailed()
+{
+    log_e("Failed to connect to the broker!");
+}
+
 void onBeforeStateChanged(bool state, HASwitch *s)
 {
-    // this callback will be calrelay before publishing new state to HA
+    // this callback will be called before publishing new state to HA
     // in some cases there may be delay before onStateChanged is calrelay due to network latency
 }
 
@@ -273,6 +297,12 @@ void HASSMQTT::mqttSetup()
     light.setDeviceClass("illuminance");
     light.setIcon("mdi:lightbulb");
     light.setName("Light");
+
+    mqtt.onMessage(onMqttMessage);
+    mqtt.onConnected(onMqttConnected);
+    mqtt.onConnectionFailed(onMqttConnectionFailed);
+
+    mqtt.setDiscoveryPrefix("Greenhouse_Tower");
 
 #if !MQTT_SECURE
 #if ENABLE_MDNS_SUPPORT
