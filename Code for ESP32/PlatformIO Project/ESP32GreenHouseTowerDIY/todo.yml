@@ -1,34 +1,54 @@
 ---
 TO_DO:
-STATE: ['TO_DO', 'IN_PROGRESS','DONE']
+STATE: ['TO_DO' = [], 'IN_PROGRESS' [-],'DONE' = [x]]
   Description: This is a list of things that need to be done.
   Tasks:
-    - [] Optimize the code - Optimize
+    - [ ] Optimize the code - Optimize
 
-    - [x] Fix the bugs - Fix
+    - [ ] Fix the bugs - Fix
 
-    - [x] Add new features - Add
+    - [ ] Add new features - Add
 
-    - [x] Test the code - Test
+    - [ ] Test the code - Test
 
-    - [x] Document the code - Document
+    - [ ] Document the code - Document
 
   --------- HIGH PRIORITY ---------
+
     - [x] Implement Relay functionality - Done
+
     - [x] Implement Air Temperature per cell functionality - Done
+
     - [x] Implement Water Temperature functionality - Done
+
     - [x] Implement Tower Humidity functionality - Done
+
     - [x] Implement Tower Humidity Sensor Choice functionality - Done
+
     - [x] Implement WiFi functionality - Done
+
     - [x] Implement Struct to hold and pass around data functionality - Done
+
     - [x] Implement Config file stored in flash functionality - Done
+
     - [x] Implement Auto Adjust HalSensor functionality - Done
+
     - [x] Implement Background Tasks Class and set Network and Update Config checks to the background task object - Done
+
+    - [x] Implement Home assistant MQTT functionality - Done - Needs to be tested
+
+    - [-] Implement Light detection functionality - In_Progress - TODO: LDR is implemented, need to implement the light detection from BH1750
+
+    - [-] Implement Basic MQTT functionality - In_Progress - TODO: code is added to the main file, but needs a trigger to start the MQTT service
+
     - [-] Implement Soil Moisture Sensor Functionality - In_Progress - TODO: Add proper soil moisture sensor implementation
+
+    - [-] Implement Water Level Sensor Functionality, both Ultrasonic support and Capacitive Sensor Support - In_Progress - TODO: Add proper soil moisture sensor implementation
+
     - [-] Implement Flow Sensor functionality - In_Progress - TODO: Add proper flow sensor implementation
+
     - [-] Implement I2C scanner functionality - In_Progress - TODO: code is added to the main file, but needs a trigger to start the scanner
-    - [-] Implement Adjust HalSensor functionality from frontend - In_Progress - TODO: code is added to the main file, but needs a trigger to start use the adjustment function
-    - [-] Implement MQTT functionality - In_Progress - TODO: code is added to the main file, but needs a trigger to start the MQTT service
+    
 
   -------- LOW PRIORITY --------
 

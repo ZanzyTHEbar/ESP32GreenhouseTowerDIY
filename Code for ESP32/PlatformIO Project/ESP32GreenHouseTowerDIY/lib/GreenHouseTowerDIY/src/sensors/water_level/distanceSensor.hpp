@@ -1,5 +1,5 @@
 /*
- HMSMqtt.h - ESP32GreenHouseDIY MQTT library
+ distanceSensor.h - ESP32GreenHouseDIY Distance Sensor library
  Copyright (c) 2021 ZanzyTHEbar
  */
 #pragma once
@@ -15,15 +15,14 @@ public:
   DistanceSensor();
   virtual ~DistanceSensor();
 
-  void setupDistanceSensor();
-  double readWaterLevel();
-  
   // Initialize the library
-  
+  double readSensor();
+  double readWaterLevel();
+  void indicateWaterLevel();
+
 
 private:
   // Private variables
-  double distance;
 };
 
 extern DistanceSensor distanceSensor;
