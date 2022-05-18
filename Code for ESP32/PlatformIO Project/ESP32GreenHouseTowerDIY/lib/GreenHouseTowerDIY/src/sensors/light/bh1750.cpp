@@ -16,19 +16,36 @@ void BH1750::setupLightSensor()
     // use BH1750_TO_GROUND or BH1750_TO_VCC depending how you wired the address pin of the sensor.
 #if bh1750_GND
     bool avail = BH1750_sensor.begin(BH1750_TO_GROUND); // will be false no sensor found
-#endif // bh1750_GND
+#endif                                                  // bh1750_GND
 #if bh1750_VCC
     bool avail = BH1750_sensor.begin(BH1750_TO_VCC); // will be false no sensor found
-#endif // bh1750_VCC                                                
-}
-
-void BH1750::loopLightSensor()
-{
-    // Every 1 second, do a measurement using the sensor and print the distance in centimeters.
-    my_delay(1L);
-    log_i("Lux: %.3f", lux, DEC);
+#endif                                               // bh1750_VCC
+    if (!avail)
+    {
+        Serial.println("No BH1750 sensor found");
+    }
+    else
+    {
+        Serial.println("BH1750 sensor found");
+#if bh1750_FAST
+        BH1750_sensor.calibrateTiming();
+#endif                         // bh1750_FAST
+        BH1750_sensor.start(); // start the first measurement in setup
+    }
 }
 
 float BH1750::getLux()
 {
+#if bh1750_FAST
+    if (BH1750_sensor.hasValue() == true)
+#else
+    if (BH1750_sensor.hasValue())
+#endif // bh1750_FAST
+    {  // non blocking reading
+        float lux = BH1750_sensor.getLux();
+        log_i("Light lux level: %.3f", lux);
+        BH1750_sensor.start();
+        return lux;
+    }
+    return 0;
 }

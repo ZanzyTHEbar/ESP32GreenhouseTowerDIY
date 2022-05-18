@@ -17,7 +17,6 @@ public:
 
     // Initialize the library
     void setupLightSensor();
-    void loopLightSensor();
     float getLux();
 
 private:
