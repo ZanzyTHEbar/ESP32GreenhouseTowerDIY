@@ -36,7 +36,7 @@ image_width_4: "400"
 
 [![GitHub issues](https://img.shields.io/github/issues/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/issues) [![GitHub forks](https://img.shields.io/github/forks/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/network)
 
-----
+-----
 
 {% for tags in page.image_tags %}
     {% assign alt_tags = tags | split: "  " %}
