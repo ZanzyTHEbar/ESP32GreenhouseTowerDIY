@@ -9,7 +9,7 @@ image_title: "Vertical Tower Example"
 image_description: "full constructed tower prototype"
 image_category: "tower"
 image_tags: "tower vertical example full constructed"
-image_src: "/assets/images/tower_garden/outdoors/IMG_20190523_094749"
+image_src: "/ESP32GreenhouseTowerDIY/assets/images/tower_garden/outdoors/IMG_20190523_094749.jpg"
 ---
 
 # Introduction
