@@ -1,5 +1,5 @@
-title: 'ESP32GreenhouseTowerDIY Documentation'
-description: 'Documentation for a DIY Greenhouse Tower, a DIY small-scale open hardware vertical tower garden platform.'
+title: 'Greenhouse Tower'
+description: 'Vertical gardening for everyone.'
 author: 'ZanzyTHEbar'
 email: info@h-bat.com
 url: 'https://zanzythebar.github.io'
@@ -8,7 +8,7 @@ url: 'https://zanzythebar.github.io'
 remote-theme: just-the-docs/just-the-docs
 color_scheme: 'light'
 
-logo: '/assets/images/logo.png'
+# logo: '/assets/images/logo.gif'
 heading_level: 6
 previews: 3
 

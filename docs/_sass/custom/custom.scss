@@ -1,15 +1,30 @@
+@keyframes gradientBackground {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .side-bar {
-  background: #00ffff;
+  background-image: radial-gradient(circle at top right, #00f260, #0575e6, #24243e);
+  background-size: 600% 400%;
+  animation: gradientBackground 10s ease infinite;
+  color: white;
 }
 
 .site-footer a {
-  color: #00ffff;
+  color: linear-gradient(-45deg, #00f260, #0575e6, #24243e);
   text-decoration: none;
   background-image: none;
 }
 
 .site-footer {
-  color: #00ffff;
+  color: linear-gradient(-45deg, #00f260, #0575e6, #24243e);
 }
 
 .header-container {

@@ -10,6 +10,8 @@ image_description: "full constructed tower prototype"
 image_category: "tower"
 image_tags: "tower vertical example full constructed"
 image_src: "/ESP32GreenhouseTowerDIY/assets/images/tower_garden_imgs/outdoors/IMG_20190523_094749.jpg"
+image_height: "600"
+image_width: "400"
 ---
 
 # Introduction
@@ -28,7 +30,7 @@ image_src: "/ESP32GreenhouseTowerDIY/assets/images/tower_garden_imgs/outdoors/IM
     {% assign alt_tags = tags | split: "  " %}
 {% endfor %}
 
-{% include image.html title=page.image_title image=page.image_category description=page.image_description src=page.image_src tags=alt_tags %}
+{% include image.html height=page.image_height width=page.image_width title=page.image_title image=page.image_category description=page.image_description src=page.image_src tags=alt_tags %}
 
 ____
 

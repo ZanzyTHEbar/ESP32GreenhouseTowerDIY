@@ -1,0 +1,82 @@
+<style>
+    .terminal-body {
+        background-color: black;
+        background-image: radial-gradient(rgba(0, 150, 0, 0.75), black 120%);
+        height: 100vh;
+        color: white;
+        font: 1.3rem Inconsolata, monospace;
+        text-shadow: 0 0 5px #C8C8C8;
+        flex-shrink: 0;
+        object-fit: cover;
+        border-radius: 20px;
+    }
+
+    .terminal-body::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: repeating-linear-gradient(0deg,
+                rgba(black, 0.15),
+                rgba(black, 0.15) 1px,
+                transparent 1px,
+                transparent 2px);
+    }
+
+    .terminal-body::selection {
+        background: #0080FF;
+        text-shadow: none;
+    }
+
+    .terminal {
+        display: flex;
+        flex-direction: column;
+        /* align-items: center; */
+        justify-content: space-between;
+        /* justify-content: center; */
+        overflow: hidden;
+    }
+
+    .terminal-card-grid {
+        max-width: 800px;
+        margin: 0 auto;
+        display: grid;
+        grid-gap: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .terminal-card {
+        flex-shrink: 0;
+        width: 400px;
+        height: 600px;
+        object-fit: cover;
+        background-color: white;
+        box-shadow: 2px 2px 12px 1px rgba(8, 8, 8, 0.5);
+        border-radius: 20px;
+    }
+
+    .terminal-content-form {
+        padding: 5%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        /* justify-content: center; */
+        overflow: hidden;
+    }
+</style>
+<p class="terminal" align="center">
+<div class="terminal-content-form">
+    <div class="terminal-card-grid">
+        <div class="terminal-card">
+            <div class="terminal-body">
+                <pre><output>
+                    {{ include.content }}
+                </output></pre>
+            </div>
+        </div>
+    </div>
+</div>
+</p>
