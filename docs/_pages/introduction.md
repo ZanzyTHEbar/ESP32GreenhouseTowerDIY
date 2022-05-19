@@ -84,9 +84,9 @@ Option One:
 
 If you are using Home Assistant, you can use the MQTT Discovery feature within the firmware, and the MQTT broker will be discovered automatically. Nothing is needed from you for this to work. Simply turn on the ESP32 and have the `mDNS` feature enabled in the firmware.
 
-You can refer to the [ZeroConf Documentation here](https://www.home-assistant.io/integrations/zeroconf/) [and here](https://developers.home-assistant.io/docs/creating_integration_manifest/#zeroconf) for home assistance for more information and troubleshooting.
+You can refer to the [ZeroConf Documentation here](https://www.home-assistant.io/integrations/zeroconf/) and [here](https://developers.home-assistant.io/docs/creating_integration_manifest/#zeroconf) for home assistance for more information and troubleshooting.
 
-If for some reason you are unable to use the MQTT Discovery feature, you can still use the mDNS feature to discover the broker, see [Option Two](#/option-two) below.
+If for some reason you are unable to use the MQTT Discovery feature, you can still use the mDNS feature to discover the broker, see Option Two below.
 
 Option Two:
 {: .fs-3 .fw-300 }
