@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ESP32GreenhouseDIY Docs
+    url: https://ZanzyTHEBar.github.io/ESP32GreenhouseDIY/
+    about: All the information related to Cyan.
+  - name: ESP32GreenhouseDIY Discussions and Support
+    url: https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/discussions
+    about: ESP32GreenhouseDIY usage Questions, Feature Requests and Projects.
+  - name: ESP32GreenhouseDIY Users Chat
+    url: https://ZanzyTHEBar.github.io/ESP32GreenhouseDIY/comments_suggetions/
+    about: Chat for feedback, questions and troubleshooting.
+  - name: ESP32GreenhouseDIY Discord
+    url: https://ZanzyTHEBar.github.io/ESP32GreenhouseDIY/contact/
+    about: Chat for feedback, questions and troubleshooting.

@@ -8,11 +8,13 @@ This repo is dedicated to the **DIY ESP32** based automated *Aeroponic* or *Hydr
 
 In the height of COVID my wife and i wanted to grow our own food indoors. This open source project is a culmination of my own work and many inspirations from the internet to develop an easy, approachable and beginner friendly project for hobbyists.
 
-This project is designed to be modular and affordable. Featuring a vertical tower system with interlocking parts and an adapter to a common 20L/5gallon bucket.
+This project is designed to be modular and affordable. Featuring a vertical tower system with interlocking parts and an adapter to a common `20L/5gallon` bucket.
 
 The design also features an optional 3D printable Aeroponic Nozzle for converting the system from hydroponic to aeroponic.  
 
-I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skil levels, python seemed like the most comon first "language".
+> I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".
+
+> ***EDIT***: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.
 
 ![tower garden](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg)
 
@@ -22,9 +24,7 @@ I decided to go with an ESP32 using Micropython firmware. While Arduino is perfe
 
 # HOW TO ORDER PCBS
 
-PCBS can be ordered from JLCPCB or PCBWay, or made yourself. The PCB files are still in prototype phase and i welcome any development ideas.
-
-The PCB is designed to be used with a GPIO extension board - however this was for my personal use-case. This can be changed, or i can make this adaptation upon request.
+PCBS can be ordered from JLCPCB or PCBWay, or made yourself. The PCB files are still in prototype phase and I welcome any development ideas.
 
 # HOW TO SETUP
 
@@ -34,12 +34,13 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 
 1. Raspberrypi - any model
    1. Install Mosquitto broker to the pi and connect it to your network
+      1. Alternatively, you can use the MQTT client included with Home Assistant, as this project has full support for Home Assistant (Arduino Core version only currently).
 2. 12V submersable water pump
 3. 3m or more of Vinyl tubing with 10mm ID and 13mm OD
 
 ***SETUP***
 
-1. Acquire PCB and ESP32 (WROVER and WROOM has both been tested).
+1. Acquire PCB and ESP32 (WROVER and WROOM have both been tested).
 2. Acquire The remaining sensors and components - assemble
 3. Plug ESP32 into computer - open your IDE (i used Thonny for this project) Flash the micropython firmware to the esp32
    1. Upload ESP32MicropytyhonLibraries ---> rename to ESP32Micro

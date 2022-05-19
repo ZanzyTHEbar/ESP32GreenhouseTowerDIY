@@ -298,7 +298,7 @@ bool Config::saveConfig()
     json["Number_of_Sensors"] = config.numSensors;
 
     // Relays
-    JsonArray Relays = json.createNestedArray("HMS_Relays_State");
+    JsonArray Relays = json.createNestedArray("Tower_Relays_State");
     for (int i = 0; i < sizeof(config.relays) / sizeof(config.relays[0]); i++)
     {
         Relays.add(config.relays[i]);
@@ -389,7 +389,7 @@ void Config::setHostname(String new_hostname)
     setConfigChanged();
 }
 
-// we can't assing wifiManager.resetSettings(); to reset, somehow it gets called straight away.
+// we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
 void Config::setWiFiConf(String ssid, String password)
 {
     /* #if defined(ESP32)
