@@ -13,7 +13,7 @@ The privacy of my visitors is extremely important. This Privacy Policy outlines 
 
 The persons responsible for data processing on this website are:
 
-OpenAir-Collective
+ZanzyTHEbar - The owner of this website.
 {: .fs-5 .fw-300 }
 
 The responsible body(s) decides alone or jointly with others on the purposes and means of processing personal data (e.g. names, contact details, etc.).

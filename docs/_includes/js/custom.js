@@ -1,6 +1,6 @@
 async function switchScheme(isClicked) {
   if (isClicked == true) {
-    jtd.setTheme("openair");
+    jtd.setTheme("greenhouse");
   } else {
     jtd.setTheme("light");
   }

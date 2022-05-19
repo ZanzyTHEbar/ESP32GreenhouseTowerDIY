@@ -1,21 +1,21 @@
-title: 'Open Air Cyan Documentation'
-description: 'Documentation for OpenAir Cyan, a DIY small-scale open hardware direct air carbon capture device called Cyan.'
+title: 'ESP32GreenhouseTowerDIY Documentation'
+description: 'Documentation for a DIY Greenhouse Tower, a DIY small-scale open hardware vertical tower garden platform.'
 author: 'ZanzyTHEbar'
 email: info@h-bat.com
-url: 'https://openair-collective.github.io'
+url: 'https://zanzythebar.github.io'
 
 # Build settings
 remote-theme: just-the-docs/just-the-docs
 color_scheme: 'light'
 
-logo: '/assets/images/openair-logo.png'
+logo: '/assets/images/logo.png'
 heading_level: 6
 previews: 3
 
 sass:
   style: compressed
 
-baseurl: '/openair-cyan/'
+baseurl: '/ESP32GreenhouseTowerDIY/'
 
 sitemap: true
 
@@ -61,9 +61,9 @@ timezone: 'America/New_York'
 
 # excerpt_separator: <!--more-->
 
-github_username: 'openair-collective'
+github_username: 'ZanzyTHEbar'
 
-twitter_username: 'openaircollect'
+# twitter_username: '@zanzythebar'
 
 search_enabled: true
 preview_words_before: 5
@@ -75,9 +75,9 @@ button: true
 # Links at the top of the page
 aux_links:
   # 'Github':
-  #  - '//github.com/openair-collective/openair-cyan/'
+  #  - '//github.com/ZanzTHEbar/ESP32GreenhouseTowerDIY/'
   # 'Arduino Code':
-  #  - '//github.com/openair-collective/openair-cyan/tree/dev/Code'
+  #  - '//github.com/ZanzTHEbar/ESP32GreenhouseTowerDIY/tree/dev/Code'
 
 # Sitemap options
 aux_links_new_tab: false
@@ -93,7 +93,7 @@ last_edit_time_format: '%b %e %Y at %I:%M %p'
 
 gh_edit_link: true # show or hide edit this page link
 gh_edit_link_text: 'Edit this page on GitHub.'
-gh_edit_repository: 'https://github.com/openair-collective/openair-cyan' # the github URL for your repo
+gh_edit_repository: '//github.com/ZanzTHEbar/ESP32GreenhouseTowerDIY/' # the github URL for your repo
 gh_edit_branch: 'docs' # the branch that your docs is served from
 gh_edit_source: docs # the source that your files originate from
 gh_edit_view_mode: 'edit' # "tree" or "edit" if you want the user to jump into the editor immediately
