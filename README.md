@@ -10,7 +10,7 @@ In the height of COVID my wife and i wanted to grow our own food indoors. This o
 
 This project is designed to be modular and affordable. Featuring a vertical tower system with interlocking parts and an adapter to a common `20L/5gallon` bucket.
 
-The design also features an optional 3D printable Aeroponic Nozzle for converting the system from hydroponic to aeroponic.  
+The design also features an optional 3D printable Aeroponics Nozzle for converting the system from hydroponic to aeroponics.  
 
 > I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".
 
