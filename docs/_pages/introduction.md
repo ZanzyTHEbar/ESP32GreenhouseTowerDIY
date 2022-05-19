@@ -5,6 +5,11 @@ permalink: /introduction/
 has_children: true
 has_toc: false
 nav_order: 1
+image_title: "Vertical Tower Example"
+image_description: "full constructed tower prototype"
+image_category: "tower"
+image_tags: "tower vertical example full constructed"
+image_src: "https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg"
 ---
 
 # Introduction
@@ -18,10 +23,12 @@ nav_order: 1
 > **Note:** The cost of plant nutrients is not taken into account, and is up to you to control.
 
 **Goal:** The goal of this project was to build a high-efficiency, very low cost direct DIY vertical tower garden for growing small fruits and vegetables.
-​
-<p align="center">
-    <image src="https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg"></image>
-</p>
+
+{% for tags in page.image_tags %}
+    {% assign alt_tags = tags | split: "  " %}
+{% endfor %}
+
+{% include image.html title=page.image_title image=page.image_category description=page.image_description src=page.image_src tags=alt_tags %}
 
 ____
 
@@ -73,7 +80,7 @@ MQTT Broker Configuration and Connection
 
 If you have chosen the mDNS option, you will need to setup mDNS on your network for MQTT Discovery. The mDNS service on the ESP is already configure, if you chose that feature, and should appear on your network as at the `<name>.tower.local` address.
 
-The MQTT Broker is a free service that allows you to publish and subscribe to MQTT messages. To automate the connection process, this project offers Multi-Cast DNS (mDNS/Zeroconf) to find the broker. For this to work, you must have a broker on your local network, and you must have only 1 MQTT broker within the range of the client, otherwise the client will simply connect to the first broker it finds.
+The MQTT Broker is a free service that allows you to publish and subscribe to MQTT messages. To automate the connection process, this project offers Multi-Cast DNS (mDNS/Zeroconf) to find the broker. For this to work, you must have a broker on your local network, and you must have only 1 MQTT broker within the range of the client, otherwise the client will simply connect to the images broker it finds.
 
 Using a Zeroconf approach we can avoid having to hard code the broker's IP address or hostname into the client device's firmware. Instead we can use DNS-SD and Avahi/Bonjour to discover the server hosting the MQTT broker.
 

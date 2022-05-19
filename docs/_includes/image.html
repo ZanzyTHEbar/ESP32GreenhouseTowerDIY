@@ -1,4 +1,10 @@
-<figure class="image">
+<!-- <figure class="image">
   <img src="{{ include.url }}" alt="{{ include.description }}">
+  <figcaption>{{ include.description }}</figcaption>
+</figure> -->
+<figure class="image"
+  style="display: flex; flex-direction: column; align-items: center; justify-content: space-between">
+  <img class="image-{{ include.image }}" src="{{ include.src }}" alt="{{ include.tags }}">
+  <div style="padding-top: 10px"></div>
   <figcaption>{{ include.description }}</figcaption>
 </figure>
