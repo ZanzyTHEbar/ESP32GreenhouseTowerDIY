@@ -9,7 +9,7 @@ image_title: "Vertical Tower Example"
 image_description: "full constructed tower prototype"
 image_category: "tower"
 image_tags: "tower vertical example full constructed"
-image_src: "https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg"
+image_src: "/assets/images/tower_garden/outdoors/IMG_20190523_094749"
 ---
 
 # Introduction
