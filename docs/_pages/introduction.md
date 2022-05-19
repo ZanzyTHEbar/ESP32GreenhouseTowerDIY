@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Technical Details
+title: Introduction
 permalink: /introduction/
 has_children: true
 has_toc: false
@@ -9,44 +9,112 @@ nav_order: 1
 
 # Introduction
 
-**Purpose:** These are instructions to build an open hardware, DIY DACC unit for home or classroom use.
+**Purpose:** These are instructions to build an open hardware, DIY Vertical Greenhouse Garden.
 
-**Expected results:** an up to `12.5% ` weight increase from $CO_2$ uptake over the course of a `16-hour` period when starting with `10g` input material. This translates into about a `2.1g` $CO_2$ uptake obtainable during a single run. The average has been about `1.7g` across multiple runs.
+**Expected results:** A fully functional and (reasonably) automated vertical tower system.
 
-**Minimal parts cost:** `<$20` for the basic system which consists of a humidifier box and air pump; about `$100` to add the box and fan for experimentation (not necessary).
+**Minimal parts cost:** `<$20` for the basic system which consists of a `20L/5gallon` (can be smaller - minimum size is `4L/1gallon`) humidifier box/water reservoir and submersible pump - about `$100`. You will also need to purchase the PCB's `~$40`, power supply and sensors `~$30`. The cost of the parts will vary depending on the size of the tower, and the number of sensors. The cost of 3D printing the tower will be `~$25` or less. The full `1m` tower consumes `~2kg` of `PETG` - which is the recommended printing material for outdoor use. The tower can be printed in `ABS` and/or `PETG` materials.
 
-**Goal:** The goal of this project was to build a high-efficiency, very low cost direct air carbon capture (DACC) system. We call the system Cyan in honor of Violet, OpenAir’s moisture swing sorbent DACC, and also in honor of cyanobacteria, whose combined efforts transformed the early Earth’s atmosphere. Similarly, we believe millions of distributed, consumer-scale DACC units could someday complement large-scale DACC efforts and make a difference when it comes to climate change. This unit will not solve the climate crisis alone, but many of these will open doors to discussion, education, behavior changes, modifications, and further R&D to improve the state of DACC. And that is what we desperately need to limit the possibility of dangerous warming.
+> **Note:** The cost of plant nutrients is not taken into account, and is up to you to control.
+
+**Goal:** The goal of this project was to build a high-efficiency, very low cost direct DIY vertical tower garden for growing small fruits and vegetables.
 ​
 <p align="center">
-    <image src="/openair-cyan/assets/images/assemblyinst/cyan_side_view.png"></image>
+    <image src="https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg"></image>
 </p>
 
 ____
-​
 
-## Chemistry and Benefits
+## HOW TO SETUP - Hardware
 
-The carbonation reaction (also known as carbonatation) is being used to capture $CO_2$ as follows:
+Setup is very straight forward, thankfully. You will need to purchase a few components before you begin:
 
-$Ca(OH)_2 + CO_2 -> CaCO_3 + H_2O$
+***Materials for purchase***
+{: .fs-5 .fw-300 }
 
-This reaction takes place naturally, especially in concrete, but typically takes a very long amount of time (months to years). Cyan speeds up the reaction considerably by increasing the relative humidity and forcing this “wet” air into the reaction chamber to offset $CO_2$ declines as the reaction progresses.
+1. Raspberrypi - *any model*
+   1. Install the MQTT client included with Home Assistant (install Home Assistant), as this project has full support for Home Assistant (Arduino Core version only currently).
+      1. Alternatively, you can install Mosquitto broker to the pi and connect it to your network
+2. 12V submersible water pump
+3. 3m or more of Vinyl tubing with 10mm ID and 13mm OD
 
-Calcium carbonate ($CaCO_3$) is a safe output that is actually the main constituent of limestone. It can be extracted, filtered, dried, weighed, and the quantity of $CO_2$ taken up can be determined through calculation from the weight. No equipment is required to pressurize the captured $CO_2$, making Cyan a good choice for true consumer-scale DACC.
+***SETUP***
+{: .fs-5 .fw-300 }
+
+____
+
+## HOW TO SETUP - Software
+
+1. Acquire PCB and ESP32 (WROVER and WROOM has both been tested).
+2. Acquire The remaining sensors and components - assemble
+
+Micrpython
+{: .fs-4 .fw-300 }
+
+____
+
+1. Plug ESP32 into computer - open your IDE (i used Thonny for this project) Flash the micropython firmware to the esp32
+   1. Upload ESP32MicropytyhonLibraries ---> rename to ESP32Micro
+   2. Upload boot.py and greenhouse.py to root directory
+
+Arduino Core
+{: .fs-4 .fw-300 }
+
+____
+
+1. Plug ESP32 into computer - navigate to [WebSerial](/ESP32GreenhouseTowerDIY/webserial/)
+   1. Configure your chosen sensors and features
+   2. Press build and upload, and wait for the green light to turn on - it is safe to unplug the ESP32 at that point.
+
+MQTT Broker Configuration and Connection
+{: .fs-4 .fw-300 }
+
+____
+
+If you have chosen the mDNS option, you will need to setup mDNS on your network for MQTT Discovery. The mDNS service on the ESP is already configure, if you chose that feature, and should appear on your network as at the `<name>.tower.local` address.
+
+The MQTT Broker is a free service that allows you to publish and subscribe to MQTT messages. To automate the connection process, this project offers Multi-Cast DNS (mDNS/Zeroconf) to find the broker. For this to work, you must have a broker on your local network, and you must have only 1 MQTT broker within the range of the client, otherwise the client will simply connect to the first broker it finds.
+
+Using a Zeroconf approach we can avoid having to hard code the broker's IP address or hostname into the client device's firmware. Instead we can use DNS-SD and Avahi/Bonjour to discover the server hosting the MQTT broker.
+
+To enable MQTT discovery on the broker, simply install avahi-daemon.
+
+Option One:
+{: .fs-3 .fw-300 }
+
+If you are using Home Assistant, you can use the MQTT Discovery feature within the firmware, and the MQTT broker will be discovered automatically. Nothing is needed from you for this to work. Simply turn on the ESP32 and have the `mDNS` feature enabled in the firmware.
+
+You can refer to the [ZeroConf Documentation here](https://www.home-assistant.io/integrations/zeroconf/) [and here](https://developers.home-assistant.io/docs/creating_integration_manifest/#zeroconf) for home assistance for more information and troubleshooting.
+
+If for some reason you are unable to use the MQTT Discovery feature, you can still use the mDNS feature to discover the broker, see [Option Two](#/option-two) below.
+
+Option Two:
+{: .fs-3 .fw-300 }
+
+You will need to install the [avahi](https://avahi.org/) package. For a Raspberry Pi, use the following command:
+
+    sudo apt-get install avahi-daemon
+
+For this to work, the MQTT service needs to be advertised. On a Linux host system, Avahi can be configured to do this by including the following in `/etc/avahi/services/mqtt.service`:
+
+``xml
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+ <name replace-wildcards="yes">MQTT on %h</name>
+  <service>
+   <type>_mqtt._tcp</type>
+   <port>1883</port>
+  </service>
+</service-group>
+```
+____
+
+## Benefits
 
 ____
 
 ## Challenges and Limitations
 
-The carbonation reaction is slow due to the formation of a passivating layer of $CaCO_3$ around $Ca(OH)_2$ molecules. While bubbles of $CO_2$ were produced upon filtering, drying, and applying 5% distilled white vinegar (acid test for the presence of $CaCO_3$), it is very likely that not all the $Ca(OH)_2$ is converted to $CaCO_3$ in 24 hours. Thus we still need to quantify the amount of $CO_2$ that is captured per gram of $Ca(OH)_2$ to see how that depends on different variables.
-
-To achieve true negative emissions using Cyan, you will need to start with a source of carbon-neutral $Ca(OH)_2$. Hydrated lime is a good consumer source; it is very easy to buy hydrated lime at a gardening or hardware store. However, this hydrated lime comes from calcium oxide (lime) produced through calcination, a very energy-intensive process with temperatures above 900 degrees Celsius. This energy is typically supplied mostly by fossil fuels, though renewable sources are becoming increasingly prevalent in the energy mix. There are projects underway to produce lime through concentrated solar, but for now this is a one-way reaction to produce calcium carbonate without regenerating the lime.
-
 ____
 
 ## Safety Considerations
-
-$Ca(OH)_2$ comes in powdered form and although it has uses in pickling and gardening, it can do great damage if rubbed into the eyes, inhaled, or ingested. Scoop the material and avoid pouring; if you do pour, a mask should be worn so as not to inhale the dust.
-
-***Do not ingest*** any reactant or product, even the calcium carbonate you produce. It’s never a good idea to eat the products of your chemical reactions.
-Also, since the aquarium air pump does not have a grounding plug (the case for most such pumps), the safety considerations for working with electricity near water should be observed.
