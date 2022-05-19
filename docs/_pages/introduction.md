@@ -25,7 +25,7 @@ nav_order: 1
 
 ____
 
-## HOW TO SETUP - Hardware
+## How to Setup  - Hardware
 
 Setup is very straight forward, thankfully. You will need to purchase a few components before you begin:
 
@@ -38,38 +38,38 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 2. 12V submersible water pump
 3. 3m or more of Vinyl tubing with 10mm ID and 13mm OD
 
+____
+
+## How to Setup - Software
+
+1. Acquire all parts and ESP32 (WROVER and WROOM has both been tested).
+2. Acquire The remaining sensors and components - assemble
+
 ***SETUP***
 {: .fs-5 .fw-300 }
 
 ____
 
-## HOW TO SETUP - Software
-
-1. Acquire PCB and ESP32 (WROVER and WROOM has both been tested).
-2. Acquire The remaining sensors and components - assemble
-
 Micrpython
 {: .fs-4 .fw-300 }
-
-____
 
 1. Plug ESP32 into computer - open your IDE (i used Thonny for this project) Flash the micropython firmware to the esp32
    1. Upload ESP32MicropytyhonLibraries ---> rename to ESP32Micro
    2. Upload boot.py and greenhouse.py to root directory
 
+____
+
 Arduino Core
 {: .fs-4 .fw-300 }
-
-____
 
 1. Plug ESP32 into computer - navigate to [WebSerial](/ESP32GreenhouseTowerDIY/webserial/)
    1. Configure your chosen sensors and features
    2. Press build and upload, and wait for the green light to turn on - it is safe to unplug the ESP32 at that point.
 
+____
+
 MQTT Broker Configuration and Connection
 {: .fs-4 .fw-300 }
-
-____
 
 If you have chosen the mDNS option, you will need to setup mDNS on your network for MQTT Discovery. The mDNS service on the ESP is already configure, if you chose that feature, and should appear on your network as at the `<name>.tower.local` address.
 
@@ -97,7 +97,7 @@ You will need to install the [avahi](https://avahi.org/) package. For a Raspberr
 
 For this to work, the MQTT service needs to be advertised. On a Linux host system, Avahi can be configured to do this by including the following in `/etc/avahi/services/mqtt.service`:
 
-``xml
+```xml
 <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
 <service-group>
  <name replace-wildcards="yes">MQTT on %h</name>
@@ -107,6 +107,7 @@ For this to work, the MQTT service needs to be advertised. On a Linux host syste
   </service>
 </service-group>
 ```
+
 ____
 
 ## Benefits
