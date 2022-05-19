@@ -1,1 +1,0 @@
-Modular Hydroponic Tower Garden by boundarycondition on Thingiverse: https://www.thingiverse.com/thing:3405964
