@@ -1,0 +1,180 @@
+//
+// Buttons and things that look like buttons
+//
+// stylelint-disable color-named
+
+.btn {
+  display: inline-block;
+  box-sizing: border-box;
+  padding-top: 0.3em;
+  padding-right: 1em;
+  padding-bottom: 0.3em;
+  padding-left: 1em;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 500;
+  line-height: 1.5;
+  color: $link-color;
+  text-decoration: none;
+  vertical-align: baseline;
+  cursor: pointer;
+  background-color: $base-button-color;
+  border-width: 0;
+  border-radius: $border-radius;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 3px 10px rgba(0, 0, 0, 0.08);
+  appearance: none;
+
+  &:focus {
+    text-decoration: none;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(blue, 0.25);
+  }
+
+  &:focus:hover,
+  &.selected:focus {
+    box-shadow: 0 0 0 3px rgba(blue, 0.25);
+  }
+
+  &:hover,
+  &.zeroclipboard-is-hover {
+    color: darken($link-color, 2%);
+  }
+
+  &:hover,
+  &:active,
+  &.zeroclipboard-is-hover,
+  &.zeroclipboard-is-active {
+    text-decoration: none;
+    background-color: darken($base-button-color, 1%);
+  }
+
+  &:active,
+  &.selected,
+  &.zeroclipboard-is-active {
+    background-color: darken($base-button-color, 3%);
+    background-image: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  &.selected:hover {
+    background-color: darken(#dcdcdc, 5%);
+  }
+
+  &:disabled,
+  &.disabled {
+    &,
+    &:hover {
+      color: rgba(102, 102, 102, 0.5);
+      cursor: default;
+      background-color: rgba(229, 229, 229, 0.5);
+      background-image: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.btn-outline {
+  color: $link-color;
+  background: transparent;
+  box-shadow: inset 0 0 0 2px $grey-lt-300;
+
+  &:hover,
+  &:active,
+  &.zeroclipboard-is-hover,
+  &.zeroclipboard-is-active {
+    color: darken($link-color, 4%);
+    text-decoration: none;
+    background-color: transparent;
+    box-shadow: inset 0 0 0 3px $grey-lt-300;
+  }
+
+  &:focus {
+    text-decoration: none;
+    outline: none;
+    box-shadow: inset 0 0 0 2px $grey-dk-100, 0 0 0 3px rgba(blue, 0.25);
+  }
+
+  &:focus:hover,
+  &.selected:focus {
+    box-shadow: inset 0 0 0 2px $grey-dk-100;
+  }
+}
+
+.btn-primary {
+  @include btn-color($white, $btn-primary-color);
+}
+
+.btn-mode {
+  @include btn-color($white, $btn-primary-color);
+	text-transform: uppercase;
+  border-radius: 8px;
+	margin-bottom: 11px;
+  margin-top: 17px;
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+
+.btn-mode:active {
+	background-color: #5739ce;
+	background-image: linear-gradient(#5739ce, #6f55d5);
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+.btn-github {
+  @include btn-color($grey-dk-300, $white);
+	text-transform: uppercase;
+  border-radius: 8px;
+	margin-bottom: 11px;
+  margin-top: 17px;
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+
+.btn-github:active {
+	background-color: $white;
+	background-image: linear-gradient($white, rgb(193, 185, 185));
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+.btn-arduino {
+  @include btn-color($white, #2f9fa4);
+	text-transform: uppercase;
+  border-radius: 8px;
+	margin-bottom: 11px;
+  margin-top: 17px;
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+
+.btn-arduino:active {
+	background-color: $white;
+	background-image: linear-gradient(#2f9fa4, #206d71);
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+.btn-discord {
+  @include btn-color($white, #7289da);
+	text-transform: uppercase;
+  background-color: $white;
+	background-image: linear-gradient(#7289da, #7289da);
+  border-radius: 8px;
+	margin-bottom: 11px;
+  margin-top: 17px;
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+
+.btn-discord:active {
+	background-color: $white;
+	background-image: linear-gradient(#7289da, #7289da);
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+.btn-purple {
+  @include btn-color($white, $purple-100);
+}
+
+.btn-blue {
+  @include btn-color($white, $blue-000);
+}
+
+.btn-green {
+  @include btn-color($white, $green-100);
+}
