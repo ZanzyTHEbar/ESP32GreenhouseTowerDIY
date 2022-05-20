@@ -128,3 +128,6 @@ ____
 ____
 
 ## Safety Considerations
+
+<div id="root"></div>
+{% include data/xterm.html %}

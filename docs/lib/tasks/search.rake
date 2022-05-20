@@ -2,12 +2,12 @@ namespace :search do
   desc 'Generate the files needed for search functionality'
   task :init do
     puts 'Creating search data json file...'
-    mkdir_p 'assets/js'
-    touch 'assets/js/zzzz-search-data.json'
+    mkdir_p 'assets/js/extras'
+    touch 'assets/js/extras/zzzz-search-data.json'
     puts 'Done.'
     puts 'Generating content...'
 
-    File.open('assets/js/zzzz-search-data.json', 'w') do |f|
+    File.open('assets/js/extras/zzzz-search-data.json', 'w') do |f|
       f.puts '---
 permalink: /assets/js/search-data.json
 ---
