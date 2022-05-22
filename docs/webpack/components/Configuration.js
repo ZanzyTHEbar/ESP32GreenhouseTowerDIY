@@ -1,111 +1,156 @@
 import * as React from "react";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
+import {
+  Button,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  FormControl,
+  FormHelperText,
+  TextField,
+  Switch,
+  InputLabel,
+  Autocomplete,
+  Input,
+  OutlinedInput,
+  ButtonGroup,
+  Box,
+  Checkbox,
+  Typography,
+  AppBar,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardMedia,
+  CssBaseline,
+  Grid,
+  Toolbar,
+  Container,
+  Paper,
+  Alert,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+  Link,
+  StepConnector,
+  StepConnectorClasses,
+} from "@mui/material/";
+
+const boardNames = ["ESP32_Devkit_C", "Adafruit_Feather_32"];
+const firmwareVersions = ["main", "nightly", "beta"];
 
 export default function AddressForm() {
+  const [value_boardNames, setValue_boardNames] = React.useState(boardNames[0]);
+  const [value_firmwareVersion, setValue_firmwareVersion] = React.useState(
+    firmwareVersions[0]
+  );
+  const [inputValue_boardNames, setInputValue_boardNames] = React.useState("");
+  const [inputValue_firmwareVersion, setInputValue_firmwareVersion] =
+    React.useState("");
+
+  const [state, setState] = React.useState({
+    gilad: true,
+    jason: false,
+    antoine: true,
+  });
+
+  const handleChange = (event) => {
+    setState({
+      ...state,
+      [event.target.name]: event.target.checked,
+    });
+  };
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
-        Shipping address
+        Versioning
       </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="firstName"
-            name="firstName"
-            label="First name"
-            fullWidth
-            autoComplete="given-name"
-            variant="standard"
-          />
+      <form>
+        <Grid container spacing={3}>
+          <Grid item sm={12}>
+            {/* <TextField
+              required
+              id="firmwareVersion"
+              label="Firmware Version"
+              fullWidth
+              autoComplete="firmwareVersion"
+            /> */}
+            <FormControl component="fieldset" variant="standard" fullWidth>
+              <FormLabel component="legend">
+                It is recommended to use the most recent version
+              </FormLabel>
+              <br></br>
+              <FormGroup>
+                <Autocomplete
+                  value={value_firmwareVersion}
+                  onChange={(event, newValue) => {
+                    setValue_firmwareVersion(newValue);
+                  }}
+                  inputValue={inputValue_firmwareVersion}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue_firmwareVersion(newInputValue);
+                  }}
+                  id="controllable-states-demo"
+                  options={firmwareVersions}
+                  fullWidth
+                  renderInput={(params) => (
+                    <TextField {...params} label="Firmware version" />
+                  )}
+                />
+                <br></br>
+                <Autocomplete
+                  value={value_boardNames}
+                  onChange={(event, newValue) => {
+                    setValue_boardNames(newValue);
+                  }}
+                  inputValue={inputValue_boardNames}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue_boardNames(newInputValue);
+                  }}
+                  id="controllable-states-demo"
+                  options={boardNames}
+                  fullWidth
+                  renderInput={(params) => (
+                    <TextField {...params} label="Board Name" />
+                  )}
+                />
+                <FormHelperText>If unsure - choose ESP32_Devkit_C</FormHelperText>
+                {/* <FormControlLabel
+                  control={
+                    <Switch
+                      checked={state.gilad}
+                      onChange={handleChange}
+                      name="gilad"
+                    />
+                  }
+                  label="Gilad Gray"
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={state.jason}
+                      onChange={handleChange}
+                      name="jason"
+                    />
+                  }
+                  label="Jason Killian"
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={state.antoine}
+                      onChange={handleChange}
+                      name="antoine"
+                    />
+                  }
+                  label="Antoine Llorca"
+                /> */}
+              </FormGroup>
+            </FormControl>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="lastName"
-            name="lastName"
-            label="Last name"
-            fullWidth
-            autoComplete="family-name"
-            variant="standard"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            required
-            id="address1"
-            name="address1"
-            label="Address line 1"
-            fullWidth
-            autoComplete="shipping address-line1"
-            variant="standard"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="address2"
-            name="address2"
-            label="Address line 2"
-            fullWidth
-            autoComplete="shipping address-line2"
-            variant="standard"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="city"
-            name="city"
-            label="City"
-            fullWidth
-            autoComplete="shipping address-level2"
-            variant="standard"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            id="state"
-            name="state"
-            label="State/Province/Region"
-            fullWidth
-            variant="standard"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="zip"
-            name="zip"
-            label="Zip / Postal code"
-            fullWidth
-            autoComplete="shipping postal-code"
-            variant="standard"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="country"
-            name="country"
-            label="Country"
-            fullWidth
-            autoComplete="shipping country"
-            variant="standard"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox color="secondary" name="saveAddress" value="yes" />
-            }
-            label="Use this address for payment details"
-          />
-        </Grid>
-      </Grid>
+      </form>
     </React.Fragment>
   );
 }
