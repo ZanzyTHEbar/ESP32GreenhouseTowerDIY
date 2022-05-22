@@ -30,7 +30,7 @@ image_width: "400"
     {% assign alt_tags = tags | split: "  " %}
 {% endfor %}
 
-{% include image.html height=page.image_height width=page.image_width title=page.image_title image=page.image_category description=page.image_description src=page.image_src tags=alt_tags %}
+{% include modal/image.html height=page.image_height width=page.image_width title=page.image_title image=page.image_category description=page.image_description src=page.image_src tags=alt_tags %}
 
 ____
 
@@ -128,6 +128,3 @@ ____
 ____
 
 ## Safety Considerations
-
-<div id="root"></div>
-{% include data/xterm.html %}

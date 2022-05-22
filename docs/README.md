@@ -42,7 +42,7 @@ image_width_4: "400"
     {% assign alt_tags = tags | split: "  " %}
 {% endfor %}
 
-{% include image.html height=page.image_height width=page.image_width title=page.image_title image=page.image_category description=page.image_description src=page.image_src tags=alt_tags %}
+{% include modal/image.html height=page.image_height width=page.image_width title=page.image_title image=page.image_category description=page.image_description src=page.image_src tags=alt_tags %}
 
 # Welcome to ESP32 Greenhouse Tower DIY
 {: .no_toc }
@@ -63,7 +63,7 @@ A DIY vertical tower garden for indoor or outdoor use :cactus:.
     {% assign alt_tags_2 = tags_2 | split: "  " %}
 {% endfor %}
 
-{% include image.html height=page.image_height_2 width=page.image_width_2 title=page.image_title_2 image=page.image_category_2 description=page.image_description_2 src=page.image_src_2 tags=alt_tags_2 %}
+{% include modal/image.html height=page.image_height_2 width=page.image_width_2 title=page.image_title_2 image=page.image_category_2 description=page.image_description_2 src=page.image_src_2 tags=alt_tags_2 %}
 
 [![GitHub issues](https://img.shields.io/github/issues/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/issues) [![GitHub forks](https://img.shields.io/github/forks/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/network) [![GitHub stars](https://img.shields.io/github/stars/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/stargazers) [![GitHub license](https://img.shields.io/github/license/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/LICENSE)
 
@@ -85,13 +85,13 @@ The design also features an optional 3D printable Aeroponics Nozzle for converti
     {% assign alt_tags_3 = tags_3 | split: "  " %}
 {% endfor %}
 
-{% include image.html height=page.image_height_3 width=page.image_width_3 title=page.image_title_3 image=page.image_category_3 description=page.image_description_3 src=page.image_src_3 tags=alt_tags_3 %}
+{% include modal/image.html height=page.image_height_3 width=page.image_width_3 title=page.image_title_3 image=page.image_category_3 description=page.image_description_3 src=page.image_src_3 tags=alt_tags_3 %}
 
 {% for tags_4 in page.image_tags_4 %}
     {% assign alt_tags_4 = tags_4 | split: "  " %}
 {% endfor %}
 
-{% include image.html height=page.image_height_4 width=page.image_width_4 title=page.image_title_4 image=page.image_category_4 description=page.image_description_4 src=page.image_src_4 tags=alt_tags_4 %}
+{% include modal/image.html height=page.image_height_4 width=page.image_width_4 title=page.image_title_4 image=page.image_category_4 description=page.image_description_4 src=page.image_src_4 tags=alt_tags_4 %}
 
 # How To Order PCBs
 

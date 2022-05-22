@@ -1,24 +1,23 @@
 import React, { Component, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
 import Hello from "./components/Hello";
 //import { Transport } from './cp210x-webusb.js'
 import { Transport } from "./components/webserial";
 import { ESPLoader } from "./components/ESPLoader";
-/*class App extends Component {
-  createRoot() {
-    return <Hello />;
-  }
-}
-createRoot(<App />, document.getElementById("root")); */
+import { TerminalContextProvider } from "react-terminal";
+import Mui from "./components/mui";
 
-const rootElement = document.getElementById("root");
-const root = createRoot(rootElement);
+/* const root = createRoot(rootElement);
 
 root.render(
   <StrictMode>
+    <Mui />
     <Hello />
   </StrictMode>
-);
+); */
+
+ReactDOM.render(<Mui />, document.getElementById("react-ui-build"));
 
 const baudrates = document.getElementById("baudrates");
 const connectButton = document.getElementById("connectButton");
@@ -37,7 +36,6 @@ const lblConnTo = document.getElementById("lblConnTo");
 const tableBody = document.getElementById("tableBody");
 const table = document.getElementById("fileTable");
 const alertDiv = document.getElementById("alertDiv");
-
 let term = new Terminal({ cols: 120, rows: 40 });
 term.open(terminal);
 
