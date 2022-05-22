@@ -8,16 +8,14 @@ import { ESPLoader } from "./components/ESPLoader";
 import { TerminalContextProvider } from "react-terminal";
 import Mui from "./components/mui";
 
-/* const root = createRoot(rootElement);
+const rootElement = document.getElementById("react-ui-build");
+const root = createRoot(rootElement);
 
 root.render(
   <StrictMode>
     <Mui />
-    <Hello />
   </StrictMode>
-); */
-
-ReactDOM.render(<Mui />, document.getElementById("react-ui-build"));
+);
 
 const baudrates = document.getElementById("baudrates");
 const connectButton = document.getElementById("connectButton");
