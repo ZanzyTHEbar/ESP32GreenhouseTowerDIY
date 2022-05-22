@@ -31,7 +31,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Checkout from "./CheckOut";
 import Configuration from "./Configuration";
 import Building from "./Building";
-import PaymentForm from "./PaymentForm";
+import Downloading from "./Downloading";
+import Flashing from "./Flashing";
+import Done from "./Done";
+
 import "./style.css";
 
 const steps = [
