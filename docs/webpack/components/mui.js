@@ -28,7 +28,6 @@ import {
 import SaveIcon from "@mui/icons-material/SaveAltTwoTone";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Checkout from "./CheckOut";
 import Configuration from "./Configuration";
 import Building from "./Building";
 import Downloading from "./Downloading";

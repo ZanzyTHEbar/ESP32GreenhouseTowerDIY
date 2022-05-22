@@ -1,10 +1,10 @@
 import React, { Component, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import ReactDOM from "react-dom";
-import Hello from "./components/Hello";
+/* import Hello from "./components/Hello"; */
 //import { Transport } from './cp210x-webusb.js'
-import { Transport } from "./components/webserial";
-import { ESPLoader } from "./components/ESPLoader";
+/* import { Transport } from "./components/webserial";
+import { ESPLoader } from "./components/ESPLoader"; */
 import { TerminalContextProvider } from "react-terminal";
 import Mui from "./components/mui";
 

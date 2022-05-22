@@ -40,7 +40,28 @@ import {
 const boardNames = ["ESP32_Devkit_C", "Adafruit_Feather_32"];
 const firmwareVersions = ["main", "nightly", "beta"];
 
-export default function AddressForm() {
+function DownloadButton(){
+  return (
+    <form>
+      <Grid container spacing={3}>
+        <Grid item sm={12}>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={() => {
+              console.log(`${value_boardNames} and firmware version ${value_firmwareVersion}`);
+            }}
+          >
+            Download
+          </Button>
+        </Grid>
+      </Grid>
+    </form>
+  );
+}
+
+export default function Configuration() {
   const [value_boardNames, setValue_boardNames] = React.useState(boardNames[0]);
   const [value_firmwareVersion, setValue_firmwareVersion] = React.useState(
     firmwareVersions[0]
@@ -151,6 +172,7 @@ export default function AddressForm() {
           </Grid>
         </Grid>
       </form>
+      
     </React.Fragment>
   );
 }
