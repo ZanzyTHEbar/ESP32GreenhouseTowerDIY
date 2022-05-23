@@ -50,6 +50,8 @@ import {
   Step,
   StepLabel,
   StepContent,
+  Tooltip,
+  IconButton,
   Link,
   StepConnector,
   StepConnectorClasses,
@@ -116,7 +118,7 @@ export default function Configuration() {
 
   const [state, setState] = React.useState({
     mqtt: false,
-    wifi: false,
+    wifi: true,
     bluetooth: false,
     ota: false,
     mdns: false,
@@ -136,6 +138,223 @@ export default function Configuration() {
     });
   };
 
+  const formSettings = () => {
+    return (
+      <div>
+        <Grid container spacing={3}>
+          <Grid item sm={12}>
+            <List
+              sx={{
+                width: "100%",
+                maxWidth: 800,
+                bgcolor: "background.paper",
+              }}
+              subheader={<ListSubheader>Settings</ListSubheader>}
+            >
+              <ListItem>
+                <ListItemIcon>
+                  <WifiIcon />
+                </ListItemIcon>
+                <ListItemText id="switch-list-label-wifi" primary="WiFi" />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={state.wifi ? true : false && !state.bluetooth}
+                      onChange={handleChange}
+                      name="wifi"
+                      inputProps={{
+                        "aria-label": "secondary checkbox",
+                      }}
+                    />
+                  }
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <SmartButtonTwoToneIcon />
+                </ListItemIcon>
+                <ListItemText id="switch-list-label-mqtt" primary="MQTT" />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={state.wifi ? state.mqtt : false}
+                      onChange={handleChange}
+                      name="mqtt"
+                      inputProps={{
+                        "aria-label": "secondary checkbox",
+                      }}
+                    />
+                  }
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <SystemUpdateAltIcon />
+                </ListItemIcon>
+                <ListItemText id="switch-list-label-ota" primary="WiFi-OTA" />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={state.wifi ? state.ota : false}
+                      onChange={handleChange}
+                      name="ota"
+                      inputProps={{
+                        "aria-label": "secondary checkbox",
+                      }}
+                    />
+                  }
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <HASSIO />
+                </ListItemIcon>
+                <ListItemText
+                  id="switch-list-label-hassio"
+                  primary="Home Assistant"
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={state.wifi ? state.hassio : false}
+                      onChange={handleChange}
+                      name="hassio"
+                      inputProps={{
+                        "aria-label": "secondary checkbox",
+                      }}
+                    />
+                  }
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <BluetoothIcon />
+                </ListItemIcon>
+                <ListItemText
+                  id="switch-list-label-bluetooth"
+                  primary={
+                    <React.Fragment>
+                      <Typography color="inherit">Bluetooth</Typography>
+                      <p>
+                        <u>
+                          {"("}
+                          {"OTA"}
+                          <b>{" only"}</b>{" "}
+                        </u>
+                        {")"}
+                      </p>
+                    </React.Fragment>
+                  }
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={!state.wifi && state.bluetooth}
+                      onChange={handleChange}
+                      name="bluetooth"
+                      inputProps={{
+                        "aria-label": "secondary checkbox",
+                      }}
+                    />
+                  }
+                />
+              </ListItem>
+            </List>
+          </Grid>
+        </Grid>
+      </div>
+    );
+  };
+
+  const sensorOptions = () => {
+    return (
+      <div>
+        <Grid item sm={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Paper
+                sx={{
+                  padding: "1rem",
+                  margin: "1rem",
+                  width: "100%",
+                  maxWidth: 800,
+                  bgcolor: "background.paper",
+                }}
+                variant="outlined"
+              >
+                <Typography variant="h6" gutterBottom>
+                  Humidity Sensors (Optional)
+                </Typography>
+                <br></br>
+                <Autocomplete
+                  value={value_boardNames}
+                  onChange={(event, newValue) => {
+                    setValue_boardNames(newValue);
+                  }}
+                  inputValue={inputValue_boardNames}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue_boardNames(newInputValue);
+                  }}
+                  id="controllable-states"
+                  options={boardNames}
+                  fullWidth
+                  renderInput={(params) => (
+                    <TextField {...params} label="Board Name" />
+                  )}
+                />
+                <FormHelperText sx={{ color: "#0971f1" }}>
+                  If unsure - choose ESP32_Devkit_C <br></br>
+                  If using the PCB design files from this repo, choose Custom
+                  PCB
+                </FormHelperText>
+                <br></br>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Paper
+                variant="outlined"
+                sx={{
+                  padding: "1rem",
+                  margin: "1rem",
+                  width: "100%",
+                  maxWidth: 800,
+                  bgcolor: "background.paper",
+                }}
+              >
+                <Typography variant="h6" gutterBottom>
+                  Temperature Sensors (Optional)
+                </Typography>
+                <br></br>
+                <Autocomplete
+                  value={value_boardNames}
+                  onChange={(event, newValue) => {
+                    setValue_boardNames(newValue);
+                  }}
+                  inputValue={inputValue_boardNames}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue_boardNames(newInputValue);
+                  }}
+                  id="controllable-states"
+                  options={boardNames}
+                  fullWidth
+                  renderInput={(params) => (
+                    <TextField {...params} label="Board Name" />
+                  )}
+                />
+                <FormHelperText sx={{ color: "#0971f1" }}>
+                  If unsure - choose ESP32_Devkit_C <br></br>
+                  If using the PCB design files from this repo, choose Custom
+                  PCB
+                </FormHelperText>
+                <br></br>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Grid>
+      </div>
+    );
+  };
+
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -144,13 +363,6 @@ export default function Configuration() {
       <form>
         <Grid container spacing={3}>
           <Grid item sm={12}>
-            {/* <TextField
-              required
-              id="firmwareVersion"
-              label="Firmware Version"
-              fullWidth
-              autoComplete="firmwareVersion"
-            /> */}
             <FormControl
               component="fieldset"
               variant="outlined"
@@ -169,6 +381,15 @@ export default function Configuration() {
               </Alert>
               <br></br>
               <FormGroup>
+                <Tooltip title="Custom Name of the firmware" placement="top">
+                  <TextField
+                    id="firmwarename"
+                    label="Firmware Name (Optional)"
+                    fullWidth
+                    autoComplete="firmwareName"
+                  />
+                </Tooltip>
+                <br></br>
                 <Autocomplete
                   value={value_firmwareVersion}
                   onChange={(event, newValue) => {
@@ -240,211 +461,13 @@ export default function Configuration() {
                       <strong>not </strong>
                       sending or monitoring data.
                     </Alert>
-                    <Grid container spacing={3}>
-                      <Grid item sm={12}>
-                        <List
-                          sx={{
-                            width: "100%",
-                            maxWidth: 800,
-                            bgcolor: "background.paper",
-                          }}
-                          subheader={<ListSubheader>Settings</ListSubheader>}
-                        >
-                          <ListItem>
-                            <ListItemIcon>
-                              <WifiIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                              id="switch-list-label-wifi"
-                              primary="WiFi"
-                            />
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={state.wifi ? true : false && !state.bluetooth}
-                                  onChange={handleChange}
-                                  name="wifi"
-                                  inputProps={{
-                                    "aria-label": "secondary checkbox",
-                                  }}
-                                />
-                              }
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemIcon>
-                              <SmartButtonTwoToneIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                              id="switch-list-label-mqtt"
-                              primary="MQTT"
-                            />
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={state.wifi ? state.mqtt : false}
-                                  onChange={handleChange}
-                                  name="mqtt"
-                                  inputProps={{
-                                    "aria-label": "secondary checkbox",
-                                  }}
-                                />
-                              }
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemIcon>
-                              <SystemUpdateAltIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                              id="switch-list-label-ota"
-                              primary="WiFi-OTA"
-                            />
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={state.wifi ? state.ota : false}
-                                  onChange={handleChange}
-                                  name="ota"
-                                  inputProps={{
-                                    "aria-label": "secondary checkbox",
-                                  }}
-                                />
-                              }
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemIcon>
-                              <HASSIO />
-                            </ListItemIcon>
-                            <ListItemText
-                              id="switch-list-label-hassio"
-                              primary="Home Assistant"
-                            />
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={state.wifi ? state.hassio : false}
-                                  onChange={handleChange}
-                                  name="hassio"
-                                  inputProps={{
-                                    "aria-label": "secondary checkbox",
-                                  }}
-                                />
-                              }
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemIcon>
-                              <BluetoothIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                              id="switch-list-label-bluetooth"
-                              primary="Bluetooth"
-                            />
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={!state.wifi && state.bluetooth}
-                                  onChange={handleChange}
-                                  name="bluetooth"
-                                  inputProps={{
-                                    "aria-label": "secondary checkbox",
-                                  }}
-                                />
-                              }
-                            />
-                          </ListItem>
-                        </List>
-                      </Grid>
-                    </Grid>
+                    {formSettings()}
                   </AccordionDetails>
                 </Accordion>
               </FormGroup>
             </FormControl>
           </Grid>
-          <Grid item sm={12}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Paper
-                  sx={{
-                    padding: "1rem",
-                    margin: "1rem",
-                    width: "100%",
-                    maxWidth: 800,
-                    bgcolor: "background.paper",
-                  }}
-                  variant="outlined"
-                >
-                  <Typography variant="h6" gutterBottom>
-                    Humidity Sensors (Optional)
-                  </Typography>
-                  <br></br>
-                  <Autocomplete
-                    value={value_boardNames}
-                    onChange={(event, newValue) => {
-                      setValue_boardNames(newValue);
-                    }}
-                    inputValue={inputValue_boardNames}
-                    onInputChange={(event, newInputValue) => {
-                      setInputValue_boardNames(newInputValue);
-                    }}
-                    id="controllable-states"
-                    options={boardNames}
-                    fullWidth
-                    renderInput={(params) => (
-                      <TextField {...params} label="Board Name" />
-                    )}
-                  />
-                  <FormHelperText sx={{ color: "#0971f1" }}>
-                    If unsure - choose ESP32_Devkit_C <br></br>
-                    If using the PCB design files from this repo, choose Custom
-                    PCB
-                  </FormHelperText>
-                  <br></br>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    padding: "1rem",
-                    margin: "1rem",
-                    width: "100%",
-                    maxWidth: 800,
-                    bgcolor: "background.paper",
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>
-                    Temperature Sensors (Optional)
-                  </Typography>
-                  <br></br>
-                  <Autocomplete
-                    value={value_boardNames}
-                    onChange={(event, newValue) => {
-                      setValue_boardNames(newValue);
-                    }}
-                    inputValue={inputValue_boardNames}
-                    onInputChange={(event, newInputValue) => {
-                      setInputValue_boardNames(newInputValue);
-                    }}
-                    id="controllable-states"
-                    options={boardNames}
-                    fullWidth
-                    renderInput={(params) => (
-                      <TextField {...params} label="Board Name" />
-                    )}
-                  />
-                  <FormHelperText sx={{ color: "#0971f1" }}>
-                    If unsure - choose ESP32_Devkit_C <br></br>
-                    If using the PCB design files from this repo, choose Custom
-                    PCB
-                  </FormHelperText>
-                  <br></br>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Grid>
+          {sensorOptions()}
         </Grid>
       </form>
     </React.Fragment>

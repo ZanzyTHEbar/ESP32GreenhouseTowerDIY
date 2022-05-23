@@ -20,3 +20,23 @@
   margin-left: -1.4em;
   content: "" !important;
 }
+
+#switch-list-label-bluetooth span {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+#switch-list-label-bluetooth p {
+  display: inline-block;
+}
+
+#switch-list-label-bluetooth p > p {
+  display: inline-block;
+  color: #da0000;
+}
+
+#switch-list-label-bluetooth u {
+  margin-left: 5px;
+  display: inline-block;
+  color: #da0000;
+}
