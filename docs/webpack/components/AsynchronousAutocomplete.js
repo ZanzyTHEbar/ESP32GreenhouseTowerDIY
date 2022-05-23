@@ -9,7 +9,7 @@ function sleep(delay = 0) {
   });
 }
 
-export default function AsyncAuto(Options, Label, Required) {
+export default function AsyncAuto(Options, Label, Required, Disabled, ID) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const loading = open && options.length === 0;
@@ -22,8 +22,6 @@ export default function AsyncAuto(Options, Label, Required) {
     }
 
     (async () => {
-      await sleep(1e3); // For demo purposes.
-
       if (active) {
         setOptions([...Options]);
       }
@@ -42,8 +40,9 @@ export default function AsyncAuto(Options, Label, Required) {
 
   return (
     <Autocomplete
-      id="asynchronousauto"
+      id={`asynchronousauto-${ID}`}
       open={open}
+      clearOnEscape
       onOpen={() => {
         setOpen(true);
       }}
@@ -54,11 +53,13 @@ export default function AsyncAuto(Options, Label, Required) {
       getOptionLabel={(option) => option.title}
       options={options}
       loading={loading}
+      disabled={Disabled}
       renderInput={(params) => (
         <TextField
           {...params}
           label={Label}
           required={Required}
+          disabled={Disabled}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

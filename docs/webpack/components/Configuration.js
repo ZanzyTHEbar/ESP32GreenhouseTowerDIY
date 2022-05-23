@@ -87,21 +87,39 @@ const firmwareVersions = [
   { title: "default build" },
 ];
 
-const sht31Sensors = ["none", "1", "2"];
+const sht31Sensors = [{ title: "none" }, { title: "1" }, { title: "2" }];
 
-const dhtSensorsType = ["dht11", "dht22", "dht21", "am2301"];
+const dhtSensorsType = [
+  { title: "none" },
+  { title: "dht11" },
+  { title: "dht22" },
+  { title: "dht21" },
+  { title: "am2301" },
+];
+
+const lightSensors = [{ title: "none" }, { title: "bh1750" }, { title: "ldr" }];
+
+const ds18b20 = [
+  { title: "none" },
+  { title: "1" },
+  { title: "2" },
+  { title: "3" },
+  { title: "4" },
+  { title: "5" },
+  { title: "6" },
+  { title: "7" },
+  { title: "8" },
+  { title: "9" },
+  { title: "10" },
+];
 
 const dhtSensorsNum = ["none", "1", "2"];
 
-const ds18b20 = ["none", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-
-const lightSensors = ["bh1750", "ldr", "none"];
-
 const waterLevelSensors = [
+  { title: "none" },
   { title: "infrared" },
   { title: "ultraSonic" },
   { title: "capacitive" },
-  { title: "none" },
 ];
 
 const relayPin = [
@@ -235,6 +253,10 @@ export default function Configuration() {
     sht31: false,
     ds18b20: false,
     dht: false,
+    autoComplete_dht: false,
+    autoComplete_ds18b20: false,
+    autoComplete_light_sensor: false,
+    autoComplete_water_level_sensor: false,
   });
 
   const handleChange = (event) => {
@@ -244,10 +266,11 @@ export default function Configuration() {
     });
   };
 
-  const handleChangeAntSwitch = (event) => {
-    if (event.target.checked) {
-    } else {
-    }
+  const handleChangeAntSwitch = (event, type) => {
+    setState({
+      ...state,
+      [type]: !state[type],
+    });
   };
 
   const formSettings = () => {
@@ -405,9 +428,12 @@ export default function Configuration() {
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Typography>Off</Typography>
                     <AntSwitch
+                      name="dht"
                       defaultChecked
-                      onChange={handleChange}
-                      inputProps={{ "aria-label": "ant design" }}
+                      onChange={(event) =>
+                        handleChangeAntSwitch(event, "autoComplete_dht")
+                      }
+                      id="antswitch-dht"
                     />
                     <Typography>On</Typography>
                   </Stack>
@@ -417,8 +443,8 @@ export default function Configuration() {
                   title={
                     <React.Fragment>
                       <p>
-                        <b>{"SHT31"}</b>{" "}
-                        {"- How many sensors do you have?/want to use?"}
+                        <b>{"DHT"}</b>{" "}
+                        {"- What type of DHT sensor do you have?"}
                         <br></br>
                       </p>
                     </React.Fragment>
@@ -426,22 +452,13 @@ export default function Configuration() {
                   placement="top"
                   id="tooltip-top"
                 >
-                  <Autocomplete
-                    value={value_dht}
-                    onChange={(event, newValue) => {
-                      setValue_dht(newValue);
-                    }}
-                    inputValue={inputValue_dht}
-                    onInputChange={(event, newInputValue) => {
-                      setInputValue_dht(newInputValue);
-                    }}
-                    id="controllable-states"
-                    options={dhtSensorsType}
-                    fullWidth
-                    renderInput={(params) => (
-                      <TextField {...params} label="DHT Sensor Type" />
-                    )}
-                  />
+                  {AsyncAuto(
+                    [...dhtSensorsType],
+                    "DHT Sensor Type",
+                    false,
+                    state.autoComplete_dht,
+                    "dht"
+                  )}
                 </Tooltip>
                 <br></br>
               </Paper>
@@ -469,7 +486,11 @@ export default function Configuration() {
                     <Typography>Off</Typography>
                     <AntSwitch
                       defaultChecked
-                      inputProps={{ "aria-label": "ant design" }}
+                      name="ds18b20"
+                      onChange={(event) =>
+                        handleChangeAntSwitch(event, "autoComplete_ds18b20")
+                      }
+                      id="antswitch-ds18b20"
                     />
                     <Typography>On</Typography>
                   </Stack>
@@ -488,25 +509,13 @@ export default function Configuration() {
                   placement="top"
                   id="tooltip-top"
                 >
-                  <Autocomplete
-                    value={value_ds18b20}
-                    onChange={(event, newValue) => {
-                      setValue_ds18b20(newValue);
-                    }}
-                    inputValue={inputValue_ds18b20}
-                    onInputChange={(event, newInputValue) => {
-                      setInputValue_ds18b20(newInputValue);
-                    }}
-                    id="controllable-states"
-                    options={ds18b20}
-                    fullWidth
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Number of DS18B20 Sensors"
-                      />
-                    )}
-                  />
+                  {AsyncAuto(
+                    [...ds18b20],
+                    "Number of DS18B20 Sensors",
+                    false,
+                    state.autoComplete_ds18b20,
+                    "ds18b20"
+                  )}
                 </Tooltip>
                 <br></br>
               </Paper>
@@ -534,7 +543,11 @@ export default function Configuration() {
                     <Typography>Off</Typography>
                     <AntSwitch
                       defaultChecked
-                      inputProps={{ "aria-label": "ant design" }}
+                      name="light"
+                      onChange={(event) =>
+                        handleChangeAntSwitch(event, "autoComplete_light_sensor")
+                      }
+                      id="antswitch-light"
                     />
                     <Typography>On</Typography>
                   </Stack>
@@ -553,25 +566,13 @@ export default function Configuration() {
                   placement="top"
                   id="tooltip-top"
                 >
-                  <Autocomplete
-                    value={value_ds18b20}
-                    onChange={(event, newValue) => {
-                      setValue_ds18b20(newValue);
-                    }}
-                    inputValue={inputValue_ds18b20}
-                    onInputChange={(event, newInputValue) => {
-                      setInputValue_ds18b20(newInputValue);
-                    }}
-                    id="controllable-states"
-                    options={ds18b20}
-                    fullWidth
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Number of DS18B20 Sensors"
-                      />
-                    )}
-                  />
+                  {AsyncAuto(
+                    [...lightSensors],
+                    "Type of Light Level Sensor",
+                    false,
+                    state.autoComplete_light_sensor,
+                    "light"
+                  )}
                 </Tooltip>
                 <br></br>
               </Paper>
@@ -599,7 +600,11 @@ export default function Configuration() {
                     <Typography>Off</Typography>
                     <AntSwitch
                       defaultChecked
-                      inputProps={{ "aria-label": "ant design" }}
+                      name="water"
+                      onChange={(event) =>
+                        handleChangeAntSwitch(event, "autoComplete_water_level_sensor")
+                      }
+                      id="antswitch-water"
                     />
                     <Typography>On</Typography>
                   </Stack>
@@ -618,25 +623,13 @@ export default function Configuration() {
                   placement="top"
                   id="tooltip-top"
                 >
-                  <Autocomplete
-                    value={value_ds18b20}
-                    onChange={(event, newValue) => {
-                      setValue_ds18b20(newValue);
-                    }}
-                    inputValue={inputValue_ds18b20}
-                    onInputChange={(event, newInputValue) => {
-                      setInputValue_ds18b20(newInputValue);
-                    }}
-                    id="controllable-states"
-                    options={ds18b20}
-                    fullWidth
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Number of DS18B20 Sensors"
-                      />
-                    )}
-                  />
+                  {AsyncAuto(
+                    [...waterLevelSensors],
+                    "Type of Water Level Sensor",
+                    false,
+                    state.autoComplete_water_level_sensor,
+                    "water"
+                  )}
                 </Tooltip>
                 <br></br>
               </Paper>
@@ -682,7 +675,13 @@ export default function Configuration() {
                   />
                 </Tooltip>
                 <br></br>
-                {AsyncAuto([...firmwareVersions], "Firmware Version", true)}
+                {AsyncAuto(
+                  [...firmwareVersions],
+                  "Firmware Version",
+                  true,
+                  false,
+                  "firmware_version"
+                )}
                 <br></br>
                 <Tooltip
                   title={
@@ -700,7 +699,13 @@ export default function Configuration() {
                   placement="top"
                   id="tooltip-top"
                 >
-                  {AsyncAuto([...boardNames], "Board Name", true)}
+                  {AsyncAuto(
+                    [...boardNames],
+                    "Board Name",
+                    true,
+                    false,
+                    "board_names"
+                  )}
                 </Tooltip>
                 <br></br>
                 <Typography variant="h6" gutterBottom>
