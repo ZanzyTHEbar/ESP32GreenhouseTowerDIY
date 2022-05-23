@@ -117,43 +117,6 @@ const theme = createTheme({
   },
 });
 
-function showMsg() {
-  const msg = "Setting up Firmware Image";
-  window.alert(msg);
-  return msg;
-}
-
-/* function CheckBoxState() {
-  const [checked, setChecked] = React.useState(true);
-  return (
-    <div>
-      <Checkbox
-        checked={checked}
-        color="primary"
-        onChange={(e) => setChecked(e.target.checked)}
-        value="checkedA"
-        inputProps={{ "aria-label": "primary checkbox" }}
-      />
-    </div>
-  );
-} */
-
-/* function MUIButtonGroup() {
-  return (
-    <div>
-      <ButtonGroup
-        variant="contained"
-        color="primary"
-        aria-label="contained primary button group"
-      >
-        <Button>One</Button>
-        <Button>Two</Button>
-        <Button>Three</Button>
-      </ButtonGroup>
-    </div>
-  );
-} */
-
 export default function MUI() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());

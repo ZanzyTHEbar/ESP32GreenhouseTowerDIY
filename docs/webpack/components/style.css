@@ -5,5 +5,18 @@
   background-color: black;
 }
 
-.react-mui-ui-App {
+.react-mui-ui ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.react-mui-ui ul > li {
+  height: fit-content;
+}
+
+.react-mui-ui ul > li::before {
+  position: absolute;
+  margin-left: -1.4em;
+  content: "" !important;
 }

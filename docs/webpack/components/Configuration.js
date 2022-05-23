@@ -1,6 +1,12 @@
 import * as React from "react";
 import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Button,
+  CircularProgress,
+  Divider,
+  Backdrop,
   FormControlLabel,
   FormGroup,
   FormLabel,
@@ -14,6 +20,11 @@ import {
   OutlinedInput,
   ButtonGroup,
   Box,
+  List,
+  ListSubheader,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   Checkbox,
   Typography,
   AppBar,
@@ -28,6 +39,12 @@ import {
   Container,
   Paper,
   Alert,
+  AlertColor,
+  AlertTitle,
+  AlertDescription,
+  AlertIcon,
+  AlertAction,
+  AlertActionGroup,
   Stepper,
   Step,
   StepLabel,
@@ -35,29 +52,44 @@ import {
   Link,
   StepConnector,
   StepConnectorClasses,
+  LinearProgress,
 } from "@mui/material/";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMoreRounded";
+import WifiIcon from "@mui/icons-material/Wifi";
+import BluetoothIcon from "@mui/icons-material/Bluetooth";
+import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
+import SmartButtonTwoToneIcon from "@mui/icons-material/SmartButtonTwoTone";
 
-const boardNames = ["ESP32_Devkit_C", "Adafruit_Feather_32"];
+const boardNames = [
+  "Custom PCB",
+  "ESP32_Devkit_C",
+  "Adafruit_Feather_Huzzah",
+  "ESP32_DevKit_32s",
+  "ESP32_Sketch_Board",
+  "DOIT_ESP32",
+  "ESP32_CAM",
+];
 const firmwareVersions = ["main", "nightly", "beta"];
 
-function DownloadButton(){
+function BackDrop() {
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleToggle = () => {
+    setOpen(!open);
+  };
   return (
-    <form>
-      <Grid container spacing={3}>
-        <Grid item sm={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={() => {
-              console.log(`${value_boardNames} and firmware version ${value_firmwareVersion}`);
-            }}
-          >
-            Download
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+    <div>
+      <Button onClick={handleToggle}>Show backdrop</Button>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+        onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </div>
   );
 }
 
@@ -71,9 +103,17 @@ export default function Configuration() {
     React.useState("");
 
   const [state, setState] = React.useState({
-    gilad: true,
-    jason: false,
-    antoine: true,
+    mqtt: true,
+    wifi: true,
+    bluetooth: false,
+    ota: true,
+    mdns: false,
+    light_sensor: false,
+    sht31: false,
+    ds18b20: false,
+    dht11: false,
+    dht22: false,
+    dht21: false,
   });
 
   const handleChange = (event) => {
@@ -97,10 +137,17 @@ export default function Configuration() {
               fullWidth
               autoComplete="firmwareVersion"
             /> */}
-            <FormControl component="fieldset" variant="standard" fullWidth>
-              <FormLabel component="legend">
-                It is recommended to use the most recent version
-              </FormLabel>
+            <FormControl component="fieldset" variant="outlined">
+              <Alert
+                severity="error"
+                role="info"
+                variant="filled"
+                color="error"
+              >
+                <AlertTitle>Warning</AlertTitle>
+                It is recommended to use the <strong>most recent</strong>{" "}
+                version
+              </Alert>
               <br></br>
               <FormGroup>
                 <Autocomplete
@@ -112,7 +159,7 @@ export default function Configuration() {
                   onInputChange={(event, newInputValue) => {
                     setInputValue_firmwareVersion(newInputValue);
                   }}
-                  id="controllable-states-demo"
+                  id="controllable-states"
                   options={firmwareVersions}
                   fullWidth
                   renderInput={(params) => (
@@ -129,50 +176,237 @@ export default function Configuration() {
                   onInputChange={(event, newInputValue) => {
                     setInputValue_boardNames(newInputValue);
                   }}
-                  id="controllable-states-demo"
+                  id="controllable-states"
                   options={boardNames}
                   fullWidth
                   renderInput={(params) => (
                     <TextField {...params} label="Board Name" />
                   )}
                 />
-                <FormHelperText>If unsure - choose ESP32_Devkit_C</FormHelperText>
-                {/* <FormControlLabel
-                  control={
-                    <Switch
-                      checked={state.gilad}
-                      onChange={handleChange}
-                      name="gilad"
-                    />
-                  }
-                  label="Gilad Gray"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={state.jason}
-                      onChange={handleChange}
-                      name="jason"
-                    />
-                  }
-                  label="Jason Killian"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={state.antoine}
-                      onChange={handleChange}
-                      name="antoine"
-                    />
-                  }
-                  label="Antoine Llorca"
-                /> */}
+                <FormHelperText sx={{ color: "#0971f1" }}>
+                  If unsure - choose ESP32_Devkit_C <br></br>
+                  If using the PCB design files from this repo, choose Custom
+                  PCB
+                </FormHelperText>
+                <br></br>
+                <Typography variant="h6" gutterBottom>
+                  Features
+                </Typography>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography>Configure Features</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>
+                      Customize your Build Configuration with the below
+                      settings. Certain Features require the wifi module to be
+                      enabled. This project uses LAN for communication, so you
+                      will need to enable the wifi module. If you really do not
+                      want to enable the wifi module, you can disable it here,
+                      and bluetooth with be enabled automatically.
+                    </Typography>
+                    <Alert
+                      severity="info"
+                      role="info"
+                      variant="filled"
+                      color="info"
+                    >
+                      <AlertTitle>Info</AlertTitle>
+                      The Bluetooth software module{" "}
+                      <strong>only functions</strong> with Bluetooth-based OTA,{" "}
+                      <strong>not </strong>
+                      sending or monitoring data.
+                    </Alert>
+                    <Grid container spacing={3}>
+                      <Grid item sm={12}>
+                        <List
+                          sx={{
+                            width: "100%",
+                            maxWidth: 800,
+                            bgcolor: "background.paper",
+                          }}
+                          subheader={<ListSubheader>Settings</ListSubheader>}
+                        >
+                          <ListItem>
+                            <ListItemIcon>
+                              <WifiIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                              id="switch-list-label-wifi"
+                              primary="WiFi"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={state.wifi}
+                                  onChange={handleChange}
+                                  name="wifi"
+                                  inputProps={{
+                                    "aria-label": "secondary checkbox",
+                                  }}
+                                />
+                              }
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <SmartButtonTwoToneIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                              id="switch-list-label-bluetooth"
+                              primary="MQTT"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={state.wifi ? state.mqtt : false}
+                                  onChange={handleChange}
+                                  name="mqtt"
+                                  inputProps={{
+                                    "aria-label": "secondary checkbox",
+                                  }}
+                                />
+                              }
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <SystemUpdateAltIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                              id="switch-list-label-bluetooth"
+                              primary="WiFi-OTA"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={state.wifi ? state.ota : false}
+                                  onChange={handleChange}
+                                  name="ota"
+                                  inputProps={{
+                                    "aria-label": "secondary checkbox",
+                                  }}
+                                />
+                              }
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <BluetoothIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                              id="switch-list-label-bluetooth"
+                              primary="Bluetooth"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={state.wifi ? false : true}
+                                  onChange={handleChange}
+                                  name="bluetooth"
+                                  inputProps={{
+                                    "aria-label": "secondary checkbox",
+                                  }}
+                                />
+                              }
+                            />
+                          </ListItem>
+                        </List>
+                      </Grid>
+                    </Grid>
+                  </AccordionDetails>
+                </Accordion>
               </FormGroup>
             </FormControl>
           </Grid>
+          <Grid item sm={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Paper
+                  sx={{
+                    padding: "1rem",
+                    margin: "1rem",
+                    width: "100%",
+                    maxWidth: 800,
+                    bgcolor: "background.paper",
+                  }}
+                  variant="outlined"
+                >
+                  <Typography variant="h6" gutterBottom>
+                    WiFi Module
+                  </Typography>
+                  <br></br>
+                  <Autocomplete
+                    value={value_boardNames}
+                    onChange={(event, newValue) => {
+                      setValue_boardNames(newValue);
+                    }}
+                    inputValue={inputValue_boardNames}
+                    onInputChange={(event, newInputValue) => {
+                      setInputValue_boardNames(newInputValue);
+                    }}
+                    id="controllable-states"
+                    options={boardNames}
+                    fullWidth
+                    renderInput={(params) => (
+                      <TextField {...params} label="Board Name" />
+                    )}
+                  />
+                  <FormHelperText sx={{ color: "#0971f1" }}>
+                    If unsure - choose ESP32_Devkit_C <br></br>
+                    If using the PCB design files from this repo, choose Custom
+                    PCB
+                  </FormHelperText>
+                  <br></br>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    padding: "1rem",
+                    margin: "1rem",
+                    width: "100%",
+                    maxWidth: 800,
+                    bgcolor: "background.paper",
+                  }}
+                >
+                  <Typography variant="h6" gutterBottom>
+                    WiFi Module
+                  </Typography>
+                  <br></br>
+                  <Autocomplete
+                    value={value_boardNames}
+                    onChange={(event, newValue) => {
+                      setValue_boardNames(newValue);
+                    }}
+                    inputValue={inputValue_boardNames}
+                    onInputChange={(event, newInputValue) => {
+                      setInputValue_boardNames(newInputValue);
+                    }}
+                    id="controllable-states"
+                    options={boardNames}
+                    fullWidth
+                    renderInput={(params) => (
+                      <TextField {...params} label="Board Name" />
+                    )}
+                  />
+                  <FormHelperText sx={{ color: "#0971f1" }}>
+                    If unsure - choose ESP32_Devkit_C <br></br>
+                    If using the PCB design files from this repo, choose Custom
+                    PCB
+                  </FormHelperText>
+                  <br></br>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
       </form>
-      
     </React.Fragment>
   );
 }

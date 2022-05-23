@@ -37,6 +37,12 @@ import {
   StepConnectorClasses,
 } from "@mui/material/";
 
+function showMsg() {
+  const msg = "Setting up Firmware Image";
+  window.alert(msg);
+  return msg;
+}
+
 function DownloadButton() {
   return (
     <form>
@@ -46,13 +52,9 @@ function DownloadButton() {
             variant="contained"
             color="primary"
             fullWidth
-            onClick={() => {
-              console.log(
-                `${value_boardNames} and firmware version ${value_firmwareVersion}`
-              );
-            }}
+            onClick={() => {showMsg();}}
           >
-            Download
+            Build Firmware
           </Button>
         </Grid>
       </Grid>
