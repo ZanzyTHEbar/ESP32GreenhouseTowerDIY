@@ -40,3 +40,22 @@
   display: inline-block;
   color: #da0000;
 }
+
+#tooltip-top {
+  position: relative;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+#tooltip-top strong {
+  color: black;
+}
+
+.sensorOptions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
