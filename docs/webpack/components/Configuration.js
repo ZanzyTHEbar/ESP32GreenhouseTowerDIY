@@ -219,28 +219,6 @@ function BackDrop() {
 }
 
 export default function Configuration() {
-  /* Board Names */
-  const [value_boardNames, setValue_boardNames] = React.useState(boardNames[0]);
-  const [inputValue_boardNames, setInputValue_boardNames] = React.useState("");
-
-  /* Firmware Version */
-  const [value_firmwareVersion, setValue_firmwareVersion] = React.useState(
-    firmwareVersions[0]
-  );
-  const [inputValue_firmwareVersion, setInputValue_firmwareVersion] =
-    React.useState("");
-
-  /* BS18B20 */
-  const [value_ds18b20, setValue_ds18b20] = React.useState(ds18b20[0]);
-  const [inputValue_ds18b20, setInputValue_ds18b20] = React.useState("");
-
-  /* DHT */
-  const [value_dht, setValue_dht] = React.useState(dhtSensorsType[0]);
-  const [inputValue_dht, setInputValue_dht] = React.useState("");
-
-  /* light */
-  const [value_light, setValue_light] = React.useState(lightSensors[0]);
-  const [inputValue_light, setInputValue_light] = React.useState("");
 
   const [state, setState] = React.useState({
     mqtt: false,
