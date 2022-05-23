@@ -20,6 +20,7 @@ import {
   OutlinedInput,
   ButtonGroup,
   Box,
+  Icon,
   List,
   ListSubheader,
   ListItem,
@@ -59,6 +60,7 @@ import WifiIcon from "@mui/icons-material/Wifi";
 import BluetoothIcon from "@mui/icons-material/Bluetooth";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import SmartButtonTwoToneIcon from "@mui/icons-material/SmartButtonTwoTone";
+import HassIO from "./icons/homeassistant.svg";
 
 const boardNames = [
   "Custom PCB",
@@ -70,6 +72,16 @@ const boardNames = [
   "ESP32_CAM",
 ];
 const firmwareVersions = ["main", "nightly", "beta"];
+
+function HASSIO() {
+  return (
+    <div>
+      <Icon sx={{ fill: "#757575" }}>
+        <HassIO />
+      </Icon>
+    </div>
+  );
+}
 
 function BackDrop() {
   const [open, setOpen] = React.useState(false);
@@ -103,11 +115,12 @@ export default function Configuration() {
     React.useState("");
 
   const [state, setState] = React.useState({
-    mqtt: true,
+    mqtt: false,
     wifi: true,
     bluetooth: false,
     ota: true,
     mdns: false,
+    hassio: true,
     light_sensor: false,
     sht31: false,
     ds18b20: false,
@@ -137,7 +150,12 @@ export default function Configuration() {
               fullWidth
               autoComplete="firmwareVersion"
             /> */}
-            <FormControl component="fieldset" variant="outlined">
+            <FormControl
+              component="fieldset"
+              variant="outlined"
+              required
+              fullWidth
+            >
               <Alert
                 severity="error"
                 role="info"
@@ -163,7 +181,7 @@ export default function Configuration() {
                   options={firmwareVersions}
                   fullWidth
                   renderInput={(params) => (
-                    <TextField {...params} label="Firmware version" />
+                    <TextField {...params} required label="Firmware version" />
                   )}
                 />
                 <br></br>
@@ -180,7 +198,7 @@ export default function Configuration() {
                   options={boardNames}
                   fullWidth
                   renderInput={(params) => (
-                    <TextField {...params} label="Board Name" />
+                    <TextField {...params} required label="Board Name" />
                   )}
                 />
                 <FormHelperText sx={{ color: "#0971f1" }}>
@@ -257,7 +275,7 @@ export default function Configuration() {
                               <SmartButtonTwoToneIcon />
                             </ListItemIcon>
                             <ListItemText
-                              id="switch-list-label-bluetooth"
+                              id="switch-list-label-mqtt"
                               primary="MQTT"
                             />
                             <FormControlLabel
@@ -278,7 +296,7 @@ export default function Configuration() {
                               <SystemUpdateAltIcon />
                             </ListItemIcon>
                             <ListItemText
-                              id="switch-list-label-bluetooth"
+                              id="switch-list-label-ota"
                               primary="WiFi-OTA"
                             />
                             <FormControlLabel
@@ -315,6 +333,27 @@ export default function Configuration() {
                               }
                             />
                           </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <HASSIO />
+                            </ListItemIcon>
+                            <ListItemText
+                              id="switch-list-label-homeassistant"
+                              primary="Home Assistant"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={state.wifi ? state.hassio : false}
+                                  onChange={handleChange}
+                                  name="homeassistant"
+                                  inputProps={{
+                                    "aria-label": "secondary checkbox",
+                                  }}
+                                />
+                              }
+                            />
+                          </ListItem>
                         </List>
                       </Grid>
                     </Grid>
@@ -337,7 +376,7 @@ export default function Configuration() {
                   variant="outlined"
                 >
                   <Typography variant="h6" gutterBottom>
-                    WiFi Module
+                    Humidity Sensors (Optional)
                   </Typography>
                   <br></br>
                   <Autocomplete
@@ -376,7 +415,7 @@ export default function Configuration() {
                   }}
                 >
                   <Typography variant="h6" gutterBottom>
-                    WiFi Module
+                    Temperature Sensors (Optional)
                   </Typography>
                   <br></br>
                   <Autocomplete
