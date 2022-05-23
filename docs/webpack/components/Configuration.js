@@ -68,18 +68,24 @@ import BluetoothIcon from "@mui/icons-material/Bluetooth";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import SmartButtonTwoToneIcon from "@mui/icons-material/SmartButtonTwoTone";
 import HassIO from "./icons/homeassistant.svg";
+import AsyncAuto from "./AsynchronousAutoComplete";
 
 const boardNames = [
-  "Custom PCB",
-  "ESP32_Devkit_C",
-  "Adafruit_Feather_Huzzah",
-  "ESP32_DevKit_32s",
-  "ESP32_Sketch_Board",
-  "DOIT_ESP32",
-  "ESP32_CAM",
+  { title: "Custom PCB" },
+  { title: "ESP32_Devkit_C" },
+  { title: "Adafruit_Feather_Huzzah" },
+  { title: "ESP32_Sketch_Board" },
+  { title: "ESP32_DevKit_32s" },
+  { title: "DOIT_ESP32" },
+  { title: "ESP32_CAM" },
 ];
 
-const firmwareVersions = ["main", "nightly", "beta"];
+const firmwareVersions = [
+  { title: "main" },
+  { title: "nightly" },
+  { title: "beta" },
+  { title: "default build" },
+];
 
 const sht31Sensors = ["none", "1", "2"];
 
@@ -91,7 +97,12 @@ const ds18b20 = ["none", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
 const lightSensors = ["bh1750", "ldr", "none"];
 
-const waterLevelSensors = ["infrared", "ultraSonic", "capacitive", "none"];
+const waterLevelSensors = [
+  { title: "infrared" },
+  { title: "ultraSonic" },
+  { title: "capacitive" },
+  { title: "none" },
+];
 
 const relayPin = [
   "32",
@@ -216,16 +227,14 @@ export default function Configuration() {
   const [state, setState] = React.useState({
     mqtt: false,
     wifi: true,
-    bluetooth: false,
+    bluetooth: true,
     ota: false,
     mdns: false,
     hassio: false,
     light_sensor: false,
     sht31: false,
     ds18b20: false,
-    dht11: false,
-    dht22: false,
-    dht21: false,
+    dht: false,
   });
 
   const handleChange = (event) => {
@@ -233,6 +242,12 @@ export default function Configuration() {
       ...state,
       [event.target.name]: event.target.checked,
     });
+  };
+
+  const handleChangeAntSwitch = (event) => {
+    if (event.target.checked) {
+    } else {
+    }
   };
 
   const formSettings = () => {
@@ -391,6 +406,7 @@ export default function Configuration() {
                     <Typography>Off</Typography>
                     <AntSwitch
                       defaultChecked
+                      onChange={handleChange}
                       inputProps={{ "aria-label": "ant design" }}
                     />
                     <Typography>On</Typography>
@@ -666,24 +682,8 @@ export default function Configuration() {
                   />
                 </Tooltip>
                 <br></br>
-                <Autocomplete
-                  value={value_firmwareVersion}
-                  onChange={(event, newValue) => {
-                    setValue_firmwareVersion(newValue);
-                  }}
-                  inputValue={inputValue_firmwareVersion}
-                  onInputChange={(event, newInputValue) => {
-                    setInputValue_firmwareVersion(newInputValue);
-                  }}
-                  id="controllable-states"
-                  options={firmwareVersions}
-                  fullWidth
-                  renderInput={(params) => (
-                    <TextField {...params} required label="Firmware version" />
-                  )}
-                />
+                {AsyncAuto([...firmwareVersions], "Firmware Version", true)}
                 <br></br>
-
                 <Tooltip
                   title={
                     <React.Fragment>
@@ -700,22 +700,7 @@ export default function Configuration() {
                   placement="top"
                   id="tooltip-top"
                 >
-                  <Autocomplete
-                    value={value_boardNames}
-                    onChange={(event, newValue) => {
-                      setValue_boardNames(newValue);
-                    }}
-                    inputValue={inputValue_boardNames}
-                    onInputChange={(event, newInputValue) => {
-                      setInputValue_boardNames(newInputValue);
-                    }}
-                    id="controllable-states"
-                    options={boardNames}
-                    fullWidth
-                    renderInput={(params) => (
-                      <TextField {...params} required label="Board Name" />
-                    )}
-                  />
+                  {AsyncAuto([...boardNames], "Board Name", true)}
                 </Tooltip>
                 <br></br>
                 <Typography variant="h6" gutterBottom>
