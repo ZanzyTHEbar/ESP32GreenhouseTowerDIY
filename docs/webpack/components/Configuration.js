@@ -116,11 +116,11 @@ export default function Configuration() {
 
   const [state, setState] = React.useState({
     mqtt: false,
-    wifi: true,
+    wifi: false,
     bluetooth: false,
-    ota: true,
+    ota: false,
     mdns: false,
-    hassio: true,
+    hassio: false,
     light_sensor: false,
     sht31: false,
     ds18b20: false,
@@ -135,6 +135,7 @@ export default function Configuration() {
       [event.target.name]: event.target.checked,
     });
   };
+
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -260,7 +261,7 @@ export default function Configuration() {
                             <FormControlLabel
                               control={
                                 <Switch
-                                  checked={state.wifi}
+                                  checked={state.wifi ? true : false && !state.bluetooth}
                                   onChange={handleChange}
                                   name="wifi"
                                   inputProps={{
@@ -314,18 +315,18 @@ export default function Configuration() {
                           </ListItem>
                           <ListItem>
                             <ListItemIcon>
-                              <BluetoothIcon />
+                              <HASSIO />
                             </ListItemIcon>
                             <ListItemText
-                              id="switch-list-label-bluetooth"
-                              primary="Bluetooth"
+                              id="switch-list-label-hassio"
+                              primary="Home Assistant"
                             />
                             <FormControlLabel
                               control={
                                 <Switch
-                                  checked={state.wifi ? false : true}
+                                  checked={state.wifi ? state.hassio : false}
                                   onChange={handleChange}
-                                  name="bluetooth"
+                                  name="hassio"
                                   inputProps={{
                                     "aria-label": "secondary checkbox",
                                   }}
@@ -335,18 +336,18 @@ export default function Configuration() {
                           </ListItem>
                           <ListItem>
                             <ListItemIcon>
-                              <HASSIO />
+                              <BluetoothIcon />
                             </ListItemIcon>
                             <ListItemText
-                              id="switch-list-label-homeassistant"
-                              primary="Home Assistant"
+                              id="switch-list-label-bluetooth"
+                              primary="Bluetooth"
                             />
                             <FormControlLabel
                               control={
                                 <Switch
-                                  checked={state.wifi ? state.hassio : false}
+                                  checked={!state.wifi && state.bluetooth}
                                   onChange={handleChange}
-                                  name="homeassistant"
+                                  name="bluetooth"
                                   inputProps={{
                                     "aria-label": "secondary checkbox",
                                   }}
