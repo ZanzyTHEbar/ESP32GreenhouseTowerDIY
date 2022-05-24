@@ -113,8 +113,6 @@ const ds18b20 = [
   { title: "10" },
 ];
 
-const dhtSensorsNum = ["none", "1", "2"];
-
 const waterLevelSensors = [
   { title: "none" },
   { title: "infrared" },
@@ -122,10 +120,14 @@ const waterLevelSensors = [
   { title: "capacitive" },
 ];
 
+const dhtSensorsNum = [{ title: "none" }, { title: "1" }, { title: "2" }];
+
 const relayPin = [
-  "32",
-  "33",
+  {title: "32"},
+  {title: "33"},
 ]; /* Possible relay combinations - need logic to remove item from list if another sensor takes up that pin */
+
+
 
 const GreenSwitch = styled(Switch)(({ theme }) => ({
   "& .MuiSwitch-switchBase.Mui-checked": {
@@ -219,7 +221,6 @@ function BackDrop() {
 }
 
 export default function Configuration() {
-
   const [state, setState] = React.useState({
     mqtt: false,
     wifi: true,
@@ -523,7 +524,10 @@ export default function Configuration() {
                       defaultChecked
                       name="light"
                       onChange={(event) =>
-                        handleChangeAntSwitch(event, "autoComplete_light_sensor")
+                        handleChangeAntSwitch(
+                          event,
+                          "autoComplete_light_sensor"
+                        )
                       }
                       id="antswitch-light"
                     />
@@ -580,7 +584,10 @@ export default function Configuration() {
                       defaultChecked
                       name="water"
                       onChange={(event) =>
-                        handleChangeAntSwitch(event, "autoComplete_water_level_sensor")
+                        handleChangeAntSwitch(
+                          event,
+                          "autoComplete_water_level_sensor"
+                        )
                       }
                       id="antswitch-water"
                     />
