@@ -1,69 +1,76 @@
 import * as React from "react";
 import {
   Button,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  FormControl,
-  FormHelperText,
-  TextField,
-  Switch,
-  InputLabel,
-  Autocomplete,
-  Input,
-  OutlinedInput,
-  ButtonGroup,
-  Box,
-  Checkbox,
-  Typography,
-  AppBar,
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardMedia,
-  CssBaseline,
+  Divider,
+  List,
+  ListItemText,
+  ListItem,
   Grid,
-  Toolbar,
-  Container,
-  Paper,
-  Alert,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent,
-  Link,
-  StepConnector,
-  StepConnectorClasses,
 } from "@mui/material/";
 
-function DownloadButton() {
-  return (
-    <form>
-      <Grid container spacing={3}>
-        <Grid item sm={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={() => {
-              console.log(
-                `${value_boardNames} and firmware version ${value_firmwareVersion}`
-              );
-            }}
-          >
-            Download
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
-  );
-}
-
-export default function Downloading() {
+const Done = ({
+  handleNext,
+  handleBack,
+  values: { firstName, lastName, email, gender, date, phone, city },
+}) => {
+  const handleSubmit = () => {
+    console.log({ firstName, lastName, email, gender, date, phone, city });
+    handleNext();
+  };
   return (
     <div>
-      <DownloadButton />
+      <Grid container spacing={3}>
+        <Grid item sm={12}>
+          <React.Fragment>
+            <List disablePadding>
+              <ListItem>
+                <ListItemText primary="First Name" secondary={firstName} />
+              </ListItem>
+
+              <Divider />
+
+              <ListItem>
+                <ListItemText primary="Last Name" secondary={lastName} />
+              </ListItem>
+
+              <Divider />
+
+              <ListItem>
+                <ListItemText primary="Email Address" secondary={email} />
+              </ListItem>
+
+              <Divider />
+
+              <ListItem>
+                <ListItemText primary="Gender" secondary={gender} />
+              </ListItem>
+
+              <Divider />
+
+              <ListItem>
+                <ListItemText primary="Date of birth" secondary={date} />
+              </ListItem>
+
+              <Divider />
+
+              <ListItem>
+                <ListItemText primary="City" secondary={city} />
+              </ListItem>
+
+              <Divider />
+
+              <ListItem>
+                <ListItemText
+                  primary="phone"
+                  secondary={phone.length > 0 ? phone : "Not Provided"}
+                />
+              </ListItem>
+            </List>
+          </React.Fragment>
+        </Grid>
+      </Grid>
     </div>
   );
-}
+};
+
+export default Done;

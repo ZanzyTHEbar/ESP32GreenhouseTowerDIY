@@ -83,23 +83,6 @@ https://react-icons.github.io/react-icons/icons?name=fa */
  *
  ********************************************************************************************************* */
 
-/* Animations */
-const textFade = keyframes`
-from{
-    opacity: 0;
-    transform: translateY(-10px);
-}
-
-to {
-    opacity: 1;
-    transform: translateY(0);
-}`;
-
-const HeaderAnimated_H2 = Styled.h2`
-  animation-name: ${textFade};
-  animation-duration: 1s;
-`;
-
 /* Form Constants */
 const boardNames = [
   { title: "Custom PCB" },
@@ -255,7 +238,22 @@ function BackDrop() {
   );
 }
 
-export default function Configuration() {
+const Configuration = ({
+  handleNext,
+  handleChange,
+  values: { firstName, lastName, email, gender },
+  formErrors,
+}) => {
+  // Check if all values are not empty or if there are some error
+  const isValid =
+    firstName.length > 0 &&
+    !formErrors.firstName &&
+    lastName.length > 0 &&
+    !formErrors.lastName &&
+    email.length > 0 &&
+    !formErrors.email &&
+    gender.length > 0;
+
   const [state, setState] = React.useState({
     mqtt: false,
     wifi: true,
@@ -273,7 +271,7 @@ export default function Configuration() {
     autoComplete_water_level_sensor: false,
   });
 
-  const handleChange = (event) => {
+  const handleButtonChange = (event) => {
     setState({
       ...state,
       [event.target.name]: event.target.checked,
@@ -309,7 +307,7 @@ export default function Configuration() {
                   control={
                     <Switch
                       checked={state.wifi ? true : false && !state.bluetooth}
-                      onChange={handleChange}
+                      onChange={handleButtonChange}
                       name="wifi"
                       inputProps={{
                         "aria-label": "secondary checkbox",
@@ -327,7 +325,7 @@ export default function Configuration() {
                   control={
                     <Switch
                       checked={state.wifi ? state.mqtt : false}
-                      onChange={handleChange}
+                      onChange={handleButtonChange}
                       name="mqtt"
                       inputProps={{
                         "aria-label": "secondary checkbox",
@@ -345,7 +343,7 @@ export default function Configuration() {
                   control={
                     <Switch
                       checked={state.wifi ? state.ota : false}
-                      onChange={handleChange}
+                      onChange={handleButtonChange}
                       name="ota"
                       inputProps={{
                         "aria-label": "secondary checkbox",
@@ -366,7 +364,7 @@ export default function Configuration() {
                   control={
                     <Switch
                       checked={state.wifi ? state.hassio : false}
-                      onChange={handleChange}
+                      onChange={handleButtonChange}
                       name="hassio"
                       inputProps={{
                         "aria-label": "secondary checkbox",
@@ -399,7 +397,7 @@ export default function Configuration() {
                   control={
                     <Switch
                       checked={!state.wifi && state.bluetooth}
-                      onChange={handleChange}
+                      onChange={handleButtonChange}
                       name="bluetooth"
                       inputProps={{
                         "aria-label": "secondary checkbox",
@@ -666,7 +664,7 @@ export default function Configuration() {
       showPassword: false,
     });
 
-    const handleChange = (prop) => (event) => {
+    const handleButtonChange = (prop) => (event) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
@@ -779,9 +777,7 @@ export default function Configuration() {
                             title="Custom Password of the Access Point"
                             placement="top"
                           >
-                            <FormControl
-                              variant="outlined"
-                            >
+                            <FormControl variant="outlined">
                               <InputLabel htmlFor="outlined-adornment-password">
                                 Password (Optional)
                               </InputLabel>
@@ -789,7 +785,7 @@ export default function Configuration() {
                                 id="outlined-adornment-password"
                                 type={values.showPassword ? "text" : "password"}
                                 value={values.password}
-                                onChange={handleChange("password")}
+                                onChange={handleButtonChange("password")}
                                 endAdornment={
                                   <InputAdornment position="end">
                                     <IconButton
@@ -828,111 +824,104 @@ export default function Configuration() {
       <Typography variant="h6" gutterBottom>
         Versioning
       </Typography>
-      <form>
-        <Grid container spacing={3}>
-          <Grid item sm={12}>
-            <FormControl
-              component="fieldset"
-              variant="outlined"
-              required
-              fullWidth
-            >
-              <Alert
-                severity="error"
-                role="info"
-                variant="filled"
-                color="error"
-              >
-                <AlertTitle>Warning</AlertTitle>
-                It is recommended to use the <strong>most recent</strong>{" "}
-                version
-              </Alert>
+      <Grid container spacing={3}>
+        <Grid item sm={12}>
+          <FormControl
+            component="fieldset"
+            variant="outlined"
+            required
+            fullWidth
+          >
+            <Alert severity="error" role="info" variant="filled" color="error">
+              <AlertTitle>Warning</AlertTitle>
+              It is recommended to use the <strong>most recent</strong> version
+            </Alert>
+            <br></br>
+            <FormGroup>
+              <Tooltip title="Custom Name of the firmware" placement="top">
+                <TextField
+                  id="firmwarename"
+                  label="Firmware Name (Optional)"
+                  fullWidth
+                  autoComplete="firmwareName"
+                />
+              </Tooltip>
               <br></br>
-              <FormGroup>
-                <Tooltip title="Custom Name of the firmware" placement="top">
-                  <TextField
-                    id="firmwarename"
-                    label="Firmware Name (Optional)"
-                    fullWidth
-                    autoComplete="firmwareName"
-                  />
-                </Tooltip>
-                <br></br>
+              {AsyncAuto(
+                [...firmwareVersions],
+                "Firmware Version",
+                true,
+                false,
+                "firmware_version"
+              )}
+              <br></br>
+              <Tooltip
+                title={
+                  <React.Fragment>
+                    <p>
+                      {"If unsure - choose"} <strong>{"ESP32_Devkit_C"}</strong>
+                      <br></br>
+                      {
+                        "If using the PCB design files from this repo, choose Custom PCB"
+                      }
+                    </p>
+                  </React.Fragment>
+                }
+                placement="top"
+                id="tooltip-top"
+              >
                 {AsyncAuto(
-                  [...firmwareVersions],
-                  "Firmware Version",
+                  [...boardNames],
+                  "Board Name",
                   true,
                   false,
-                  "firmware_version"
+                  "board_names"
                 )}
-                <br></br>
-                <Tooltip
-                  title={
-                    <React.Fragment>
-                      <p>
-                        {"If unsure - choose"}{" "}
-                        <strong>{"ESP32_Devkit_C"}</strong>
-                        <br></br>
-                        {
-                          "If using the PCB design files from this repo, choose Custom PCB"
-                        }
-                      </p>
-                    </React.Fragment>
-                  }
-                  placement="top"
-                  id="tooltip-top"
+              </Tooltip>
+              <br></br>
+              <Typography variant="h6" gutterBottom>
+                Features
+              </Typography>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
                 >
-                  {AsyncAuto(
-                    [...boardNames],
-                    "Board Name",
-                    true,
-                    false,
-                    "board_names"
-                  )}
-                </Tooltip>
-                <br></br>
-                <Typography variant="h6" gutterBottom>
-                  Features
-                </Typography>
-                <Accordion>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
+                  <Typography>Configure Modules</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography>
+                    Customize your Build Configuration with the below settings.
+                    Certain Features require the wifi module to be enabled. This
+                    project uses LAN for communication, so you will need to
+                    enable the wifi module. If you really do not want to enable
+                    the wifi module, you can disable it here, and bluetooth with
+                    be enabled automatically.
+                  </Typography>
+                  <Alert
+                    severity="info"
+                    role="info"
+                    variant="filled"
+                    color="info"
                   >
-                    <Typography>Configure Modules</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography>
-                      Customize your Build Configuration with the below
-                      settings. Certain Features require the wifi module to be
-                      enabled. This project uses LAN for communication, so you
-                      will need to enable the wifi module. If you really do not
-                      want to enable the wifi module, you can disable it here,
-                      and bluetooth with be enabled automatically.
-                    </Typography>
-                    <Alert
-                      severity="info"
-                      role="info"
-                      variant="filled"
-                      color="info"
-                    >
-                      <AlertTitle>Info</AlertTitle>
-                      The Bluetooth software module{" "}
-                      <strong>only functions</strong> with Bluetooth-based OTA,{" "}
-                      <strong>not </strong>
-                      sending or monitoring data.
-                    </Alert>
-                    {formSettings()}
-                  </AccordionDetails>
-                </Accordion>
-              </FormGroup>
-            </FormControl>
-          </Grid>
-          {sensorOptions()}
+                    <AlertTitle>Info</AlertTitle>
+                    The Bluetooth software module{" "}
+                    <strong>only functions</strong> with Bluetooth-based OTA,{" "}
+                    <strong>not </strong>
+                    sending or monitoring data.
+                  </Alert>
+                  {formSettings()}
+                </AccordionDetails>
+              </Accordion>
+            </FormGroup>
+          </FormControl>
         </Grid>
-        {wifiSection()}
-      </form>
+        {sensorOptions()}
+      </Grid>
+      {wifiSection()}
     </React.Fragment>
   );
-}
+};
+
+export default Configuration;

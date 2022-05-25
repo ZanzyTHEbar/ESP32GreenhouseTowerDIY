@@ -39,24 +39,22 @@ import {
 
 function DownloadButton() {
   return (
-    <form>
-      <Grid container spacing={3}>
-        <Grid item sm={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={() => {
-              console.log(
-                `${value_boardNames} and firmware version ${value_firmwareVersion}`
-              );
-            }}
-          >
-            Download
-          </Button>
-        </Grid>
+    <Grid container spacing={3}>
+      <Grid item sm={12}>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={() => {
+            console.log(
+              `${value_boardNames} and firmware version ${value_firmwareVersion}`
+            );
+          }}
+        >
+          Download
+        </Button>
       </Grid>
-    </form>
+    </Grid>
   );
 }
 

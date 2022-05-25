@@ -33,8 +33,51 @@ import Building from "./Building";
 import Downloading from "./Downloading";
 import Flashing from "./Flashing";
 import Done from "./Done";
-
+import Success from "./Success";
+import formValidation from "./Helpers/formValidation";
 import "./style.css";
+
+const initialValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  gender: "",
+  date: "",
+  city: "",
+  phone: "",
+};
+
+const fieldsValidation = {
+  firstName: {
+    error: "",
+    validate: "text",
+    minLength: 2,
+    maxLength: 20,
+  },
+  lastName: {
+    error: "",
+    validate: "text",
+    minLength: 2,
+    maxLength: 20,
+  },
+  email: {
+    error: "",
+    validate: "email",
+  },
+  gender: {},
+  date: {},
+  city: {
+    error: "",
+    validate: "text",
+    minLength: 3,
+    maxLength: 20,
+  },
+  phone: {
+    error: "",
+    validate: "phone",
+    maxLength: 15,
+  },
+};
 
 const steps = [
   {
@@ -68,23 +111,6 @@ const steps = [
               they're running and how to resolve approval issues.`,
   },
 ];
-
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <Configuration />;
-    case 1:
-      return <Building />;
-    case 2:
-      return <Downloading />;
-    case 3:
-      return <Flashing />;
-    case 4:
-      return <Done />;
-    default:
-      throw new Error("Unknown step");
-  }
-}
 
 const theme = createTheme({
   status: {
@@ -120,6 +146,8 @@ const theme = createTheme({
 export default function MUI() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
+  const [formValues, setFormValues] = React.useState(initialValues);
+  const [formErrors, setFormErrors] = React.useState({});
 
   const isStepOptional = (step) => {
     return step === 2;
@@ -162,129 +190,229 @@ export default function MUI() {
   const handleReset = () => {
     setActiveStep(0);
   };
+
+  const handleFlashAnother = () => {
+    setActiveStep(0);
+    setFormValues(initialValues);
+    setFormErrors({});
+  };
+
+  // Handle form change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Set values
+    setFormValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // set errors
+    const error = formValidation(name, value, fieldsValidation) || "";
+
+    setFormErrors({
+      [name]: error,
+    });
+  };
+
+  const handleSteps = (step) => {
+    switch (step) {
+      case 0:
+        return (
+          <Configuration
+            handleNext={handleNext}
+            handleChange={handleChange}
+            values={formValues}
+            formErrors={formErrors}
+          />
+        );
+      case 1:
+        return (
+          <Building
+            handleNext={handleNext}
+            handleChange={handleChange}
+            values={formValues}
+            formErrors={formErrors}
+          />
+        );
+      case 2:
+        return (
+          <Downloading
+            handleNext={handleNext}
+            handleChange={handleChange}
+            values={formValues}
+            formErrors={formErrors}
+          />
+        );
+      case 3:
+        return (
+          <Flashing
+            handleNext={handleNext}
+            handleChange={handleChange}
+            values={formValues}
+            formErrors={formErrors}
+          />
+        );
+      case 4:
+        return (
+          <Done
+            handleNext={handleNext}
+            handleChange={handleChange}
+            values={formValues}
+            formErrors={formErrors}
+          />
+        );
+      default:
+        throw new Error("Unknown step");
+    }
+  };
+
+  const myForm = React.useRef(null);
+
   return (
-    <div style={{}} className="react-mui-ui">
-      <ThemeProvider theme={theme}>
-        <CssBaseline enableColorScheme={true} />
-        <main>
-          <Container maxWidth="lg" className="react-mui-ui-container">
-            <Paper variant="elevation" elevation={0}>
-              {/* <Alert severity="info" role="alert" variant="filled" color="info">
+    <div className="react-mui-ui">
+      <>
+        {activeStep === steps.length ? (
+          // Last Component
+          <Success handleNext={handleFlashAnother} handleReset={handleReset} />
+        ) : (
+          <>
+            <ThemeProvider theme={theme}>
+              <CssBaseline enableColorScheme={true} />
+              <main>
+                <Container maxWidth="lg" className="react-mui-ui-container">
+                  <Paper variant="elevation" elevation={0}>
+                    {/* <Alert severity="info" role="alert" variant="filled" color="info">
                 This is an info alert — check it out!
               </Alert> */}
-            </Paper>
-            <Paper variant="elevation" elevation={0}>
-              <AppBar position="relative" color="primary">
-                <Typography align="center" variant="h2" color="inherit">
-                  Configure your Firmware Image
-                </Typography>
-              </AppBar>
-              <Box sx={{ maxWidth: 800 }}>
-                <Stepper activeStep={activeStep} orientation="vertical">
-                  {steps.map((step, index) => {
-                    const stepProps = {};
-                    const labelProps = {};
-                    if (isStepOptional(index)) {
-                      labelProps.optional = (
-                        <Typography variant="caption">Optional</Typography>
-                      );
-                    }
-                    if (isStepSkipped(index)) {
-                      stepProps.completed = false;
-                    }
-                    return (
-                      <Step key={step.label}>
-                        <StepLabel
-                          optional={
-                            index === 4 ? (
-                              <Typography variant="caption">
-                                Last step
-                              </Typography>
-                            ) : null
-                          }
-                        >
-                          {step.label}
-                        </StepLabel>
-                        <StepContent>
-                          <Typography>{step.description}</Typography>
-                          <Box sx={{ mb: 2 }}>
-                            {activeStep === steps.length ? (
-                              <React.Fragment>
-                                <Typography sx={{ mt: 2, mb: 1 }}>
-                                  All steps completed - you&apos;re finished
-                                </Typography>
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    pt: 2,
-                                  }}
-                                >
-                                  <Box sx={{ flex: "1 1 auto" }} />
-                                  <Button onClick={handleReset}>Reset</Button>
-                                </Box>
-                              </React.Fragment>
-                            ) : (
-                              <React.Fragment>
-                                <React.Fragment>
-                                  {getStepContent(activeStep)}
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "flex-end",
-                                      flex: "1 1 auto",
-                                    }}
-                                  >
-                                    {activeStep !== 0 && (
-                                      <Button
-                                        onClick={handleBack}
-                                        sx={{ mt: 3, ml: 1 }}
-                                      >
-                                        Back
-                                      </Button>
-                                    )}
-                                    {isStepOptional(activeStep) && (
-                                      <Button
-                                        onClick={handleSkip}
-                                        sx={{ mt: 3, ml: 1 }}
-                                      >
-                                        Skip
-                                      </Button>
-                                    )}
-                                    <Button
-                                      variant="contained"
-                                      onClick={handleNext}
-                                      sx={{ mt: 3, ml: 1 }}
-                                    >
-                                      {activeStep === steps.length - 1
-                                        ? "Finish"
-                                        : "Next"}
-                                    </Button>
-                                  </Box>
-                                </React.Fragment>
-                              </React.Fragment>
-                            )}
-                          </Box>
-                        </StepContent>
-                      </Step>
-                    );
-                  })}
-                </Stepper>
-                {activeStep === steps.length && (
-                  <Paper square elevation={0} sx={{ p: 3 }}>
-                    <Typography>
-                      All steps completed - you&apos;re finished
-                    </Typography>
-                    <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-                      Reset
-                    </Button>
                   </Paper>
-                )}
-              </Box>
-            </Paper>
-          </Container>
-        </main>
-      </ThemeProvider>
+                  <Paper variant="elevation" elevation={0}>
+                    <AppBar position="relative" color="primary">
+                      <Typography align="center" variant="h2" color="inherit">
+                        Configure your Firmware Image
+                      </Typography>
+                    </AppBar>
+                    <Box sx={{ maxWidth: 800 }}>
+                      <Stepper activeStep={activeStep} orientation="vertical">
+                        {steps.map((step, index) => {
+                          const stepProps = {};
+                          const labelProps = {};
+                          if (isStepOptional(index)) {
+                            labelProps.optional = (
+                              <Typography variant="caption">
+                                Optional
+                              </Typography>
+                            );
+                          }
+                          if (isStepSkipped(index)) {
+                            stepProps.completed = false;
+                          }
+                          return (
+                            <Step key={step.label}>
+                              <StepLabel
+                                optional={
+                                  index === 4 ? (
+                                    <Typography variant="caption">
+                                      Last step
+                                    </Typography>
+                                  ) : null
+                                }
+                              >
+                                {step.label}
+                              </StepLabel>
+                              <StepContent>
+                                <Typography>{step.description}</Typography>
+                                <Box sx={{ mb: 2 }}>
+                                  <form action="/" method="POST" ref={myForm}>
+                                    {activeStep === steps.length ? (
+                                      <React.Fragment>
+                                        <Typography sx={{ mt: 2, mb: 1 }}>
+                                          All steps completed - you&apos;re
+                                          finished
+                                        </Typography>
+                                        <Box
+                                          sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            pt: 2,
+                                          }}
+                                        >
+                                          <Box sx={{ flex: "1 1 auto" }} />
+                                          <Button onClick={handleReset}>
+                                            Reset
+                                          </Button>
+                                        </Box>
+                                      </React.Fragment>
+                                    ) : (
+                                      <React.Fragment>
+                                        <React.Fragment>
+                                          {handleSteps(activeStep)}
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              justifyContent: "flex-end",
+                                              flex: "1 1 auto",
+                                            }}
+                                          >
+                                            {activeStep !== 0 && (
+                                              <Button
+                                                onClick={handleBack}
+                                                sx={{ mt: 3, ml: 1 }}
+                                              >
+                                                Back
+                                              </Button>
+                                            )}
+                                            {isStepOptional(activeStep) && (
+                                              <Button
+                                                onClick={handleSkip}
+                                                sx={{ mt: 3, ml: 1 }}
+                                              >
+                                                Skip
+                                              </Button>
+                                            )}
+                                            <Button
+                                              variant="contained"
+                                              onClick={handleNext}
+                                              sx={{ mt: 3, ml: 1 }}
+                                              color={
+                                                activeStep === steps.length - 1
+                                                  ? "secondary"
+                                                  : "primary"
+                                              }
+                                            >
+                                              {activeStep === steps.length - 1
+                                                ? "Finish"
+                                                : "Next"}
+                                            </Button>
+                                          </Box>
+                                        </React.Fragment>
+                                      </React.Fragment>
+                                    )}
+                                  </form>
+                                </Box>
+                              </StepContent>
+                            </Step>
+                          );
+                        })}
+                      </Stepper>
+                      {activeStep === steps.length && (
+                        <Paper square elevation={0} sx={{ p: 3 }}>
+                          <Typography>
+                            All steps completed - you&apos;re finished
+                          </Typography>
+                          <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
+                            Reset
+                          </Button>
+                        </Paper>
+                      )}
+                    </Box>
+                  </Paper>
+                </Container>
+              </main>
+            </ThemeProvider>
+          </>
+        )}
+      </>
     </div>
   );
 }
