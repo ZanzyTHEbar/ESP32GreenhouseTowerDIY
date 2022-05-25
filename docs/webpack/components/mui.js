@@ -165,21 +165,19 @@ export default function MUI() {
   return (
     <div style={{}} className="react-mui-ui">
       <ThemeProvider theme={theme}>
-        <CssBaseline square={false} enableColorScheme={true} />
+        <CssBaseline enableColorScheme={true} />
         <main>
           <Container maxWidth="lg" className="react-mui-ui-container">
-            <Paper variant="elevation" elevation={0} square={false}>
+            <Paper variant="elevation" elevation={0}>
               {/* <Alert severity="info" role="alert" variant="filled" color="info">
                 This is an info alert — check it out!
               </Alert> */}
             </Paper>
-            <Paper variant="elevation" elevation={0} square={false}>
+            <Paper variant="elevation" elevation={0}>
               <AppBar position="relative" color="primary">
-                <Toolbar>
-                  <Typography align="center" variant="h2" color="inherit">
-                    Configure your Firmware Image
-                  </Typography>
-                </Toolbar>
+                <Typography align="center" variant="h2" color="inherit">
+                  Configure your Firmware Image
+                </Typography>
               </AppBar>
               <Box sx={{ maxWidth: 800 }}>
                 <Stepper activeStep={activeStep} orientation="vertical">

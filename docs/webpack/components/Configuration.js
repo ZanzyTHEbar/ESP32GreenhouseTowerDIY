@@ -17,6 +17,7 @@ import {
   InputLabel,
   Autocomplete,
   Input,
+  InputAdornment,
   OutlinedInput,
   ButtonGroup,
   Box,
@@ -67,9 +68,39 @@ import WifiIcon from "@mui/icons-material/Wifi";
 import BluetoothIcon from "@mui/icons-material/Bluetooth";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import SmartButtonTwoToneIcon from "@mui/icons-material/SmartButtonTwoTone";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import HassIO from "./icons/homeassistant.svg";
 import AsyncAuto from "./AsynchronousAutoComplete";
+import "./style.css";
+import Styled, { keyframes } from "styled-components";
+/* import Animations from "./animation"; */
+/* import { IconName } from "react-icons/fa";
+https://react-icons.github.io/react-icons/icons?name=fa */
 
+/*********************************************************************************************************
+ *
+ * Variables and Constants
+ *
+ ********************************************************************************************************* */
+
+/* Animations */
+const textFade = keyframes`
+from{
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+to {
+    opacity: 1;
+    transform: translateY(0);
+}`;
+
+const HeaderAnimated_H2 = Styled.h2`
+  animation-name: ${textFade};
+  animation-duration: 1s;
+`;
+
+/* Form Constants */
 const boardNames = [
   { title: "Custom PCB" },
   { title: "ESP32_Devkit_C" },
@@ -123,11 +154,9 @@ const waterLevelSensors = [
 const dhtSensorsNum = [{ title: "none" }, { title: "1" }, { title: "2" }];
 
 const relayPin = [
-  {title: "32"},
-  {title: "33"},
+  { title: "32" },
+  { title: "33" },
 ]; /* Possible relay combinations - need logic to remove item from list if another sensor takes up that pin */
-
-
 
 const GreenSwitch = styled(Switch)(({ theme }) => ({
   "& .MuiSwitch-switchBase.Mui-checked": {
@@ -187,6 +216,12 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 
 /* DS18B20 */
 const label = { inputProps: { "aria-label": "Switch demo" } };
+
+/*********************************************************************************************************
+ *
+ * Functions
+ *
+ ********************************************************************************************************* */
 
 function HASSIO() {
   return (
@@ -625,6 +660,169 @@ export default function Configuration() {
     );
   };
 
+  const wifiSection = () => {
+    const [values, setValues] = React.useState({
+      password: "",
+      showPassword: false,
+    });
+
+    const handleChange = (prop) => (event) => {
+      setValues({ ...values, [prop]: event.target.value });
+    };
+
+    const handleClickShowPassword = () => {
+      setValues({
+        ...values,
+        showPassword: !values.showPassword,
+      });
+    };
+
+    const handleMouseDownPassword = (event) => {
+      event.preventDefault();
+    };
+    return (
+      <div className="wifiSection">
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            maxWidth: 800,
+            alignItems: "center",
+            justifyContent: "center",
+            bgcolor: "background.paper",
+          }}
+        >
+          <React.Fragment>
+            <Paper
+              variant="elevated"
+              sx={{
+                margin: "1rem",
+                padding: "1rem",
+                width: "100%",
+                maxWidth: 800,
+                bgcolor: "background.paper",
+              }}
+              elevation={3}
+            >
+              <AppBar position="relative">
+                <Typography
+                  align="center"
+                  variant="h3"
+                  gutterBottom
+                  color="inherit"
+                >
+                  <WifiIcon style={{ position: "relative", top: "3px" }} />{" "}
+                  Settings
+                </Typography>
+              </AppBar>
+              <Grid container spacing={3}>
+                <Grid item sm={12}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      padding: "1rem",
+                      marginTop: "1rem",
+                      width: "100%",
+                      bgcolor: "background.paper",
+                    }}
+                    className="wifiSection-paper"
+                  >
+                    <Typography variant="h6" gutterBottom>
+                      Access Point Settings
+                    </Typography>
+                    <Grid item sm={12}>
+                      <FormControl
+                        component="fieldset"
+                        variant="outlined"
+                        required
+                        fullWidth
+                      >
+                        <Alert
+                          severity="warning"
+                          role="info"
+                          variant="filled"
+                          color="success"
+                        >
+                          <AlertTitle>Info</AlertTitle>
+                          We will{" "}
+                          <u>
+                            <strong>never</strong>
+                          </u>{" "}
+                          collect, save, or otherwise interact with your WiFi
+                          credentials.
+                        </Alert>
+                        <Typography variant="h6" gutterBottom>
+                          The below fields are for configuring the Access Point
+                          that will be used to connect your device to your local
+                          WiFi network. If you do not configure this section,
+                          the device will default to using the access point
+                          details configured in the software. See the{" "}
+                          <a href="/ESP32GreenhouseTowerDIY/access_point">
+                            Access Point
+                          </a>{" "}
+                          section of the documentation for more information.
+                        </Typography>
+                        <br></br>
+                        <FormGroup>
+                          <Tooltip
+                            title="Custom SSID of the Access Point"
+                            placement="top"
+                          >
+                            <TextField
+                              id="greenhouse-ssid"
+                              label="SSID (Optional)"
+                              fullWidth
+                            />
+                          </Tooltip>
+                          <br></br>
+                          <Tooltip
+                            title="Custom Password of the Access Point"
+                            placement="top"
+                          >
+                            <FormControl
+                              variant="outlined"
+                            >
+                              <InputLabel htmlFor="outlined-adornment-password">
+                                Password (Optional)
+                              </InputLabel>
+                              <OutlinedInput
+                                id="outlined-adornment-password"
+                                type={values.showPassword ? "text" : "password"}
+                                value={values.password}
+                                onChange={handleChange("password")}
+                                endAdornment={
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="toggle password visibility"
+                                      onClick={handleClickShowPassword}
+                                      onMouseDown={handleMouseDownPassword}
+                                      edge="end"
+                                    >
+                                      {values.showPassword ? (
+                                        <VisibilityOff />
+                                      ) : (
+                                        <Visibility />
+                                      )}
+                                    </IconButton>
+                                  </InputAdornment>
+                                }
+                                label="Password (Optional)"
+                              />
+                            </FormControl>
+                          </Tooltip>
+                        </FormGroup>
+                      </FormControl>
+                    </Grid>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Paper>
+          </React.Fragment>
+        </Box>
+      </div>
+    );
+  };
+
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -733,6 +931,7 @@ export default function Configuration() {
           </Grid>
           {sensorOptions()}
         </Grid>
+        {wifiSection()}
       </form>
     </React.Fragment>
   );

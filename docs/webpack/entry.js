@@ -17,6 +17,28 @@ root.render(
   </StrictMode>
 );
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const baudrates = document.getElementById("baudrates");
 const connectButton = document.getElementById("connectButton");
 const disconnectButton = document.getElementById("disconnectButton");
