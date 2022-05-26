@@ -34,49 +34,23 @@ import Downloading from "./Downloading";
 import Flashing from "./Flashing";
 import Done from "./Done";
 import Success from "./Success";
-import formValidation from "./Helpers/formValidation";
+import formValidation from "./helpers/formValidation";
 import "./style.css";
 
 const initialValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  gender: "",
-  date: "",
-  city: "",
-  phone: "",
+  firmwareName: "",
+  firmwareVersion: "",
+  boardName: "",
+  ssid: "",
+  password: "",
 };
 
 const fieldsValidation = {
-  firstName: {
-    error: "",
-    validate: "text",
-    minLength: 2,
-    maxLength: 20,
-  },
-  lastName: {
-    error: "",
-    validate: "text",
-    minLength: 2,
-    maxLength: 20,
-  },
-  email: {
-    error: "",
-    validate: "email",
-  },
-  gender: {},
-  date: {},
-  city: {
-    error: "",
-    validate: "text",
-    minLength: 3,
-    maxLength: 20,
-  },
-  phone: {
-    error: "",
-    validate: "phone",
-    maxLength: 15,
-  },
+  firmwareName: { error: "", validate: "text", minLength: 2, maxLength: 20 },
+  firmwareVersion: { error: "", validate: "checkbox" },
+  boardName: { error: "", validate: "checkbox" },
+  ssid: { error: "", validate: "text", minLength: 2, maxLength: 20 },
+  password: { error: "", validate: "text", minLength: 2, maxLength: 20 },
 };
 
 const steps = [
@@ -86,29 +60,19 @@ const steps = [
   },
   {
     label: "Building",
-    description:
-      "We are building your firmware image. Please wait for a few minutes.",
+    description: ``,
   },
   {
     label: "Downloading",
-    description: `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`,
+    description: ``,
   },
   {
     label: "Flashing",
-    description: `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`,
+    description: ``,
   },
   {
     label: "Done",
-    description: `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`,
+    description: ``,
   },
 ];
 
@@ -143,7 +107,7 @@ const theme = createTheme({
   },
 });
 
-export default function MUI() {
+const MUI = () => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   const [formValues, setFormValues] = React.useState(initialValues);
@@ -415,4 +379,6 @@ export default function MUI() {
       </>
     </div>
   );
-}
+};
+
+export default MUI;

@@ -241,18 +241,17 @@ function BackDrop() {
 const Configuration = ({
   handleNext,
   handleChange,
-  values: { firstName, lastName, email, gender },
+  values: { firmwareName, ssid, password },
   formErrors,
 }) => {
   // Check if all values are not empty or if there are some error
   const isValid =
-    firstName.length > 0 &&
-    !formErrors.firstName &&
-    lastName.length > 0 &&
-    !formErrors.lastName &&
-    email.length > 0 &&
-    !formErrors.email &&
-    gender.length > 0;
+    firmwareName.length > 0 &&
+    !formErrors.firmwareName &&
+    ssid.length > 0 &&
+    !formErrors.ssid &&
+    password.length > 0 &&
+    !formErrors.password;
 
   const [state, setState] = React.useState({
     mqtt: false,
@@ -739,7 +738,7 @@ const Configuration = ({
                           severity="warning"
                           role="info"
                           variant="filled"
-                          color="success"
+                          style={{ background: "#02cf86" }}
                         >
                           <AlertTitle>Info</AlertTitle>
                           We will{" "}
@@ -769,6 +768,10 @@ const Configuration = ({
                             <TextField
                               id="greenhouse-ssid"
                               label="SSID (Optional)"
+                              value={ssid || ""}
+                              onChange={handleChange}
+                              error={!!formErrors.ssid}
+                              helperText={formErrors.ssid}
                               fullWidth
                             />
                           </Tooltip>
@@ -842,6 +845,11 @@ const Configuration = ({
                 <TextField
                   id="firmwarename"
                   label="Firmware Name (Optional)"
+                  value={firmwareName || ""}
+                  placeholder="my_greenhouse_firmware"
+                  onChange={handleChange}
+                  error={!!formErrors.firmwareName}
+                  helperText={formErrors.firmwareName}
                   fullWidth
                   autoComplete="firmwareName"
                 />
