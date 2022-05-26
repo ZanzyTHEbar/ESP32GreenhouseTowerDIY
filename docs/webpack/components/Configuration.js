@@ -769,6 +769,7 @@ const Configuration = ({
                               id="greenhouse-ssid"
                               label="SSID (Optional)"
                               value={ssid || ""}
+                              name="ssid"
                               onChange={handleChange}
                               error={!!formErrors.ssid}
                               helperText={formErrors.ssid}
@@ -848,6 +849,7 @@ const Configuration = ({
                   value={firmwareName || ""}
                   placeholder="my_greenhouse_firmware"
                   onChange={handleChange}
+                  name="firmwareName"
                   error={!!formErrors.firmwareName}
                   helperText={formErrors.firmwareName}
                   fullWidth
