@@ -11,10 +11,10 @@ import {
 const Done = ({
   handleNext,
   handleBack,
-  values: { firstName, lastName, email, gender, date, phone, city },
+  values: { firmwareName, firmwareVersion, boardName, ssid, password },
 }) => {
   const handleSubmit = () => {
-    console.log({ firstName, lastName, email, gender, date, phone, city });
+    console.log({ firmwareName, firmwareVersion, boardName, ssid, password });
     handleNext();
   };
   return (
@@ -24,45 +24,36 @@ const Done = ({
           <React.Fragment>
             <List disablePadding>
               <ListItem>
-                <ListItemText primary="First Name" secondary={firstName} />
-              </ListItem>
-
-              <Divider />
-
-              <ListItem>
-                <ListItemText primary="Last Name" secondary={lastName} />
-              </ListItem>
-
-              <Divider />
-
-              <ListItem>
-                <ListItemText primary="Email Address" secondary={email} />
-              </ListItem>
-
-              <Divider />
-
-              <ListItem>
-                <ListItemText primary="Gender" secondary={gender} />
-              </ListItem>
-
-              <Divider />
-
-              <ListItem>
-                <ListItemText primary="Date of birth" secondary={date} />
-              </ListItem>
-
-              <Divider />
-
-              <ListItem>
-                <ListItemText primary="City" secondary={city} />
+                <ListItemText
+                  primary="Custom Firmware Name"
+                  secondary={firmwareName === null ? "Not Set" : firmwareName}
+                />
               </ListItem>
 
               <Divider />
 
               <ListItem>
                 <ListItemText
-                  primary="phone"
-                  secondary={phone.length > 0 ? phone : "Not Provided"}
+                  primary="Firmware Version"
+                  secondary={firmwareVersion}
+                />
+              </ListItem>
+
+              <Divider />
+
+              <ListItem>
+                <ListItemText
+                  primary="Board Name"
+                  secondary={boardName}
+                />
+              </ListItem>
+
+              <Divider />
+
+              <ListItem>
+                <ListItemText
+                  primary="Access Point SSID"
+                  secondary={ssid === null ? "ESP32_Greenhouse_Tower" : ssid}
                 />
               </ListItem>
             </List>

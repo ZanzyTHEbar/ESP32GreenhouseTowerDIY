@@ -773,6 +773,7 @@ const Configuration = ({
                               onChange={handleChange}
                               error={!!formErrors.ssid}
                               helperText={formErrors.ssid}
+                              placeholder="ESP32_Greenhouse_Tower"
                               fullWidth
                             />
                           </Tooltip>
@@ -807,6 +808,7 @@ const Configuration = ({
                                   </InputAdornment>
                                 }
                                 label="Password (Optional)"
+                                placeholder="plantplant"
                               />
                             </FormControl>
                           </Tooltip>

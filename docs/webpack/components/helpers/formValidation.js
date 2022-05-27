@@ -1,4 +1,4 @@
-const isText = RegExp(/^[A-Z ]+$/i);
+const isText = RegExp(/^[A-Z_]+$/i);
 const isEmail = RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);
 const isPhone = RegExp(/^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4,6})$/); // us
 const isZip = RegExp(/^[0-9]{5}([- /]?[0-9]{4})?$/); // us
@@ -16,11 +16,11 @@ export default function formValidation(name, value, schema) {
 
   switch (validate) {
     case "text":
-      if (!isText.test(value)) error = "This field accept text only.";
+      if (!isText.test(value)) error = "This field accepts plain text only. No numbers, spaces, or special characters. If you need a space, use an underscore.";
       break;
 
     case "number":
-      if (!isNumber.test(value)) error = "This field accept numbers only.";
+      if (!isNumber.test(value)) error = "This field accepts numbers only.";
       break;
 
     case "email":

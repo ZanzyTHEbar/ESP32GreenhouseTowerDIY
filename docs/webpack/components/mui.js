@@ -231,8 +231,6 @@ const MUI = () => {
     }
   };
 
-  const myForm = React.useRef(null);
-
   return (
     <div className="react-mui-ui">
       <>
@@ -287,7 +285,7 @@ const MUI = () => {
                               <StepContent>
                                 <Typography>{step.description}</Typography>
                                 <Box sx={{ mb: 2 }}>
-                                  <form action="/" method="POST" ref={myForm}>
+                                  <>
                                     {activeStep === steps.length ? (
                                       <React.Fragment>
                                         <Typography sx={{ mt: 2, mb: 1 }}>
@@ -352,7 +350,7 @@ const MUI = () => {
                                         </React.Fragment>
                                       </React.Fragment>
                                     )}
-                                  </form>
+                                  </>
                                 </Box>
                               </StepContent>
                             </Step>
