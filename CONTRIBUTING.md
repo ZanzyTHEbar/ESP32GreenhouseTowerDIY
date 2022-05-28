@@ -45,10 +45,10 @@ A Pull Request (PR) is the process where code modifications are managed in GitHu
 The process is straight-forward.
 
 * Read [How to get faster PR reviews](https://github.com/kubernetes/community/blob/master/contributors/guide/pull-requests.md#best-practices-for-faster-reviews) by Kubernetes (but skip step 0)
-* Fork the EyeTrackVR Repository [git repository](https://github.com/RedHawk989/EyeTrackVR).
+* Fork the EyeTrackVR Repository [git repository](https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/OTA/).
 * Write/Change the code in your Fork for a new feature, bug fix, new sensor, optimization, etc.
 * Ensure tests work.
-* Create a Pull Request against the [**development**](https://github.com/RedHawk989/EyeTrackVR/tree/dev) branch of EyeTrackVR.
+* Create a Pull Request against the [**development**](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/tree/dev) branch of EyeTrackVR.
 
 1. All pull requests must be done against the development branch.
 2. Only relevant files should be touched (Also beware if your editor has auto-formatting feature enabled).
