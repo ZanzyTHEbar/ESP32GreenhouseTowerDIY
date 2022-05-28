@@ -12,7 +12,7 @@ This project is designed to be modular and affordable. Featuring a vertical towe
 
 The design also features an optional 3D printable Aeroponics Nozzle for converting the system from hydroponic to aeroponics.  
 
-> I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".\
+> I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".
 >
 > **Note**: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.\
 
