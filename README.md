@@ -14,7 +14,7 @@ The design also features an optional 3D printable Aeroponics Nozzle for converti
 
 > I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".
 >
-> **Note**: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.\
+> **Note**: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.
 
 ![tower garden](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg)
 
