@@ -1,6 +1,6 @@
 [![GitHub issues](https://img.shields.io/github/issues/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/issues) [![GitHub forks](https://img.shields.io/github/forks/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/network) [![GitHub stars](https://img.shields.io/github/stars/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/stargazers) [![GitHub license](https://img.shields.io/github/license/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/LICENSE)
 
-# :seedling: ESP32GreenhouseTowerDIY :seedling:
+# :seedling: ESP32GreenhouseTowerDIY :seedling
 
 This repo is dedicated to the **DIY ESP32** based automated *Aeroponic* or *Hydroponic* Modular Tower Garden :cactus: .
 
@@ -49,17 +49,14 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 ## Important Notes
 
 > **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.
-
 > **Warning**: If you receive the error:
-
-      WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
-
+> WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
 > Please remove the code *within* the `ifdef ESP32` block on line `72`. and paste the following:
-
-```ino
-   mbedtls_md5_init(&_ctx); mbedtls_md5_update_ret (&_ctx,data,len);
-   mbedtls_md5_finish_ret(&_ctx,data);
-   mbedtls_internal_md5_process( &_ctx ,data); // mbedtls_md5_starts(&_ctx); // mbedtls_md5_update(&_ctx, data, len); // mbedtls_md5_finish(&_ctx, _buf);
-```
-
+>
+>```ino
+>   mbedtls_md5_init(&_ctx); mbedtls_md5_update_ret (&_ctx,data,len);
+>   mbedtls_md5_finish_ret(&_ctx,data);
+>   mbedtls_internal_md5_process( &_ctx ,data); // mbedtls_md5_starts(&_ctx); // mbedtls_md5_update(&_ctx, data, len); // mbedtls_md5_finish(&_ctx, _buf);
+>```
+>
 > the comments are the old-lines.
