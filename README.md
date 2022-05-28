@@ -14,7 +14,7 @@ The design also features an optional 3D printable Aeroponics Nozzle for converti
 
 > I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".\
 >
-> ***EDIT***: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.\
+> **Note**: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.\
 
 ![tower garden](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg)
 
@@ -24,7 +24,7 @@ The design also features an optional 3D printable Aeroponics Nozzle for converti
 
 # HOW TO ORDER PCBS
 
-PCBS can be ordered from JLCPCB or PCBWay, or made yourself. The PCB files are still in prototype phase and I welcome any development ideas.
+PCBS can be ordered from [JLCPCB](https://jlcpcb.com/) or [PCBWay](https://www.pcbway.com/), or made yourself. The PCB files are still in prototype phase and I welcome any development ideas.
 
 # HOW TO SETUP
 
@@ -35,7 +35,7 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 1. Raspberrypi - any model
    1. Install Mosquitto broker to the pi and connect it to your network
       1. Alternatively, you can use the MQTT client included with Home Assistant, as this project has full support for Home Assistant (Arduino Core version only currently).
-2. 12V submersable water pump
+2. 12V submersible water pump
 3. 3m or more of Vinyl tubing with 10mm ID and 13mm OD
 
 ***SETUP***
@@ -48,9 +48,9 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 
 ## Important Notes
 
-> **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.\
+> **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.
 >
-> **Warning**: If you receive the error:\
+> **Warning**: If you receive the error:
 >
 > WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
 > Please remove the code *within* the `ifdef ESP32` block on line `72`. and paste the following:
