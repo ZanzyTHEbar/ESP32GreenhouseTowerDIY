@@ -48,7 +48,7 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 
 ## Important Notes
 
-> **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.
+> **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.\
 > **Warning**: If you receive the error:
 > WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
 > Please remove the code *within* the `ifdef ESP32` block on line `72`. and paste the following:
