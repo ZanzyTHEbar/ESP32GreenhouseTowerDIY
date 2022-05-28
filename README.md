@@ -50,7 +50,7 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 
 > **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.
 
-> **Important**: If you receive the error:
+> **Warning**: If you receive the error:
 
       WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
 
