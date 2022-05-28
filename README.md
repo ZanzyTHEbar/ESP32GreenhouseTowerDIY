@@ -12,9 +12,9 @@ This project is designed to be modular and affordable. Featuring a vertical towe
 
 The design also features an optional 3D printable Aeroponics Nozzle for converting the system from hydroponic to aeroponics.  
 
-> I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".
-
-> ***EDIT***: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.
+> I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".\
+>
+> ***EDIT***: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.\
 
 ![tower garden](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg)
 
@@ -49,7 +49,9 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 ## Important Notes
 
 > **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.\
-> **Warning**: If you receive the error:
+>
+> **Warning**: If you receive the error:\
+>
 > WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
 > Please remove the code *within* the `ifdef ESP32` block on line `72`. and paste the following:
 >
