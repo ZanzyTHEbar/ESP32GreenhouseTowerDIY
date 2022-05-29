@@ -50,7 +50,7 @@ const waterLevelSensors = [
   { title: "capacitive" },
 ];
 
-const dhtSensorsNum = [{ title: "1" }, { title: "2" }];
+const humSensorsNum = [{ title: "1" }, { title: "2" }];
 
 const relayPin = [
   { title: "32" },
@@ -142,12 +142,12 @@ const SensorOptions = () => {
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Off</Typography>
                   <AntSwitch
-                    name="dht"
+                    name="hum"
                     defaultChecked
                     onChange={(event) =>
                       handleChangeAntSwitch(event, "autoComplete_hum")
                     }
-                    id="antswitch-dht"
+                    id="antswitch-hum"
                   />
                   <Typography>On</Typography>
                 </Stack>
