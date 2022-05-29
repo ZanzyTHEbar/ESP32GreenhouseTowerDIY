@@ -79,7 +79,7 @@ This project is designed to be modular and affordable. Featuring a vertical towe
 
 The design also features an optional 3D printable Aeroponics Nozzle for converting the system from hydroponic to aeroponics. This is a great way to grow food indoors without having to worry about the water.
 
-> ***EDIT***: I have added Arduino Core support for the ESP32. This is still a work in progress and will be the main code-base in the future going forward. It simply has more sensor support and a few more features, plus it runs faster and consumes less energy.
+> **Note**: I have added Arduino Core support for the ESP32. This is still a work in progress and will be the main code-base in the future going forward. It simply has more sensor support and a few more features, plus it runs faster and consumes less energy.
 
 {% for tags_3 in page.image_tags_3 %}
     {% assign alt_tags_3 = tags_3 | split: "  " %}
@@ -95,29 +95,25 @@ The design also features an optional 3D printable Aeroponics Nozzle for converti
 
 # How To Order PCBs
 
-PCBS can be ordered from JLCPCB or PCBWay, or made yourself. The PCB files are still in prototype phase and I welcome any development ideas.
+PCBS can be ordered from  [JLCPCB](https://jlcpcb.com/) or [PCBWay](https://www.pcbway.com/), or made yourself. The PCB files are still in prototype phase and I welcome any development ideas.
 
 The old PCB is designed to be used with a GPIO extension board - however this was for my personal use-case. This can be changed, or i can make this adaptation upon request.
 
 ## Important Notes
 
 > **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.
-
-> **Important**: If you receive the error:
-
-      WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
-
+>
+> **Warning**: If you receive the error:
+>
+> WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
 > Please remove the code *within* the `ifdef ESP32` block on line `72`. and paste the following:
-
-```ino
-   mbedtls_md5_init(&_ctx); mbedtls_md5_update_ret (&_ctx,data,len);
-   mbedtls_md5_finish_ret(&_ctx,data);
-   mbedtls_internal_md5_process( &_ctx ,data); 
-   // mbedtls_md5_starts(&_ctx); 
-   // mbedtls_md5_update(&_ctx, data, len); 
-   // mbedtls_md5_finish(&_ctx, _buf);
-```
-
+>
+>```ino
+>   mbedtls_md5_init(&_ctx); mbedtls_md5_update_ret (&_ctx,data,len);
+>   mbedtls_md5_finish_ret(&_ctx,data);
+>   mbedtls_internal_md5_process( &_ctx ,data); // mbedtls_md5_starts(&_ctx); // mbedtls_md5_update(&_ctx, data, len); // mbedtls_md5_finish(&_ctx, _buf);
+>```
+>
 > the comments are the old-lines.
 
 # Licenses

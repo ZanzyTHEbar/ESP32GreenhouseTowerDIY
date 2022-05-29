@@ -12,8 +12,6 @@ This project is designed to be modular and affordable. Featuring a vertical towe
 
 The design also features an optional 3D printable Aeroponics Nozzle for converting the system from hydroponic to aeroponics.  
 
-> I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".
->
 > **Note**: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.
 
 ![tower garden](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg)
@@ -62,3 +60,15 @@ Setup is very straight forward, thankfully. You will need to purchase a few comp
 >```
 >
 > the comments are the old-lines.
+
+# Licenses
+
+[![GitHub license](https://img.shields.io/github/license/ZanzyTHEbar/ESP32GreenhouseTowerDIY?style=plastic)](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/master/LICENSE){:target="_blank"}
+
+***All hardware materials and designs provided here are licensed under the [CERN-OHL-P](https://opensource.org/CERN-OHL-P){:target="_blank"} hardware license.
+All software is under the [MIT License](https://opensource.org/licenses/MIT).
+All documentation, including the Wiki, is under the Creative Commons [CC-BY-SA-4.0 license](https://creativecommons.org/licenses/by-sa/4.0/)***.
+
+<div align="center">
+    <img src="./assets/images/licenses/licenses.svg" width="300" alt="Open Licenses" />
+</div>
