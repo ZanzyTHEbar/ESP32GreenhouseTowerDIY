@@ -79,7 +79,9 @@ This project is designed to be modular and affordable. Featuring a vertical towe
 
 The design also features an optional 3D printable Aeroponics Nozzle for converting the system from hydroponic to aeroponics. This is a great way to grow food indoors without having to worry about the water.
 
-> **Note**: I have added Arduino Core support for the ESP32. This is still a work in progress and will be the main code-base in the future going forward. It simply has more sensor support and a few more features, plus it runs faster and consumes less energy.
+><p>
+>   <span class="icon-span-info"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg><b>Note:</b></span> I have added Arduino Core support for the ESP32. This is still a work in progress and will be the main code-base in the future going forward. It simply has more sensor support and a few more features, plus it runs faster and consumes less energy.
+> </p>
 
 {% for tags_3 in page.image_tags_3 %}
     {% assign alt_tags_3 = tags_3 | split: "  " %}
@@ -101,9 +103,15 @@ The old PCB is designed to be used with a GPIO extension board - however this wa
 
 ## Important Notes
 
-> **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.
+> <p>
+>   <span class="icon-span-info"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg><b>Note:</b></span>
+> I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.
+> </p>
 >
-> **Warning**: If you receive the error:
+> <p>
+>   <span class="icon-span-warning"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg><b>Warning:</b></span>
+> If you receive the error:
+> </p>
 >
 > WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
 > Please remove the code *within* the `ifdef ESP32` block on line `72`. and paste the following:

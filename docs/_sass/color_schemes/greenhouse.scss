@@ -1,4 +1,6 @@
-$body-background-color: #202225;
+$blue-000: $color-accent-fg-info-dark;
+$dark-mode-bg: #202225;
+$body-background-color: $dark-mode-bg;
 $border-color: $grey-dk-200;
 
 $body-text-color: $grey-lt-300;
@@ -31,10 +33,11 @@ $feedback-color: darken($sidebar-color, 7%);
   color: $blue-000;
 }
 
-p > a {
+p>a {
   color: $blue-000;
 }
-p > strong > em > a {
+
+p>strong>em>a {
   color: $blue-000;
 }
 
@@ -42,12 +45,12 @@ p > strong > em > a {
   color: $blue-000;
 }
 
-ul > li > a {
+ul>li>a {
   color: $blue-000;
 }
 
 #main-content blockquote {
-  background-color: #202225;
+  background-color: $dark-mode-bg;
 }
 
 #main-content a {
@@ -58,8 +61,12 @@ ul > li > a {
   color: $white;
 }
 
-#main-content svg > path {
+#main-content svg>path {
   fill: $white;
+}
+
+.main-header.nav-open {
+  background-color: $dark-mode-bg;
 }
 
 .site-footer a {
@@ -70,4 +77,21 @@ ul > li > a {
 
 .site-footer {
   color: #00ffff;
+}
+
+#main-content .octicon-info {
+  fill: $color-accent-fg-info-dark;
+  vertical-align: middle;
+}
+
+#main-content .icon-span-info {
+  color: $color-accent-fg-info-dark;
+}
+
+#main-content .octicon-info>path {
+  fill: $color-accent-fg-info-dark;
+}
+
+#main-content .octicon-alert>path {
+  fill: $color-accent-fg-warning;
 }

@@ -2,9 +2,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -45,9 +47,10 @@
   margin: 0;
   padding: 0;
 
-  > li {
+  >li {
     height: fit-content;
     width: fit-content;
+
     &::before {
       position: absolute;
       margin-left: -1.4em;
@@ -76,7 +79,7 @@
 }
 
 .nav-list-item.active .nav-list-expander,
-.nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link,
+.nav-list .nav-list-item>.nav-list .nav-list-item .nav-list-link,
 .nav-list-item.active a {
   color: #888;
 }
@@ -90,7 +93,7 @@
 }
 
 .site-header a,
-.site-button > .icon {
+.site-button>.icon {
   color: #000;
 }
 
@@ -217,17 +220,16 @@ blockquote p {
   color: #000;
 }
 
-.nav-list-item.active:has() {
-}
+.nav-list-item.active:has() {}
 
 .nav-list-item.active .nav-list-expander,
-.nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link,
+.nav-list .nav-list-item>.nav-list .nav-list-item .nav-list-link,
 .nav-list-item.active a {
   color: #000;
   position: relative;
 }
 
-.nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link::before {
+.nav-list .nav-list-item>.nav-list .nav-list-item .nav-list-link::before {
   content: '';
   display: block;
   position: absolute;
@@ -245,7 +247,7 @@ blockquote p {
   display: none;
 }
 
-.nav-list .nav-list-item > .nav-list {
+.nav-list .nav-list-item>.nav-list {
   display: block;
 }
 
@@ -253,12 +255,15 @@ blockquote p {
   .site-nav {
     padding-top: 1rem;
   }
+
   .site-header a {
     font-size: 20px !important;
   }
+
   .rotation {
     width: calc(100% / 4);
   }
+
   .rotation {
     display: inline-block;
   }
@@ -268,22 +273,28 @@ blockquote p {
   .site-header a {
     font-size: 24px !important;
   }
+
   .main-content dl {
     grid-template: auto / 10em 1fr;
   }
+
   .rotation:nth-child(1) {
     width: 100px;
   }
+
   .rotation:nth-child(2) {
     width: 140px;
   }
+
   .rotation:nth-child(3) {
     width: 90px;
   }
+
   .rotation:nth-child(4) {
     width: 100px;
   }
-  .nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link::before {
+
+  .nav-list .nav-list-item>.nav-list .nav-list-item .nav-list-link::before {
     left: 20px;
   }
 }
@@ -300,4 +311,22 @@ blockquote p {
   h4 {
     font-size: 18px !important;
   }
+}
+
+.octicon-info {
+  fill: $color-accent-fg-info-light;
+  vertical-align: middle;
+}
+
+.icon-span-info {
+  color: $color-accent-fg-info-light;
+}
+
+.octicon-alert {
+  fill: $color-accent-fg-warning;
+  vertical-align: middle;
+}
+
+.icon-span-warning {
+  color: $color-accent-fg-warning;
 }
