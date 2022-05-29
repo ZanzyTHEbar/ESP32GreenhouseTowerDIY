@@ -28,30 +28,13 @@ import {
 import SaveIcon from "@mui/icons-material/SaveAltTwoTone";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Configuration from "./Configuration";
-import Building from "./Building";
-import Downloading from "./Downloading";
-import Flashing from "./Flashing";
-import Done from "./Done";
-import Success from "./Success";
-import formValidation from "./helpers/formValidation";
+import Configuration from "./UI/pages/Configuration";
+import Building from "./UI/pages/Building";
+import Downloading from "./UI/pages/Downloading";
+import Flashing from "./UI/pages/Flashing";
+import Done from "./UI/pages/Done";
+import Success from "./UI/pages/Success";
 import "./style.css";
-
-const initialValues = {
-  firmwareName: "",
-  firmwareVersion: "",
-  boardName: "",
-  ssid: "",
-  password: "",
-};
-
-const fieldsValidation = {
-  firmwareName: { error: "", validate: "text", minLength: 2, maxLength: 20 },
-  firmwareVersion: { error: "", validate: "checkbox" },
-  boardName: { error: "", validate: "checkbox" },
-  ssid: { error: "", validate: "text", minLength: 2, maxLength: 20 },
-  password: { error: "", validate: "text", minLength: 2, maxLength: 20 },
-};
 
 const steps = [
   {
@@ -108,10 +91,15 @@ const theme = createTheme({
 });
 
 const MUI = () => {
+  //!TODO: Make these variables dynamic based on the selected form values
+  const firmwareName = "ESP32_Greenhouse_Tower";
+  const firmwareVersion = "1.0.0";
+  const boardName = "ESP32";
+  const ssid = "ESP32_Greenhouse_Tower";
+  //!END TODO
+
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
-  const [formValues, setFormValues] = React.useState(initialValues);
-  const [formErrors, setFormErrors] = React.useState({});
 
   const isStepOptional = (step) => {
     return step === 2;
@@ -157,73 +145,25 @@ const MUI = () => {
 
   const handleFlashAnother = () => {
     setActiveStep(0);
-    setFormValues(initialValues);
-    setFormErrors({});
-  };
-
-  // Handle form change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Set values
-    setFormValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // set errors
-    const error = formValidation(name, value, fieldsValidation) || "";
-
-    setFormErrors({
-      [name]: error,
-    });
   };
 
   const handleSteps = (step) => {
     switch (step) {
       case 0:
-        return (
-          <Configuration
-            handleNext={handleNext}
-            handleChange={handleChange}
-            values={formValues}
-            formErrors={formErrors}
-          />
-        );
+        return <Configuration handleNext={handleNext} />;
       case 1:
-        return (
-          <Building
-            handleNext={handleNext}
-            handleChange={handleChange}
-            values={formValues}
-            formErrors={formErrors}
-          />
-        );
+        return <Building handleNext={handleNext} />;
       case 2:
-        return (
-          <Downloading
-            handleNext={handleNext}
-            handleChange={handleChange}
-            values={formValues}
-            formErrors={formErrors}
-          />
-        );
+        return <Downloading handleNext={handleNext} />;
       case 3:
-        return (
-          <Flashing
-            handleNext={handleNext}
-            handleChange={handleChange}
-            values={formValues}
-            formErrors={formErrors}
-          />
-        );
+        return <Flashing handleNext={handleNext} />;
       case 4:
         return (
           <Done
-            handleNext={handleNext}
-            handleChange={handleChange}
-            values={formValues}
-            formErrors={formErrors}
+            firmwareName={firmwareName}
+            firmwareVersion={firmwareVersion}
+            boardName={boardName}
+            ssid={ssid}
           />
         );
       default:

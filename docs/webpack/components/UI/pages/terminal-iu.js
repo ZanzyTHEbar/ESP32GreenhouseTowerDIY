@@ -1,6 +1,6 @@
 import React, { Component, StrictMode } from "react";
 import { TerminalContextProvider } from "react-terminal";
-import "./style.css";
+import "../style.css";
 import Terminal from "terminal-in-react";
 
 class TerminalUI extends Component {

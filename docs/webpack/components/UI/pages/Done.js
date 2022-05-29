@@ -1,22 +1,7 @@
 import * as React from "react";
-import {
-  Button,
-  Divider,
-  List,
-  ListItemText,
-  ListItem,
-  Grid,
-} from "@mui/material/";
+import { Divider, List, ListItemText, ListItem, Grid } from "@mui/material/";
 
-const Done = ({
-  handleNext,
-  handleBack,
-  values: { firmwareName, firmwareVersion, boardName, ssid, password },
-}) => {
-  const handleSubmit = () => {
-    console.log({ firmwareName, firmwareVersion, boardName, ssid, password });
-    handleNext();
-  };
+const Done = ({firmwareName, firmwareVersion, boardName, ssid }) => {
   return (
     <div>
       <Grid container spacing={3}>
@@ -42,10 +27,7 @@ const Done = ({
               <Divider />
 
               <ListItem>
-                <ListItemText
-                  primary="Board Name"
-                  secondary={boardName}
-                />
+                <ListItemText primary="Board Name" secondary={boardName} />
               </ListItem>
 
               <Divider />
