@@ -22,10 +22,18 @@ public:
   void mqttSetup();
   void mqttLoop();
 
+  // Friends
+  friend class LDR;
+  friend void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
+
 #if ENABLE_MDNS_SUPPORT
   int DiscovermDNSBroker();
 #endif // ENABLE_MDNS_SUPPORT
 
+private:
+  // Private functions
+
+  // Private variables
   int pump_relay_pin;
   char *pHTopic;
   char *pHOutTopic;
@@ -34,8 +42,6 @@ public:
   int doseTimeSm;
   int doseTimeMed;
   int doseTimeLg;
-
-private:
 };
 
 extern HASSMQTT hassmqtt;

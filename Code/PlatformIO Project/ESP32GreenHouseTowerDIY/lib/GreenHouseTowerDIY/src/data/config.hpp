@@ -58,7 +58,7 @@ public:
     bool isValidHostname(char *hostname_to_check, long size);
     // parse and set a new hostname to config
     void setHostname(String new_hostname);
-    // we can't assing wifiManager.resetSettings(); to reset, somehow it gets called straight away.
+    // we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
     void setWiFiConf(String ssid, String password);
     void InitDataStruct();
     void CreateDefaultConfig();

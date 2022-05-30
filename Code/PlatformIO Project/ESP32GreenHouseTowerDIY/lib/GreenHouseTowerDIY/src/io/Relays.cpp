@@ -14,7 +14,7 @@ Relays::~Relays()
 }
 
 /******************************************************************************
- * Function: Controll the Relays
+ * Function: Control the Relays
  * Description: This function turns the relays in the stack on and off.
  * Parameters: int, bool, long (in seconds)
  * Return: None

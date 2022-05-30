@@ -67,7 +67,7 @@ void AccumulateData::InitAccumulateData()
     // loop through and store temp data
     for (int i = 0; i < numSensors; i++)
     {
-        config.temp_sensors[i] = Tower_Temp.temp_sensor_results.temp[i];
+        config.temp_sensors[i] = tower_temp.temp_sensor_results.temp[i];
     }
 
     // Relays

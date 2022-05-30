@@ -73,13 +73,7 @@ _Pragma(STR(message(ENABLE_MQTT_SUPPORT)))
 // #include "Oldmqtt.hpp"
 
 #include "mqtt/hassmqtt.hpp"
-
 /*###################### MQTT Configuration END ######################*/
-
-/*###################### Distance Sensor Values ######################*/
-#define ECHO 13
-#define TRIGGER 14
-/*###################### Distance Sensor Values END ######################*/
 
 
 // Variables

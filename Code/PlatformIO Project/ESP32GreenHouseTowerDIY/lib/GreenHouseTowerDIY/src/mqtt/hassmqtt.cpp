@@ -1,4 +1,7 @@
 #include "hassmqtt.hpp"
+#include <iostream>
+#include <functional>
+using namespace std;
 
 long lastReconnectAttempt = 0;
 
@@ -78,6 +81,64 @@ void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
 
     log_i("New message on topic: %s", topic);
     log_i("Data: %s", (const char *)payload);
+#if ENABLE_PH_SUPPORT
+    if (memcmp(topic, hassmqtt.pHOutTopic, strlen(hassmqtt.pHOutTopic)) == 0)
+    {
+        // The message is for the pH sensor.
+        // The message is in the format:
+        // <pH>:<pH_value>
+        String result;
+        for (int i = 0; i < length; i++)
+        {
+            log_i("%s", (char)payload[i]);
+            result += (char)payload[i];
+        }
+
+        // Act on the message
+        if (result.equalsIgnoreCase("UP MED"))
+        {
+            log_i("Adjust pH UP a medium amount!");
+            digitalWrite(hassmqtt.phUpPIN, HIGH);
+            delay(hassmqtt.doseTimeMed);
+            digitalWrite(hassmqtt.phUpPIN, LOW);
+        }
+        else if (result.equalsIgnoreCase("DOWN MED"))
+        {
+            log_i("Adjusting pH DOWN a medium amount!");
+            digitalWrite(hassmqtt.phDnPIN, HIGH);
+            delay(hassmqtt.doseTimeMed);
+            digitalWrite(hassmqtt.phDnPIN, LOW);
+        }
+        else if (result.equalsIgnoreCase("UP SM"))
+        {
+            log_i("Adjust pH UP a small amount!");
+            digitalWrite(hassmqtt.phUpPIN, HIGH);
+            delay(hassmqtt.doseTimeSm);
+            digitalWrite(hassmqtt.phUpPIN, LOW);
+        }
+        else if (result.equalsIgnoreCase("DOWN SM"))
+        {
+            log_i("Adjusting pH DOWN a small amount!");
+            digitalWrite(hassmqtt.phDnPIN, HIGH);
+            delay(hassmqtt.doseTimeSm);
+            digitalWrite(hassmqtt.phDnPIN, LOW);
+        }
+        if (result.equalsIgnoreCase("UP LG"))
+        {
+            log_i("Adjust pH UP a large amount!");
+            digitalWrite(hassmqtt.phUpPIN, HIGH);
+            delay(hassmqtt.doseTimeLg);
+            digitalWrite(hassmqtt.phUpPIN, LOW);
+        }
+        else if (result.equalsIgnoreCase("DOWN LG"))
+        {
+            log_i("Adjusting pH DOWN a large amount!");
+            digitalWrite(hassmqtt.phDnPIN, HIGH);
+            delay(hassmqtt.doseTimeLg);
+            digitalWrite(hassmqtt.phDnPIN, LOW);
+        }
+    }
+#endif // ENABLE_PH_SUPPORT
 
     mqtt.publish("greenhouse_tower_pub", "hello");
 }
@@ -111,6 +172,14 @@ void onRelayStateChanged(bool state, HASwitch *s)
         cfg.config.relays[i] = (cfg.config.relays[i] == true) ? false : true;
     }
 }
+
+#if ENABLE_PH_SUPPORT
+void onPHStateChanged(bool state, HASwitch *s)
+{
+    // PH Control
+    bool ph = state;
+}
+#endif // ENABLE_PH_SUPPORT
 
 // ############## functions to update current server settings ###################
 #if ENABLE_MDNS_SUPPORT
@@ -203,8 +272,6 @@ void HASSMQTT::loadMQTTConfig()
     heapStr(&cfg.config.MQTTClientID, mqtt_client_id);
     WiFi.setHostname(cfg.config.hostname); // define hostname
     cfg.setConfigChanged();
-    free(mqtt_user);
-    free(mqtt_pass);
     free(mqtt_client_id);
 
     log_i("Loaded config: hostname %s, MQTT enable relay %s, MQTT host %s, MQTT port %d, MQTT user %s, MQTT pass %s, MQTT topic %s, MQTT set topic %s, MQTT device name %s",
@@ -302,7 +369,6 @@ void HASSMQTT::mqttSetup()
     light.setDeviceClass("illuminance");
     light.setIcon("mdi:lightbulb");
     light.setName("Light");
-
     mqtt.onMessage(onMqttMessage);
     mqtt.onConnected(onMqttConnected);
     mqtt.onConnectionFailed(onMqttConnectionFailed);

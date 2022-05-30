@@ -1,6 +1,6 @@
 #include "distanceSensor.hpp"
 
-UltraSonicDistanceSensor _distanceSensor(ECHO, TRIGGER); // Initialize sensor that uses digital pins 13 and 12.
+UltraSonicDistanceSensor _distanceSensor(ECHO_PIN, TRIG_PIN); // Initialize sensor that uses digital pins 13 and 12.
 
 // Constructor
 DistanceSensor::DistanceSensor()
@@ -14,7 +14,7 @@ DistanceSensor::~DistanceSensor()
 
 double DistanceSensor::readSensor()
 {
-    double distance = _distanceSensor.measureDistanceCm(Tower_Temp.temp_sensor_results.temp[0]);
+    double distance = _distanceSensor.measureDistanceCm(tower_temp.temp_sensor_results.temp[0]);
     log_i("°C - Distance: %.3f cm", distance, DEC);
     // Every 1 second, do a measurement using the sensor and print the distance in centimeters.
     my_delay(1L);
@@ -36,10 +36,13 @@ double DistanceSensor::readWaterLevel()
         log_i("Percent Full: %.3f", p, DEC);
         log_i("True Distance: %.3f cm", readSensor(), DEC);
 
-        if (*((char *)typeid(p).name()) == 'f' || *(typeid(p).name()) == 'i')
+        if (!isnan(p))
         {
             return p;
         }
+
+        log_e("Error: %s", "p is NaN");
+        return 0.0;
     }
     catch (const std::exception &e)
     {

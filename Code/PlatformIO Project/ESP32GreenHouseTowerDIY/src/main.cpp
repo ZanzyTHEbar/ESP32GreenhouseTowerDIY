@@ -40,7 +40,7 @@ void setup()
 
   Serial.println(F("HMS booting - please wait"));
   Serial.println(F("Starting..."));
-  Cell_Temp.SetupSensors();
+  tower_temp.SetupSensors();
 
   switch (humidity.setupSensor())
   {
@@ -70,16 +70,14 @@ void setup()
   network.SetupServer();
   Serial.println(F("Setting up WiFi"));
   Serial.println(F("Setting up MQTT"));
-  HMSmqtt.loadMQTTConfig();
+  hassmqtt.loadMQTTConfig();
 
 #if ENABLE_MDNS_SUPPORT
   if (ENABLE_MQTT_SUPPORT)
   {
-    HMSmqtt.DiscovermDNSBroker(); // discover the mDNS broker for mqtt
+    hassmqtt.DiscovermDNSBroker(); // discover the mDNS broker for mqtt
   }
 #endif // ENABLE_MDNS_SUPPORT
-
-  HMSmqtt.MQTTSetup();
 
   Serial.println("");
   if (network.SetupNetworkStack())
@@ -119,7 +117,7 @@ void loop()
 
   if (WiFi.status() == WL_CONNECTED)
   {
-    HMSmqtt.RunMqttService();
+    hassmqtt.mqttLoop();
   }
   my_delay(1L);
 }

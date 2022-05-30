@@ -81,7 +81,7 @@ void TowerTemp::printAddress(DeviceAddress deviceAddress)
     }
 }
 
-TowerTemp::Temp TowerTemp::checkSensors()
+float TowerTemp::checkSensors()
 {
     if (sensors_count == 0)
     {
@@ -91,7 +91,6 @@ TowerTemp::Temp TowerTemp::checkSensors()
             temp_sensor_results.temp[i] = no_sensors[i];
         }
         log_i("No temperature sensors found - please connect them and restart the device");
-        return temp_sensor_results;
     }
 }
 
@@ -132,7 +131,6 @@ TowerTemp::Temp TowerTemp::GetTempF()
 {
     // handle the case where no sensors are connected
     checkSensors();
-
     for (int i = 0; i < sensors_count; i++)
     {
         // Search the wire for address
@@ -150,4 +148,4 @@ TowerTemp::Temp TowerTemp::GetTempF()
     return temp_sensor_results;
 }
 
-TowerTemp Tower_Temp;
+TowerTemp tower_temp;
