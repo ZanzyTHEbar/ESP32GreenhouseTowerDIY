@@ -58,9 +58,9 @@
 
 #define _STR(x) #x
 #define STR(x) _STR(x)
-#define TODO(x) _Pragma(STR(message("TODO: " STR(x) "::" __FILE__ "@" STR((__LINE__)))))
+#define TODO(x) _Pragma(STR(message("TODO: " STR(x) "::" __FILE__ "@" "(" $Line ")")))
 
-#define Message(desc) _Pragma(STR(message(__FILE__ "(" STR(__LINE__) ") :" #desc)))
+#define Message(desc) _Pragma(STR(message(__FILE__ "(" $Line "):" #desc)))
 
 /**
  * @brief The below Macros print data to the terminal during compilation.
