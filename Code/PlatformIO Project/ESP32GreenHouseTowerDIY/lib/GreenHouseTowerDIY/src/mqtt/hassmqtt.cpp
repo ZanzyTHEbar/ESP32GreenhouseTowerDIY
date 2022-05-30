@@ -54,6 +54,13 @@ HASensor sht31_humidity_2("tower_humidity_sht31");
 HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
 #endif // USE_SHT31_SENSOR
 
+const long interval = 60000;
+unsigned long previousMillis = 0;
+
+uint8_t user_bytes_received = 0;
+const uint8_t bufferlen = 32;
+char user_data[bufferlen];
+
 /***********************************************************************************************************************
  * Class Global Variables
  * Please only make changes to the following class variables within the ini file. Do not change them here.
@@ -75,6 +82,45 @@ HASSMQTT::HASSMQTT()
 HASSMQTT::~HASSMQTT()
 {
 }
+
+#if ENABLE_PH_SUPPORT
+void HASSMQTT::parse_cmd(char *string)
+{
+    strupr(string);
+    if (strcmp(string, "CAL,7") == 0)
+    {
+        pH.cal_mid();
+        Serial.println("MID CALIBRATED");
+    }
+    else if (strcmp(string, "CAL,4") == 0)
+    {
+        pH.cal_low();
+        Serial.println("LOW CALIBRATED");
+    }
+    else if (strcmp(string, "CAL,10") == 0)
+    {
+        pH.cal_high();
+        Serial.println("HIGH CALIBRATED");
+    }
+    else if (strcmp(string, "CAL,CLEAR") == 0)
+    {
+        pH.cal_clear();
+        Serial.println("CALIBRATION CLEARED");
+    }
+    else if (strcmp(string, "PHUP") == 0)
+    {
+        digitalWrite(phUpPIN, HIGH);
+        delay(doseTimeSm);
+        digitalWrite(phUpPIN, LOW); // Dose of pH up
+    }
+    else if (strcmp(string, "PHDN") == 0)
+    {
+        digitalWrite(phDnPIN, HIGH);
+        delay(doseTimeSm);
+        digitalWrite(phDnPIN, LOW); // Dose of pH down
+    }
+}
+#endif // ENABLE_PH_SUPPORT
 
 void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
 {

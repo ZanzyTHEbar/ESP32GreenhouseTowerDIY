@@ -47,6 +47,14 @@
 // Relays
 #include "io/Relays.hpp"
 
+/**
+ * @brief The below Macros print data to the terminal during compilation.
+ * !TODO("");
+ * !TODO(Variable);
+ * !Message("");
+ * !Reminder("");
+ * !Feature("");
+ */
 #define Stringize(L) #L
 #define MakeString(M, L) M(L)
 #define $Line MakeString(Stringize, __LINE__)
@@ -89,15 +97,6 @@
  * End : \033[37m -or- \033[1;37m
  * 
  * @see https://en.wikipedia.org/wiki/ANSI_escape_code
- */
-
-/**
- * @brief The below Macros print data to the terminal during compilation.
- * !TODO("");
- * !TODO(Variable);
- * !Message("");
- * !Reminder("");
- * !Feature("");
  */
 
 // Globally available functions
