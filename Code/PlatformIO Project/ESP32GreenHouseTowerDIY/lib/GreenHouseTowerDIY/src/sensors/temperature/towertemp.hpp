@@ -19,7 +19,7 @@ public:
     void SetupSensors();
     void readAddresses(DeviceAddress deviceAddress);
     void printAddress(DeviceAddress deviceAddress);
-    float checkSensors();
+    void checkSensors();
 
     struct Temp
     {

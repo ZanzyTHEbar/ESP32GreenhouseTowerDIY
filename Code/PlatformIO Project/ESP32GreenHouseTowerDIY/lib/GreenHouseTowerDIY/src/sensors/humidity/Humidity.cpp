@@ -6,7 +6,7 @@ Adafruit_SHT31 sht31;
 Adafruit_SHT31 sht31_2;
 bool enableHeater = false;
 int loopCnt = 0;
-int HUMIDITY_SENSORS_ACTIVE = 0;
+byte HUMIDITY_SENSORS_ACTIVE = 0;
 #endif // USE_SHT31_SENSOR
 
 #if USE_DHT_SENSOR

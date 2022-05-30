@@ -81,7 +81,7 @@ void TowerTemp::printAddress(DeviceAddress deviceAddress)
     }
 }
 
-float TowerTemp::checkSensors()
+void TowerTemp::checkSensors()
 {
     if (sensors_count == 0)
     {
