@@ -31,7 +31,9 @@ unsigned long lastSentAt = millis();
 
 #if !ENABLE_MDNS_SUPPORT
 #define BROKER_ADDR IPAddress(192, 168, 0, 17) // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-#pragma message(Feature "mDNS Enabled: " XSTR(ENABLE_MDNS_SUPPORT))
+#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT "No"))
+#else
+#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT "Yes"))
 #endif // !ENABLE_MDNS_SUPPORT
 
 WiFiClient client;
