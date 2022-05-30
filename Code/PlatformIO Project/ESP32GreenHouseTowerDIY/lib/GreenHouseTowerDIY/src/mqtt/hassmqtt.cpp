@@ -2,16 +2,6 @@
 
 long lastReconnectAttempt = 0;
 
-// Variables for MQTT
-/* #define MQTT_SECURE_ENABLED 0
-#define MQTT_PORT 1883
-#define MQTT_PORT_SECURE 8883
-#define MQTT_MAX_TRANSFER_SIZE 1024
-#define MQTT_KEEPALIVE 60
-#define MQTT_RECONNECT_TIMEOUT 10000
-#define MQTT_RECONNECT_RETRY_TIMEOUT 1000
-#define MQTT_RECONNECT_RETRY_COUNT 3 */
-
 /**
  * @brief Initialize the MQTT client
  * @param clientId The client ID to use
@@ -57,9 +47,17 @@ HASensor sht31_humidity_temp("tower_humidity_temp_sht31");
 HASensor sht31_humidity_2("tower_humidity_sht31");
 HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
 #endif // USE_SHT31_SENSOR
+
 HASSMQTT::HASSMQTT()
 {
     pump_relay_pin = PUMP_RELAY_PIN; // change this to your pin in the platformio.ini file
+    pHTopic = "phControl/phAdjust";
+    pHOutTopic = "phControl/phRead";
+    phDnPIN = 5;
+    phUpPIN = 4;
+    doseTimeSm = 15000;
+    doseTimeMed = 30000;
+    doseTimeLg = 45000;
 }
 
 HASSMQTT::~HASSMQTT()
@@ -81,8 +79,9 @@ void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
 void onMqttConnected()
 {
     log_i("Connected to the broker!");
+    log_i("Subscribing to the topic: greenhouse_tower_pump_sub");
     // You can subscribe to custom topic if you need
-    //mqtt.subscribe("myCustomTopic");
+    mqtt.subscribe("greenhouse_tower_pump_sub");
 }
 
 void onMqttConnectionFailed()
@@ -93,7 +92,7 @@ void onMqttConnectionFailed()
 void onBeforeStateChanged(bool state, HASwitch *s)
 {
     // this callback will be called before publishing new state to HA
-    // in some cases there may be delay before onStateChanged is calrelay due to network latency
+    // in some cases there may be delay before onStateChanged is call relay due to network latency
 }
 
 void onRelayStateChanged(bool state, HASwitch *s)
@@ -103,7 +102,7 @@ void onRelayStateChanged(bool state, HASwitch *s)
     for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
     {
         log_i("switching state of pin: %s\n", relay ? "HIGH" : "LOW");
-        cfg.config.relays[relay] = (cfg.config.relays[relay] == true) ? false : true;
+        cfg.config.relays[i] = (cfg.config.relays[i] == true) ? false : true;
     }
 }
 
@@ -202,7 +201,7 @@ void HASSMQTT::loadMQTTConfig()
     free(mqtt_pass);
     free(mqtt_client_id);
 
-    log_i("Loaded config: hostname %s, MQTT enabrelay %s, MQTT host %s, MQTT port %d, MQTT user %s, MQTT pass %s, MQTT topic %s, MQTT set topic %s, MQTT device name %s",
+    log_i("Loaded config: hostname %s, MQTT enable relay %s, MQTT host %s, MQTT port %d, MQTT user %s, MQTT pass %s, MQTT topic %s, MQTT set topic %s, MQTT device name %s",
           cfg.config.hostname,
           cfg.config.MQTTBroker,
           cfg.config.MQTTPort,

@@ -27,6 +27,14 @@ public:
 #endif // ENABLE_MDNS_SUPPORT
 
   int pump_relay_pin;
+  char *pHTopic;
+  char *pHOutTopic;
+  int phDnPIN;
+  int phUpPIN;
+  int doseTimeSm;
+  int doseTimeMed;
+  int doseTimeLg;
+
 private:
 };
 
