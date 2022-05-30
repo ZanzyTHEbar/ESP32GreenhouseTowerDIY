@@ -48,16 +48,22 @@ HASensor sht31_humidity_2("tower_humidity_sht31");
 HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
 #endif // USE_SHT31_SENSOR
 
+/***********************************************************************************************************************
+ * Class Global Variables
+ * Please only make changes to the following class variables within the ini file. Do not change them here.
+ **********************************************************************************************************************/
 HASSMQTT::HASSMQTT()
 {
-    pump_relay_pin = PUMP_RELAY_PIN; // change this to your pin in the platformio.ini file
-    pHTopic = "phControl/phAdjust";
-    pHOutTopic = "phControl/phRead";
-    phDnPIN = 5;
-    phUpPIN = 4;
-    doseTimeSm = 15000;
-    doseTimeMed = 30000;
-    doseTimeLg = 45000;
+    pump_relay_pin = PUMP_RELAY_PIN;
+#if ENABLE_PH_SUPPORT
+    pHTopic = PH_TOPIC;
+    pHOutTopic = PH_OUT_TOPIC;
+    phDnPIN = PH_DN_PIN;
+    phUpPIN = PH_UP_PIN;
+    doseTimeSm = DOSE_TIME_SM;
+    doseTimeMed = DOSE_TIME_MED;
+    doseTimeLg = DOSE_TIME_LG;
+#endif // ENABLE_PH_SUPPORT
 }
 
 HASSMQTT::~HASSMQTT()
