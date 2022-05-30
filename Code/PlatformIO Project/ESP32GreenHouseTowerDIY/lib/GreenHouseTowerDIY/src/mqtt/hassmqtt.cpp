@@ -31,7 +31,8 @@ unsigned long lastSentAt = millis();
 
 #if !ENABLE_MDNS_SUPPORT
 #define BROKER_ADDR IPAddress(192, 168, 0, 17) // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-#endif                                         // !ENABLE_MDNS_SUPPORT
+#pragma message(Feature "mDNS Enabled: " XSTR(ENABLE_MDNS_SUPPORT))
+#endif // !ENABLE_MDNS_SUPPORT
 
 WiFiClient client;
 HADevice device;
@@ -78,7 +79,6 @@ void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
     // This callback is called when message from MQTT broker is received.
     // Please note that you should always verify if the message's topic is the one you expect.
     // For example: if (memcmp(topic, "myCustomTopic") == 0) { ... }
-
     log_i("New message on topic: %s", topic);
     log_i("Data: %s", (const char *)payload);
 #if ENABLE_PH_SUPPORT

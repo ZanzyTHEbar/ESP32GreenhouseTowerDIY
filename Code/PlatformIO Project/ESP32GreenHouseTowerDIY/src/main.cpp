@@ -7,6 +7,17 @@
  * Parameters: None
  * Return: None
  ******************************************************************************/
+
+#ifdef DEFAULT_HOSTNAME
+#pragma message(Reminder DEFAULT_HOSTNAME " is defined as the default hostname.")
+#endif
+
+#if PRODUCTION
+#pragma message(Reminder "This is a production build.")
+#else
+#pragma message(Reminder "This is a development build.")
+#endif
+
 void setup()
 {
   Serial.begin(115200);
