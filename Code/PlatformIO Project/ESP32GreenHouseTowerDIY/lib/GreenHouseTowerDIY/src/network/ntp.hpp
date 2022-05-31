@@ -36,9 +36,9 @@ public:
     // Private variables
 private:
     // Variables to save date and time
-    String formattedDate;
-    String dayStamp;
-    String timeStamp;
+    String _formattedDate;
+    String _dayStamp;
+    String _timeStamp;
 };
 
 extern NetworkNTP networkntp;

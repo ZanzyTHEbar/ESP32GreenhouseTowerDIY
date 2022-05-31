@@ -33,9 +33,9 @@ time_t prevDisplay = 0; // when the digital clock was displayed
 NetworkNTP::NetworkNTP()
 {
     // Variables to save date and time
-    formattedDate = "";
-    dayStamp = "";
-    timeStamp = "";
+    _formattedDate = "";
+    _dayStamp = "";
+    _timeStamp = "";
 }
 
 NetworkNTP::~NetworkNTP()
@@ -142,7 +142,7 @@ void NetworkNTP::sendNTPpacket(IPAddress &address)
     packetBuffer[14] = 49;
     packetBuffer[15] = 52;
     // all NTP fields have been given values, now
-    // you can send a packet requesting a timestamp:
+    // you can send a packet requesting a _timestamp:
     ntpUDP.beginPacket(address, 123); // NTP requests are to port 123
     ntpUDP.write(packetBuffer, ntp_packet_size);
     ntpUDP.endPacket();
@@ -153,9 +153,9 @@ NTPClient timeClient(ntpUDP);
 NetworkNTP::NetworkNTP()
 {
     // Variables to save date and time
-    formattedDate = "";
-    dayStamp = "";
-    timeStamp = "";
+    _formattedDate = "";
+    _dayStamp = "";
+    _timeStamp = "";
 }
 
 NetworkNTP::~NetworkNTP()
@@ -175,33 +175,33 @@ void NetworkNTP::NTPLoop()
     {
         timeClient.forceUpdate();
     }
-    // The formattedDate comes with the following format:
+    // The _formattedDate comes with the following format:
     // 2022-05-28T16:00:13Z
     // We need to extract date and time
-    formattedDate = timeClient.getFormattedDate();
-    log_d("Formatted Date: %s", formattedDate.c_str());
+    _formattedDate = timeClient.getFormattedDate();
+    log_d("Formatted Date: %s", _formattedDate.c_str());
 
-    int splitT = formattedDate.indexOf("T");
-    dayStamp = formattedDate.substring(0, splitT);
-    log_d("DATE: %s", dayStamp.c_str());
+    int splitT = _formattedDate.indexOf("T");
+    _dayStamp = _formattedDate.substring(0, splitT);
+    log_d("DATE: %s", _dayStamp.c_str());
 
-    timeStamp = formattedDate.substring(splitT + 1, formattedDate.length() - 1);
-    log_d("HOUR: %s", timeStamp.c_str());
+    _timeStamp = _formattedDate.substring(splitT + 1, _formattedDate.length() - 1);
+    log_d("HOUR: %s", _timeStamp.c_str());
 }
 
 String NetworkNTP::getFullDate()
 {
-    return formattedDate;
+    return _formattedDate;
 }
 
 String NetworkNTP::getDayStamp()
 {
-    return dayStamp;
+    return _dayStamp;
 }
 
 String NetworkNTP::getTimeStamp()
 {
-    return timeStamp;
+    return _timeStamp;
 }
 
 String NetworkNTP::getYear()
