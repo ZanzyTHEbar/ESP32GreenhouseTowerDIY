@@ -21,6 +21,13 @@ public:
     void parse_cmd(char *string);
     void getPH();
 
+    // Friends
+    friend class BASEMQTT;
+    friend void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
+    friend void callback(char *topic, byte *payload, unsigned int length);
+    friend void onMqttConnected();
+    friend class HASSMQTT;
+
 private:
     // Private functions
     void serialEvent();

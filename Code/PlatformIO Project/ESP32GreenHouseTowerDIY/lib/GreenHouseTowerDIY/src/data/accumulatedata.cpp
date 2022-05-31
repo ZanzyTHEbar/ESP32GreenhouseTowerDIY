@@ -4,8 +4,7 @@ int numSensors = 10;
 
 AccumulateData::AccumulateData()
 {
-    maxVoltage = 24;
-    maxTemp = 100;
+    _maxTemp = 100;
 }
 
 AccumulateData::~AccumulateData()
@@ -64,7 +63,9 @@ void AccumulateData::InitAccumulateData()
     config.humidity_temp = humidity.result.temp;
 #endif // USE_DHT_SENSOR
 
+#if ENABLE_PH_SUPPORT
     phsensor.phSensorLoop();
+#endif // ENABLE_PH_SUPPORT
 
     // loop through and store temp data
     for (int i = 0; i < numSensors; i++)

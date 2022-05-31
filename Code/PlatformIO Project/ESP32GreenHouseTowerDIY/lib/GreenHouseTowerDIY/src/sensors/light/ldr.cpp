@@ -34,11 +34,11 @@ void LDR::loopLDR()
 {
     if (getLux() <= 7)
     {
-        Relay.RelayOnOff(hassmqtt.pump_relay_pin, false, 0.1L);
+        Relay.RelayOnOff(pump._pump_relay_pin, false, 0.1L);
     }
     else
     {
-        Relay.RelayOnOff(hassmqtt.pump_relay_pin, true, 0.1L);
+        Relay.RelayOnOff(pump._pump_relay_pin, true, 0.1L);
     }
 }
 

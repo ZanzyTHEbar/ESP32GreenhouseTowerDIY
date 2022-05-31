@@ -51,6 +51,17 @@
 // Timed tasks
 #include "data/timedtasks.hpp"
 
+/*######################## MQTT Configuration ########################*/
+// MQTT includes
+//! Deprecated - TODO: REMOVE ME
+// #include "Oldmqtt.hpp"
+#include "mqtt/hassmqtt.hpp"
+#include "mqtt/basicmqtt.hpp"
+#if ENABLE_MDNS_SUPPORT
+#include "mDNS.hpp"
+#endif // ENABLE_MDNS_SUPPORT
+/*###################### MQTT Configuration END ######################*/
+
 // Relays and other IO
 #include "io/Relays.hpp"
 #include "io/pump.hpp"
@@ -112,16 +123,6 @@ char *StringtoChar(String inputString);
 char *appendChartoChar(const char *hostname, const char *def_host);
 void my_delay(volatile long delay_time);
 String generateDeviceID();
-
-/*######################## MQTT Configuration ########################*/
-// MQTT includes
-//! Deprecated - TODO: REMOVE ME
-// #include "Oldmqtt.hpp"
-#include "mqtt/hassmqtt.hpp"
-#if ENABLE_MDNS_SUPPORT
-#include "mDNS.hpp"
-#endif // ENABLE_MDNS_SUPPORT
-/*###################### MQTT Configuration END ######################*/
 
 // Global Variables
 extern const char *mqtt_mDNS_clientId;

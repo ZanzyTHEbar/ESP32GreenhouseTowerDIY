@@ -68,14 +68,13 @@ public:
     void writeFile(fs::FS &fs, const char *path, const char *message);
 
 private:
-    Config_t default_cfg;
-    int last_config;
+    Config_t _default_cfg;
+    int _last_config;
     // save last "timestamp" the config has been saved
-    bool last_config_change;
+    bool _last_config_change;
     // Variables
-    int maxVoltage;
-    int maxTemp;
-    String doc_string;
+    int _maxTemp;
+    String _doc_string;
     // Temporary function to ensure that the correct number of cells are being read - this will be removed when the cell count is dynamically allocated
 };
 

@@ -20,14 +20,14 @@ public:
 
 private:
   // Timers
-  timeObj Timer_1s;
-  timeObj Timer_5s;
-  timeObj Timer_5s_2;
-  timeObj Timer_10s;
-  timeObj Timer_10s_2;
-  timeObj Timer_30s;
-  timeObj Timer_1m;
-  timeObj Timer_5m;
+  timeObj _Timer_1s;
+  timeObj _Timer_5s;
+  timeObj _Timer_5s_2;
+  timeObj _Timer_10s;
+  timeObj _Timer_10s_2;
+  timeObj _Timer_30s;
+  timeObj _Timer_1m;
+  timeObj _Timer_5m;
 };
 
 extern TimedTasks timedTasks;

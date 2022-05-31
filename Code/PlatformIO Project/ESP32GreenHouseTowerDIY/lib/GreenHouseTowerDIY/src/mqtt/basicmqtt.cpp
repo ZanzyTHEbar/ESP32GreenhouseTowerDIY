@@ -37,16 +37,12 @@ char user_data[bufferlen];
  **********************************************************************************************************************/
 BASEMQTT::BASEMQTT()
 {
-    pumpTopic = PUMP_TOPIC;
-
-    pHTopic = PH_TOPIC;
-    pHOutTopic = PH_OUT_TOPIC;
-    phDnPIN = PH_DN_PIN;
-    phUpPIN = PH_UP_PIN;
+    // Constructor
 }
 
 BASEMQTT::~BASEMQTT()
 {
+    // Destructor
 }
 
 // Handles messages arrived on subscribed topic(s)
@@ -62,24 +58,26 @@ void callback(char *topic, byte *payload, unsigned int length)
     log_i("Message: [%s]", result.c_str());
 
     // Check if the message is for the current topic
-    if (strcmp(topic, basemqtt.pumpTopic) == 0)
+    if (strcmp(topic, pump._pumpTopic) == 0)
     {
         if (strcmp(result.c_str(), "ON") == 0)
         {
             log_i("Turning on the pump");
-            Relay.RelayOnOff(basemqtt.pump_relay_pin, true);
+            Relay.RelayOnOff(pump._pump_relay_pin, true);
         }
         else if (strcmp(result.c_str(), "OFF") == 0)
         {
             log_i("Turning off the pump");
-            Relay.RelayOnOff(basemqtt.pump_relay_pin, false);
+            Relay.RelayOnOff(pump._pump_relay_pin, false);
         }
     }
-    else if (strcmp(topic, basemqtt.pHTopic) == 0)
+#if ENABLE_PH_SUPPORT
+    else if (strcmp(topic, phsensor._pHTopic) == 0)
     {
         log_i("Setting pH level to: [%s]", result.c_str());
         phsensor.eventListener(topic, payload, length);
     }
+#endif // ENABLE_PH_SUPPORT
 }
 
 void BASEMQTT::mqttSetup()
@@ -89,16 +87,19 @@ void BASEMQTT::mqttSetup()
     // Local Mosquitto Connection -- Start
     if (mqttClient.connect(DEFAULT_HOSTNAME))
     {
+#if ENABLE_PH_SUPPORT
         // connection succeeded
-        log_i("Connection succeeded. Subscribing to the topic [%s]", pHTopic);
-        mqttClient.subscribe(pHTopic);
+        log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
+        mqttClient.subscribe(phsensor._pHTopic);
+#endif // ENABLE_PH_SUPPORT
         log_i("Successfully subscribed to the topic.");
     }
     else
     {
         // connection failed
         log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
-    } // Local Mosquitto Connection -- End
+    }
+    // Local Mosquitto Connection -- End
 }
 
 void BASEMQTT::mqttReconnect()
@@ -112,7 +113,9 @@ void BASEMQTT::mqttReconnect()
         {
             log_i("Connected to MQTT broker.");
             // Subscribe
-            mqttClient.subscribe(pHTopic);
+#if ENABLE_PH_SUPPORT
+            mqttClient.subscribe(phsensor._pHTopic);
+#endif // ENABLE_PH_SUPPORT
         }
         else
         {
@@ -153,14 +156,16 @@ void BASEMQTT::mqttLoop()
                 user_bytes_received = 0;
                 memset(user_data, 0, sizeof(user_data));
             }
-
-            log_i("Sending message to topic: %s", pHOutTopic);
-
+#if ENABLE_PH_SUPPORT
+            log_i("Sending message to topic: %s", phsensor._pHOutTopic);
+#endif // ENABLE_PH_SUPPORT
             float newpH = cfg.config.pH;
             String timeStamp = networkntp.getTimeStamp();
             log_i("pH: %s", String(newpH).c_str());
-            mqttClient.publish(pHOutTopic, String(newpH).c_str(), true);
-            mqttClient.publish(pHOutTopic, timeStamp.c_str(), true);
+#if ENABLE_PH_SUPPORT
+            mqttClient.publish(phsensor._pHOutTopic, String(newpH).c_str(), true);
+            mqttClient.publish(phsensor._pHOutTopic, timeStamp.c_str(), true);
+#endif // ENABLE_PH_SUPPORT
         }
     }
 }

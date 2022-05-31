@@ -58,14 +58,12 @@ HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
  **********************************************************************************************************************/
 HASSMQTT::HASSMQTT()
 {
-    pumpTopic = PUMP_TOPIC;
-
-    pHTopic = PH_TOPIC;
-    pHOutTopic = PH_OUT_TOPIC;
+    // Constructor
 }
 
 HASSMQTT::~HASSMQTT()
 {
+    // Destructor
 }
 
 void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
@@ -86,37 +84,39 @@ void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
     log_i("Message: [%s]", result.c_str());
 
     // Check if the message is for the current device
-    if (strcmp(topic, hassmqtt.pumpTopic) == 0)
+    if (strcmp(topic, pump._pumpTopic) == 0)
     {
         if (strcmp(result.c_str(), "ON") == 0)
         {
             log_i("Turning on the pump");
-            Relay.RelayOnOff(hassmqtt.pump_relay_pin, true);
+            Relay.RelayOnOff(pump._pump_relay_pin, true);
         }
         else if (strcmp(result.c_str(), "OFF") == 0)
         {
             log_i("Turning off the pump");
-            Relay.RelayOnOff(hassmqtt.pump_relay_pin, false);
+            Relay.RelayOnOff(pump._pump_relay_pin, false);
         }
     }
-    else if (strcmp(topic, hassmqtt.pHTopic) == 0)
+#if ENABLE_PH_SUPPORT
+    else if (strcmp(topic, phsensor._pHTopic) == 0)
     {
         log_i("Setting pH level to: [%s]", result.c_str());
         phsensor.eventListener(topic, payload, length);
     }
+#endif // ENABLE_PH_SUPPORT
 
-    mqtt.publish("greenhouse_tower_pub", "hello");
+    mqtt.publish("greenhouse_tower_info", "Hello from the Greenhouse Tower!");
 }
 
 void onMqttConnected()
 {
     // You can subscribe to custom topic if you need
     log_i("Connected to the broker!");
-    log_i("Subscribing to the topic: %s", hassmqtt.pumpTopic);
-    mqtt.subscribe(hassmqtt.pumpTopic);
+    log_i("Subscribing to the topic: %s", pump._pumpTopic);
+    mqtt.subscribe(pump._pumpTopic);
 
-    log_i("Subscribing to the topic: %s", hassmqtt.pHTopic);
-    mqtt.subscribe(hassmqtt.pHTopic);
+    log_i("Subscribing to the topic: %s", phsensor._pHTopic);
+    mqtt.subscribe(phsensor._pHTopic);
 }
 
 void onMqttConnectionFailed()
@@ -191,7 +191,7 @@ void HASSMQTT::loadMQTTConfig()
 
 void HASSMQTT::mqttSetup()
 {
-    lastInputState = digitalRead(pump_relay_pin);
+    lastInputState = digitalRead(pump._pump_relay_pin);
     // Unique ID must be set!
     String mac = WiFi.macAddress();
     byte buf[100];
@@ -279,27 +279,11 @@ void HASSMQTT::mqttSetup()
 
     mqtt.setDiscoveryPrefix("Greenhouse_Tower");
 
-#if !MQTT_SECURE
-#if ENABLE_MDNS_SUPPORT
-    DiscovermDNSBroker();
-    String mqtt_broker = cfg.config.MQTTBroker;
-    IPAddress mqtt_ip;
-    mqtt_ip.fromString(mqtt_broker);
-    mqtt.begin(mqtt_ip);
+#if MQTT_SECURE
+    mqtt.begin(BROKER_ADDR, cfg.config.MQTTUser, cfg.config.MQTTPass);
 #else
     mqtt.begin(BROKER_ADDR);
-#endif // ENABLE_MDNS_SUPPORT
-#else
-#if ENABLE_MDNS_SUPPORT
-    DiscovermDNSBroker();
-    String mqtt_broker = cfg.config.MQTTBroker;
-    IPAddress mqtt_ip;
-    mqtt_ip.fromString(mqtt_broker);
-    mqtt.begin(mqtt_ip, cfg.config.MQTTUser, cfg.config.MQTTPass);
-#else
-    mqtt.begin(BROKER_ADDR, cfg.config.MQTTUser, cfg.config.MQTTPass);
-#endif // ENABLE_MDNS_SUPPORT
-#endif // !MQTT_SECURE
+#endif // MQTT_SECURE
 }
 
 void HASSMQTT::mqttLoop()
@@ -308,7 +292,7 @@ void HASSMQTT::mqttLoop()
     if ((millis() - lastReadAt) > 30)
     { // read in 30ms interval
         // library produces MQTT message if a new state is different than the previous one
-        relay.setState(digitalRead(pump_relay_pin));
+        relay.setState(digitalRead(pump._pump_relay_pin));
         lastInputState = relay.getState();
         lastReadAt = millis();
     }

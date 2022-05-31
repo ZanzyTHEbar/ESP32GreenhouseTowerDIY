@@ -28,10 +28,6 @@ private:
   // Private functions
 
   // Private variables
-  int pump_relay_pin;
-  char *pumpTopic;
-  char *pHTopic;
-  char *pHOutTopic;
 };
 
 extern HASSMQTT hassmqtt;
