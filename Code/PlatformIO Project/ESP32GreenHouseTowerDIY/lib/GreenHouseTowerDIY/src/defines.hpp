@@ -110,6 +110,9 @@ String generateDeviceID();
 //! Deprecated - TODO: REMOVE ME
 // #include "Oldmqtt.hpp"
 #include "mqtt/hassmqtt.hpp"
+#if ENABLE_MDNS_SUPPORT
+#include "mDNS.hpp"
+#endif // ENABLE_MDNS_SUPPORT
 /*###################### MQTT Configuration END ######################*/
 
 // Global Variables

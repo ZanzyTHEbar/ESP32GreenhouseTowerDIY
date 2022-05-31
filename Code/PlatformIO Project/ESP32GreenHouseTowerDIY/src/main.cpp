@@ -81,14 +81,11 @@ void setup()
   network.SetupServer();
   Serial.println(F("Setting up WiFi"));
   Serial.println(F("Setting up MQTT"));
-  hassmqtt.loadMQTTConfig();
 
 #if ENABLE_MDNS_SUPPORT
-  if (ENABLE_MQTT_SUPPORT)
-  {
-    hassmqtt.DiscovermDNSBroker(); // discover the mDNS broker for mqtt
-  }
+  int DiscovermDNSBroker();
 #endif // ENABLE_MDNS_SUPPORT
+  hassmqtt.loadMQTTConfig();
 
   Serial.println("");
   if (network.SetupNetworkStack())

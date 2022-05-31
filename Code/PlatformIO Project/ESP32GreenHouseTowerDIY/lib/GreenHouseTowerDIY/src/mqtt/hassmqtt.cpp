@@ -1,7 +1,4 @@
 #include "hassmqtt.hpp"
-#include <iostream>
-#include <functional>
-using namespace std;
 
 long lastReconnectAttempt = 0;
 
@@ -29,11 +26,12 @@ unsigned long lastAvailabilityToggleAt = millis();
 bool lastInputState = false;
 unsigned long lastSentAt = millis();
 
-#if !ENABLE_MDNS_SUPPORT
-#define BROKER_ADDR IPAddress(192, 168, 0, 17) // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT "No"))
+#if ENABLE_MDNS_SUPPORT
+#define BROKER_ADDR cfg.config.MQTTBroker // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
+#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
 #else
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT "Yes"))
+#define BROKER_ADDR IPAddress(192, 168, 0, 17) // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
+#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
 #endif // !ENABLE_MDNS_SUPPORT
 
 WiFiClient client;
@@ -54,13 +52,6 @@ HASensor sht31_humidity_2("tower_humidity_sht31");
 HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
 #endif // USE_SHT31_SENSOR
 
-const long interval = 60000;
-unsigned long previousMillis = 0;
-
-uint8_t user_bytes_received = 0;
-const uint8_t bufferlen = 32;
-char user_data[bufferlen];
-
 /***********************************************************************************************************************
  * Class Global Variables
  * Please only make changes to the following class variables within the ini file. Do not change them here.
@@ -68,59 +59,13 @@ char user_data[bufferlen];
 HASSMQTT::HASSMQTT()
 {
     pump_relay_pin = PUMP_RELAY_PIN;
-#if ENABLE_PH_SUPPORT
     pHTopic = PH_TOPIC;
     pHOutTopic = PH_OUT_TOPIC;
-    phDnPIN = PH_DN_PIN;
-    phUpPIN = PH_UP_PIN;
-    doseTimeSm = DOSE_TIME_SM;
-    doseTimeMed = DOSE_TIME_MED;
-    doseTimeLg = DOSE_TIME_LG;
-#endif // ENABLE_PH_SUPPORT
 }
 
 HASSMQTT::~HASSMQTT()
 {
 }
-
-#if ENABLE_PH_SUPPORT
-void HASSMQTT::parse_cmd(char *string)
-{
-    strupr(string);
-    if (strcmp(string, "CAL,7") == 0)
-    {
-        pH.cal_mid();
-        Serial.println("MID CALIBRATED");
-    }
-    else if (strcmp(string, "CAL,4") == 0)
-    {
-        pH.cal_low();
-        Serial.println("LOW CALIBRATED");
-    }
-    else if (strcmp(string, "CAL,10") == 0)
-    {
-        pH.cal_high();
-        Serial.println("HIGH CALIBRATED");
-    }
-    else if (strcmp(string, "CAL,CLEAR") == 0)
-    {
-        pH.cal_clear();
-        Serial.println("CALIBRATION CLEARED");
-    }
-    else if (strcmp(string, "PHUP") == 0)
-    {
-        digitalWrite(phUpPIN, HIGH);
-        delay(doseTimeSm);
-        digitalWrite(phUpPIN, LOW); // Dose of pH up
-    }
-    else if (strcmp(string, "PHDN") == 0)
-    {
-        digitalWrite(phDnPIN, HIGH);
-        delay(doseTimeSm);
-        digitalWrite(phDnPIN, LOW); // Dose of pH down
-    }
-}
-#endif // ENABLE_PH_SUPPORT
 
 void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
 {
@@ -129,64 +74,10 @@ void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
     // For example: if (memcmp(topic, "myCustomTopic") == 0) { ... }
     log_i("New message on topic: %s", topic);
     log_i("Data: %s", (const char *)payload);
-#if ENABLE_PH_SUPPORT
+
     if (memcmp(topic, hassmqtt.pHOutTopic, strlen(hassmqtt.pHOutTopic)) == 0)
     {
-        // The message is for the pH sensor.
-        // The message is in the format:
-        // <pH>:<pH_value>
-        String result;
-        for (int i = 0; i < length; i++)
-        {
-            log_i("%s", (char)payload[i]);
-            result += (char)payload[i];
-        }
-
-        // Act on the message
-        if (result.equalsIgnoreCase("UP MED"))
-        {
-            log_i("Adjust pH UP a medium amount!");
-            digitalWrite(hassmqtt.phUpPIN, HIGH);
-            delay(hassmqtt.doseTimeMed);
-            digitalWrite(hassmqtt.phUpPIN, LOW);
-        }
-        else if (result.equalsIgnoreCase("DOWN MED"))
-        {
-            log_i("Adjusting pH DOWN a medium amount!");
-            digitalWrite(hassmqtt.phDnPIN, HIGH);
-            delay(hassmqtt.doseTimeMed);
-            digitalWrite(hassmqtt.phDnPIN, LOW);
-        }
-        else if (result.equalsIgnoreCase("UP SM"))
-        {
-            log_i("Adjust pH UP a small amount!");
-            digitalWrite(hassmqtt.phUpPIN, HIGH);
-            delay(hassmqtt.doseTimeSm);
-            digitalWrite(hassmqtt.phUpPIN, LOW);
-        }
-        else if (result.equalsIgnoreCase("DOWN SM"))
-        {
-            log_i("Adjusting pH DOWN a small amount!");
-            digitalWrite(hassmqtt.phDnPIN, HIGH);
-            delay(hassmqtt.doseTimeSm);
-            digitalWrite(hassmqtt.phDnPIN, LOW);
-        }
-        if (result.equalsIgnoreCase("UP LG"))
-        {
-            log_i("Adjust pH UP a large amount!");
-            digitalWrite(hassmqtt.phUpPIN, HIGH);
-            delay(hassmqtt.doseTimeLg);
-            digitalWrite(hassmqtt.phUpPIN, LOW);
-        }
-        else if (result.equalsIgnoreCase("DOWN LG"))
-        {
-            log_i("Adjusting pH DOWN a large amount!");
-            digitalWrite(hassmqtt.phDnPIN, HIGH);
-            delay(hassmqtt.doseTimeLg);
-            digitalWrite(hassmqtt.phDnPIN, LOW);
-        }
     }
-#endif // ENABLE_PH_SUPPORT
 
     mqtt.publish("greenhouse_tower_pub", "hello");
 }
@@ -230,70 +121,6 @@ void onPHStateChanged(bool state, HASwitch *s)
 #endif // ENABLE_PH_SUPPORT
 
 // ############## functions to update current server settings ###################
-#if ENABLE_MDNS_SUPPORT
-int HASSMQTT::DiscovermDNSBroker()
-{
-    IPAddress mqttServer;
-    // check if there is a WiFi connection
-    if (WiFi.status() == WL_CONNECTED)
-    {
-        log_i("[mDNS Broker Discovery]: connected!\n");
-
-        log_i("[mDNS Broker Discovery]: Setting up mDNS: ");
-        if (!MDNS.begin(mqtt_mDNS_clientId))
-        {
-            log_i("[Fail]\n");
-        }
-        else
-        {
-            log_i("[OK]\n");
-            log_i("[mDNS Broker Discovery]: Querying MQTT broker: ");
-
-            int n = MDNS.queryService("mqtt", "tcp") || MDNS.queryService("_mqtt", "_tcp");
-
-            if (n == 0)
-            {
-                // No service found
-                log_i("[Fail]\n");
-                return 0;
-            }
-            else
-            {
-                int mqttPort;
-                // Found one or more MQTT services - use the first one.
-                log_i("[OK]\n");
-                mqttServer = MDNS.IP(0);
-                mqttPort = MDNS.port(0);
-                heapStr(&(cfg.config.MQTTBroker), mqttServer.toString().c_str());
-                cfg.config.MQTTPort = mqttPort;
-
-                switch (mqttPort)
-                {
-                case MQTT_PORT:
-                    log_i("[mDNS Broker Discovery]: MQTT port is insecure - running on port: %d\n", mqttPort);
-                    break;
-
-                case MQTT_PORT_SECURE:
-                    log_i("[mDNS Broker Discovery]: MQTT port is secure - running on port: %d\n", mqttPort);
-                    break;
-
-                case 0:
-                    log_i("[mDNS Broker Discovery]: MQTT port is not set - running on port: %d\n", mqttPort);
-                    break;
-
-                default:
-                    log_i("[mDNS Broker Discovery]: MQTT port is on an unusual port - running on port: %d\n", mqttPort);
-                    break;
-                }
-
-                log_i("[mDNS Broker Discovery]: MQTT broker found at: %s\n: %d", cfg.config.MQTTBroker, cfg.config.MQTTPort);
-                return 1;
-            }
-        }
-    }
-    return 0;
-}
-#endif // ENABLE_MDNS_SUPPORT
 
 /**
  * @brief Check if the current hostname is the same as the one in the config file

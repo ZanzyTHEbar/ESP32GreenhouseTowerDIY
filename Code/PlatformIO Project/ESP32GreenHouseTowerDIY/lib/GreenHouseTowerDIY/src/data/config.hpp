@@ -45,6 +45,7 @@ public:
         bool relays[5];
         int relays_pin[5];
         int numSensors;
+        float pH;
     };
     Config_t config;
 
