@@ -1,3 +1,29 @@
+# Continuous Integration (CI) is the practice, in software
+# engineering, of merging all developer working copies with a shared mainline
+# several times a day < http://docs.platformio.org/page/ci/index.html >
+#
+# Documentation:
+#
+# * Travis CI Embedded Builds with PlatformIO
+#   < https://docs.travis-ci.com/user/integration/platformio/ >
+#
+# * PlatformIO integration with Travis CI
+#   < http://docs.platformio.org/page/ci/travis.html >
+#
+# * User Guide for `platformio ci` command
+#   < http://docs.platformio.org/page/userguide/cmd_ci.html >
+#
+#
+# Please choice one of the following templates (proposed below) and uncomment
+# it (remove "# " before each line) or use own configuration according to the
+# Travis CI documentation (see above).
+#
+
+
+#
+# Template #1: General project. Test it using existing `platformio.ini`.
+#
+
 language: python
 python:
   - '2.7'
@@ -7,9 +33,19 @@ cache:
   directories:
     - '~/.platformio'
 
+#env:
+#    - PLATFORMIO_CI_SRC=arduino_sketch/arduino_sketch.ino
+
 install:
   - pip install -U platformio
   - platformio update
+  #
+  # Libraries from PlatformIO Library Registry:
+  #
+  # http://platformio.org/lib/show/31/Adafruit Unified Sensor
+  # http://platformio.org/lib/show/44/Time
+
+  - platformio lib -g install 19 44
 
 script:
   - echo "Check compiler errors"
@@ -19,10 +55,12 @@ script:
   - platformio remote device list
 
   - echo "Run embedded test on a remote device"
-  - platformio remote test -r
+  # - platformio remote test -r
+
+  - platformio ci --project-conf=platformio.ini
 
 deploy:
   provider: script
   script: platformio run -e release -t upload
-#   on:
-#     branch: master
+  on:
+    branch: master
