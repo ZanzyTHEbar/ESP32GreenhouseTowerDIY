@@ -252,7 +252,7 @@ void Network::SetupWebServer()
     }
     else
     {
-        // TODO: Route for root to  "Please Scan QR code" - Route for Wifi Manager /HBAT_HMS wifi page
+        // TODO: Route for root to  "Please Scan QR code"
         // TODO: There should be a reset mode that will reset the device to factory settings and restart the device.
         // TODO: Should be a physical reset button on the PCB itself - not a touch button - hold for 5 seconds to reset. Flash LED to indicate reset per second.
         // Connect to Wi-Fi Network with SSID and password
@@ -270,7 +270,7 @@ void Network::SetupWebServer()
 
         if (!PRODUCTION)
         {
-            WiFi.softAP("HBAT_HMS", NULL, 10, 1, 2); // AP mode without password
+            WiFi.softAP(DEFAULT_HOSTNAME, NULL, 10, 1, 2); // AP mode without password
         }
         else
         {

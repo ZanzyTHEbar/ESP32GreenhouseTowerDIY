@@ -33,8 +33,6 @@ public:
     // variables
 private:
     int CheckWifiState();
-    int maxVoltage;
-    int maxTemp;
 };
 
 extern Network network;
