@@ -34,15 +34,9 @@ PCBS can be ordered from [JLCPCB](https://jlcpcb.com/) or [PCBWay](https://www.p
 
 **Minimal parts cost:** `<$20` for the basic system which consists of a `20L/5gallon` (can be smaller - minimum size is `4L/1gallon`) humidifier box/water reservoir and submersible pump - about `$100`. You will also need to purchase the PCB's `~$40`, power supply and sensors `~$30`. The cost of the parts will vary depending on the size of the tower, and the number of sensors. The cost of 3D printing the tower will be `~$25` or less. The full `1m` tower consumes `~2kg` of `PETG` - which is the recommended printing material for outdoor use. The tower can be printed in `ABS` and/or `PETG` materials.
 
-> **Note:** The cost of plant nutrients is not taken into account, and is up to you to control.
+> **Note**: The cost of plant nutrients is not taken into account, and is up to you to control.
 
 **Goal:** The goal of this project was to build a high-efficiency, very low cost direct DIY vertical tower garden for growing small fruits and vegetables.
-
-{% for tags in page.image_tags %}
-    {% assign alt_tags = tags | split: "  " %}
-{% endfor %}
-
-{% include modal/image.html height=page.image_height width=page.image_width title=page.image_title image=page.image_category description=page.image_description src=page.image_src tags=alt_tags %}
 
 ____
 
