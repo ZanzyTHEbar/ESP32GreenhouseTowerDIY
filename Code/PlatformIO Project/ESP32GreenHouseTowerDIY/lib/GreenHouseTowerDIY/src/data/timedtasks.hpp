@@ -15,6 +15,7 @@ public:
   void updateCurrentData();
   void ScanI2CBus();
   void accumulateSensorData();
+  void NTPService();
   void checkNetwork();
 
 private:

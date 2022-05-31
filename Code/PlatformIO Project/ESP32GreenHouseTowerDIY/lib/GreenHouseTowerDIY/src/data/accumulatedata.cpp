@@ -24,7 +24,7 @@ void AccumulateData::InitAccumulateData()
 
     // Initialize the library
 #if USE_SHT31_SENSOR
-        humidity.ReadSensor();
+    humidity.ReadSensor();
     config.humidity_sht31_average = humidity.StackHumidity();
     config.humidity_temp_sht31_average = humidity.AverageStackTemp();
     switch (HUMIDITY_SENSORS_ACTIVE)
@@ -64,7 +64,7 @@ void AccumulateData::InitAccumulateData()
     config.humidity_temp = humidity.result.temp;
 #endif // USE_DHT_SENSOR
 
-    phsensor.getPH();
+    phsensor.phSensorLoop();
 
     // loop through and store temp data
     for (int i = 0; i < numSensors; i++)

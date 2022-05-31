@@ -47,7 +47,7 @@ void TimedTasks::accumulateSensorData()
   }
 }
 
-void TimedTasks::accumulateSensorData()
+void TimedTasks::NTPService()
 {
   if (Timer_1s.ding())
   {
