@@ -76,7 +76,7 @@ void BASEMQTT::mqttSetup()
     log_i("Settings up MQTT...");
 
     // Local Mosquitto Connection -- Start
-    if (mqttClient.connect("arduino"))
+    if (mqttClient.connect(DEFAULT_HOSTNAME))
     {
         // connection succeeded
         log_i("Connection succeeded. Subscribing to the topic [%s]", pHTopic);
