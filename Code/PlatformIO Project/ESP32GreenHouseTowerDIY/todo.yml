@@ -18,7 +18,7 @@ STATE: [
 
     - [ ] Document the code - Document
 
-  --------- HIGH PRIORITY ---------
+#  --------- HIGH PRIORITY ---------
 
     - [x] Implement Relay functionality - Done
 
@@ -46,6 +46,8 @@ STATE: [
 
     - [x] Implement pH Sensor functionality -  Done
 
+    - [x] Implement Pump and pump timer - Done
+
     - [-] Implement pH Sensor calibration via Button interface - In_Progress - TODO: code is added to the main file, still in progress
     
     - [-] Implement Light detection functionality - In_Progress - TODO: LDR is implemented, need to implement the light detection from BH1750
@@ -56,10 +58,7 @@ STATE: [
 
     - [-] Implement I2C scanner functionality - In_Progress - TODO: code is added to the main file, but needs a button trigger to start the scanner
 
-    - [-] Implement Pump and pump timer - In_Progress - TODO: code is added to the main file, still in progress
-    
-
-  -------- LOW PRIORITY --------
+#  -------- LOW PRIORITY --------
 
   TO_DO_ITEMS:
     Done: false
