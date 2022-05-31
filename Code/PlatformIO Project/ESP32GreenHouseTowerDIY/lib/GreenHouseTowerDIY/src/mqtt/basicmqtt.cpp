@@ -41,6 +41,8 @@ char user_data[bufferlen];
 BASEMQTT::BASEMQTT()
 {
     pump_relay_pin = PUMP_RELAY_PIN;
+    pumpTopic = PUMP_TOPIC;
+
     pHTopic = PH_TOPIC;
     pHOutTopic = PH_OUT_TOPIC;
     phDnPIN = PH_DN_PIN;
@@ -66,13 +68,31 @@ void callback(char *topic, byte *payload, unsigned int length)
         log_i("payload is: [%s]", (char)payload[i]);
         result += (char)payload[i];
     }
+    log_i("Message: [%s]", result.c_str());
+
+    // Check if the message is for the current device
+    if (strcmp(topic, basemqtt.pumpTopic) == 0)
+    {
+        if (strcmp(result.c_str(), "ON") == 0)
+        {
+            log_i("Turning on the pump");
+            Relay.RelayOnOff(basemqtt.pump_relay_pin, true);
+        }
+        else if (strcmp(result.c_str(), "OFF") == 0)
+        {
+            log_i("Turning off the pump");
+            Relay.RelayOnOff(basemqtt.pump_relay_pin, false);
+        }
+    }
+    else if (strcmp(topic, basemqtt.pHTopic) == 0)
+    {
+        log_i("Setting pH level to: [%s]", result.c_str());
+        phsensor.eventListener(topic, payload, length);
+    }
 }
 
 void BASEMQTT::mqttSetup()
 {
-    pinMode(phUpPIN, OUTPUT);
-    pinMode(phDnPIN, OUTPUT);
-
     log_i("Settings up MQTT...");
 
     // Local Mosquitto Connection -- Start
@@ -102,9 +122,9 @@ void BASEMQTT::mqttReconnect()
     {
         log_i("Attempting MQTT connection...");
         // Attempt to connect
-        if (mqttClient.connect("arduino"))
+        if (mqttClient.connect(DEFAULT_HOSTNAME))
         {
-            log_i("connected");
+            log_i("Connected to MQTT broker.");
             // Subscribe
             mqttClient.subscribe(pHTopic);
         }

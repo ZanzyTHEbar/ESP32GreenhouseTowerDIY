@@ -22,12 +22,14 @@ public:
   // Friends
   friend class LDR;
   friend void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
+  friend void onMqttConnected();
 
 private:
   // Private functions
 
   // Private variables
   int pump_relay_pin;
+  char *pumpTopic;
   char *pHTopic;
   char *pHOutTopic;
 };

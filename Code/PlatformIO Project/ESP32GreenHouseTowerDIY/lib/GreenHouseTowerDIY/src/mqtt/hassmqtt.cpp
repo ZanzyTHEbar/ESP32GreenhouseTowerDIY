@@ -59,6 +59,8 @@ HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
 HASSMQTT::HASSMQTT()
 {
     pump_relay_pin = PUMP_RELAY_PIN;
+    pumpTopic = PUMP_TOPIC;
+
     pHTopic = PH_TOPIC;
     pHOutTopic = PH_OUT_TOPIC;
 }
@@ -75,8 +77,33 @@ void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
     log_i("New message on topic: %s", topic);
     log_i("Data: %s", (const char *)payload);
 
-    if (memcmp(topic, hassmqtt.pHOutTopic, strlen(hassmqtt.pHOutTopic)) == 0)
+    String result;
+    log_i("Message arrived on topic: [%s] ", topic);
+    for (int i = 0; i < length; i++)
     {
+        log_i("payload is: [%s]", (char)payload[i]);
+        result += (char)payload[i];
+    }
+    log_i("Message: [%s]", result.c_str());
+
+    // Check if the message is for the current device
+    if (strcmp(topic, hassmqtt.pumpTopic) == 0)
+    {
+        if (strcmp(result.c_str(), "ON") == 0)
+        {
+            log_i("Turning on the pump");
+            Relay.RelayOnOff(hassmqtt.pump_relay_pin, true);
+        }
+        else if (strcmp(result.c_str(), "OFF") == 0)
+        {
+            log_i("Turning off the pump");
+            Relay.RelayOnOff(hassmqtt.pump_relay_pin, false);
+        }
+    }
+    else if (strcmp(topic, hassmqtt.pHTopic) == 0)
+    {
+        log_i("Setting pH level to: [%s]", result.c_str());
+        phsensor.eventListener(topic, payload, length);
     }
 
     mqtt.publish("greenhouse_tower_pub", "hello");
@@ -84,10 +111,13 @@ void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
 
 void onMqttConnected()
 {
-    log_i("Connected to the broker!");
-    log_i("Subscribing to the topic: greenhouse_tower_pump_sub");
     // You can subscribe to custom topic if you need
-    mqtt.subscribe("greenhouse_tower_pump_sub");
+    log_i("Connected to the broker!");
+    log_i("Subscribing to the topic: %s", hassmqtt.pumpTopic);
+    mqtt.subscribe(hassmqtt.pumpTopic);
+
+    log_i("Subscribing to the topic: %s", hassmqtt.pHTopic);
+    mqtt.subscribe(hassmqtt.pHTopic);
 }
 
 void onMqttConnectionFailed()

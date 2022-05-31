@@ -31,6 +31,7 @@ private:
 
     // Private variables
     int pump_relay_pin;
+    char *pumpTopic;
     char *pHTopic;
     char *pHOutTopic;
     int phDnPIN;

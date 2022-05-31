@@ -19,6 +19,8 @@ PHSENSOR::~PHSENSOR()
 
 void PHSENSOR::phSensorSetup()
 {
+    pinMode(phUpPIN, OUTPUT);
+    pinMode(phDnPIN, OUTPUT);
     // pH probe calibration serial commands
     Serial.println(F("Use commands \"CAL,7\", \"CAL,4\", and \"CAL,10\" to calibrate the circuit to those respective values"));
     Serial.println(F("Use command \"CAL,CLEAR\" to clear the calibration"));
