@@ -26,7 +26,10 @@
 // IO
 #include <Wire.h>
 #include "io/i2cscan.hpp"
+
+// Light Sensors
 #include "sensors/light/ldr.hpp"
+
 
 // Temp Sensors
 #include "sensors/temperature/towertemp.hpp"
@@ -38,8 +41,9 @@
 // PH Sensors
 #include "sensors/pH/pHsensor.hpp"
 
-// wifi definitions
+// Network definitions
 #include "network/network.hpp"
+#include "network/ntp.hpp"
 
 // Accumulate Data
 #include "data/accumulatedata.hpp"
@@ -47,8 +51,9 @@
 // Timed tasks
 #include "data/timedtasks.hpp"
 
-// Relays
+// Relays and other IO
 #include "io/Relays.hpp"
+#include "io/pump.hpp"
 
 /**
  * @brief The below Macros print data to the terminal during compilation.

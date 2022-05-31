@@ -33,20 +33,10 @@ void setup()
   // initialize the Relay pins and set them to off state
   std::copy(temp, temp + sizeof(temp) / sizeof(temp[0]), cfg.config.relays_pin);
 
-  // use a c++ ranged for loop to iterate through the relay pins
-  for (auto pin : cfg.config.relays_pin)
-  {
-    pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
-  }
-
-  // C for loop - legacy function
-  /* for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
-  {
-      pinMode(cfg.config.relays_pin[i], OUTPUT);
-      digitalWrite(cfg.config.relays_pin[i], LOW);
-  } */
-
+  Serial.println(F("Starting NTP Client"));
+  networkntp.SetupNTP();
+  Relay.SetupRelays();
+  pump.SetupPump();
   Wire.begin();
 
   Serial.println(F("HMS booting - please wait"));

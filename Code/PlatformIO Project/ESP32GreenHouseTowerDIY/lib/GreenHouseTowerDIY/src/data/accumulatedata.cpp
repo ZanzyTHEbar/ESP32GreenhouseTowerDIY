@@ -24,7 +24,7 @@ void AccumulateData::InitAccumulateData()
 
     // Initialize the library
 #if USE_SHT31_SENSOR
-    humidity.ReadSensor();
+        humidity.ReadSensor();
     config.humidity_sht31_average = humidity.StackHumidity();
     config.humidity_temp_sht31_average = humidity.AverageStackTemp();
     switch (HUMIDITY_SENSORS_ACTIVE)

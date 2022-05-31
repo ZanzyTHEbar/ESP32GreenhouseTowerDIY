@@ -2,9 +2,6 @@
 
 // Class Objects
 WiFiClient client;
-// Define NTP Client to get time
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
 
 #if ENABLE_MDNS_SUPPORT
 #define BROKER_ADDR cfg.config.MQTTBroker // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
@@ -40,18 +37,12 @@ char user_data[bufferlen];
  **********************************************************************************************************************/
 BASEMQTT::BASEMQTT()
 {
-    pump_relay_pin = PUMP_RELAY_PIN;
     pumpTopic = PUMP_TOPIC;
 
     pHTopic = PH_TOPIC;
     pHOutTopic = PH_OUT_TOPIC;
     phDnPIN = PH_DN_PIN;
     phUpPIN = PH_UP_PIN;
-
-    // Variables to save date and time
-    formattedDate = "";
-    dayStamp = "";
-    timeStamp = "";
 }
 
 BASEMQTT::~BASEMQTT()
@@ -70,7 +61,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     }
     log_i("Message: [%s]", result.c_str());
 
-    // Check if the message is for the current device
+    // Check if the message is for the current topic
     if (strcmp(topic, basemqtt.pumpTopic) == 0)
     {
         if (strcmp(result.c_str(), "ON") == 0)
@@ -108,11 +99,6 @@ void BASEMQTT::mqttSetup()
         // connection failed
         log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
     } // Local Mosquitto Connection -- End
-
-    // Initialize a NTPClient to get time
-    timeClient.begin();
-
-    timeClient.setTimeOffset(TIME_ZONE_OFFSET);
 }
 
 void BASEMQTT::mqttReconnect()
@@ -140,24 +126,6 @@ void BASEMQTT::mqttReconnect()
 
 void BASEMQTT::mqttLoop()
 {
-    if (!timeClient.update())
-    {
-        timeClient.forceUpdate();
-    }
-    // The formattedDate comes with the following format:
-    // 2022-05-28T16:00:13Z
-    // We need to extract date and time
-    formattedDate = timeClient.getFormattedDate();
-    log_d("Formatted Date: %s", formattedDate.c_str());
-
-    // Extract date
-    int splitT = formattedDate.indexOf("T");
-    dayStamp = formattedDate.substring(0, splitT);
-    log_d("DATE: %s", dayStamp.c_str());
-    // Extract time
-    timeStamp = formattedDate.substring(splitT + 1, formattedDate.length() - 1);
-    log_d("HOUR: %s", timeStamp.c_str());
-
     my_delay(1L);
 
     if (!mqttClient.connected())
@@ -189,7 +157,7 @@ void BASEMQTT::mqttLoop()
             log_i("Sending message to topic: %s", pHOutTopic);
 
             float newpH = cfg.config.pH;
-
+            String timeStamp = networkntp.getTimeStamp();
             log_i("pH: %s", String(newpH).c_str());
             mqttClient.publish(pHOutTopic, String(newpH).c_str(), true);
             mqttClient.publish(pHOutTopic, timeStamp.c_str(), true);

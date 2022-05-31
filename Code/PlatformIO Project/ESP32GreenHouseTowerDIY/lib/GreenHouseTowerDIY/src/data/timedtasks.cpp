@@ -47,6 +47,15 @@ void TimedTasks::accumulateSensorData()
   }
 }
 
+void TimedTasks::accumulateSensorData()
+{
+  if (Timer_1s.ding())
+  {
+    networkntp.NTPLoop();
+    Timer_1s.start();
+  }
+}
+
 void TimedTasks::checkNetwork()
 {
   if (Timer_10s.ding())

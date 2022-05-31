@@ -37,9 +37,9 @@ STATE: ['TO_DO' = [], 'IN_PROGRESS' [-],'DONE' = [x]]
 
     - [x] Implement Home assistant MQTT functionality - Done - Needs to be tested
 
-    - [-] Implement Light detection functionality - In_Progress - TODO: LDR is implemented, need to implement the light detection from BH1750
+    - [x] Implement Basic MQTT functionality - Done
 
-    - [-] Implement Basic MQTT functionality - In_Progress - TODO: code is added to the main file, but needs a trigger to start the MQTT service
+    - [-] Implement Light detection functionality - In_Progress - TODO: LDR is implemented, need to implement the light detection from BH1750
 
     - [-] Implement Soil Moisture Sensor Functionality - In_Progress - TODO: Add proper soil moisture sensor implementation
 
@@ -48,6 +48,10 @@ STATE: ['TO_DO' = [], 'IN_PROGRESS' [-],'DONE' = [x]]
     - [-] Implement Flow Sensor functionality - In_Progress - TODO: Add proper flow sensor implementation
 
     - [-] Implement I2C scanner functionality - In_Progress - TODO: code is added to the main file, but needs a trigger to start the scanner
+
+    - [-] Implement pH Sensor functionality - In_Progress - TODO: code is added to the main file, still in progress
+
+    - [-] Implement Pump and pump timer - In_Progress - TODO: code is added to the main file, still in progress
     
 
   -------- LOW PRIORITY --------

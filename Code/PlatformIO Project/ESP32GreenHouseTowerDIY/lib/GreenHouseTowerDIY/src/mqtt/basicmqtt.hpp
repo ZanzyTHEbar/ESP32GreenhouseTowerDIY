@@ -7,8 +7,6 @@
 #define BASEMQTT_HPP
 #include <defines.hpp>
 #include <PubSubClient.h>
-#include <NTPClient.h>
-#include <WiFiUdp.h>
 
 class BASEMQTT
 {
@@ -36,11 +34,6 @@ private:
     char *pHOutTopic;
     int phDnPIN;
     int phUpPIN;
-
-    // Variables to save date and time
-    String formattedDate;
-    String dayStamp;
-    String timeStamp;
 };
 
 extern BASEMQTT basemqtt;

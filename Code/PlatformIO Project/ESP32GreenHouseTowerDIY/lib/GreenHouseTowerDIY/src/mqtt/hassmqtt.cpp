@@ -58,7 +58,6 @@ HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
  **********************************************************************************************************************/
 HASSMQTT::HASSMQTT()
 {
-    pump_relay_pin = PUMP_RELAY_PIN;
     pumpTopic = PUMP_TOPIC;
 
     pHTopic = PH_TOPIC;
