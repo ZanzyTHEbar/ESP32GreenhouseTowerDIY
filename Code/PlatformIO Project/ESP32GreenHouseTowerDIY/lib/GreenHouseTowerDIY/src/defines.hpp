@@ -25,11 +25,10 @@
 
 // IO
 #include <Wire.h>
-#include "io/i2cscan.hpp"
+#include "io/i2cScanner/i2cscan.hpp"
 
 // Light Sensors
 #include "sensors/light/ldr.hpp"
-
 
 // Temp Sensors
 #include "sensors/temperature/towertemp.hpp"
@@ -63,8 +62,8 @@
 /*###################### MQTT Configuration END ######################*/
 
 // Relays and other IO
-#include "io/Relays.hpp"
-#include "io/pump.hpp"
+#include "io/Relays/Relays.hpp"
+#include "io/Pump/pump.hpp"
 
 /**
  * @brief The below Macros print data to the terminal during compilation.
@@ -89,11 +88,11 @@
 
 /**
  * To be used for the Serial Monitor in Release Mode.
- *  
+ *
  * @brief ANSI color codes
  * Windows users can use these to color the terminal output.
  * @note This is not supported on Linux.
- * 
+ *
  * Green : \e[32m -or- \e[1;32m
  * Red : \e[31m -or- \e[1;31m
  * Yellow : \e[33m -or- \e[1;33m
@@ -102,10 +101,10 @@
  * Cyan : \e[36m -or- \e[1;36m
  * Reset : \e[0m -or- \e[m
  * End : \e[37m -or- \e[1;37m
- * 
+ *
  * Linux users can use these to color the terminal output.
  * @note This is not supported on Windows.
- * 
+ *
  * Green : \033[32m -or- \033[1;32m
  * Red : \033[31m -or- \033[1;31m
  * Yellow : \033[33m -or- \033[1;33m
@@ -114,7 +113,7 @@
  * Cyan : \033[36m -or- \033[1;36m
  * Reset : \033[0m -or- \033[m
  * End : \033[37m -or- \033[1;37m
- * 
+ *
  * @see https://en.wikipedia.org/wiki/ANSI_escape_code
  */
 

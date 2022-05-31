@@ -78,35 +78,35 @@ Config::~Config()
 void Config::CreateDefaultConfig()
 {
     config = {
-        NULL, // hostname
-        NULL, // MQTTClientID
-        1883, // MQTTPort
-        8883, // MQTTPort_Secure
-        NULL, // MQTTUser
-        NULL, // MQTTPass
-        NULL, // MQTTTopic
-        NULL, // MQTTSetTopic
-        NULL, // MQTTDeviceName
-        NULL, // MQTTBroker
-        false, // MQTTSecureState
-        false, // MQTTConnectedState
-        0, // last_mqtt_connect_attempt
-        0, // last_mqtt_publish_attempt
-        0, // lastMillis
-        NULL, // IP
-        NULL, // netmask
-        NULL, // gateway
-        0, // lastMsg
-        NULL, // msg
-        0, // value
-        NULL, // WIFISSID
-        NULL, // WIFIPASS
-        NULL, // MDNS
-        false, // data_json
-        "", // data_json_string
+        NULL,                                // hostname
+        NULL,                                // MQTTClientID
+        1883,                                // MQTTPort
+        8883,                                // MQTTPort_Secure
+        NULL,                                // MQTTUser
+        NULL,                                // MQTTPass
+        NULL,                                // MQTTTopic
+        NULL,                                // MQTTSetTopic
+        NULL,                                // MQTTDeviceName
+        NULL,                                // MQTTBroker
+        false,                               // MQTTSecureState
+        false,                               // MQTTConnectedState
+        0,                                   // last_mqtt_connect_attempt
+        0,                                   // last_mqtt_publish_attempt
+        0,                                   // lastMillis
+        NULL,                                // IP
+        NULL,                                // netmask
+        NULL,                                // gateway
+        0,                                   // lastMsg
+        NULL,                                // msg
+        0,                                   // value
+        NULL,                                // WIFISSID
+        NULL,                                // WIFIPASS
+        NULL,                                // MDNS
+        false,                               // data_json
+        "",                                  // data_json_string
         {false, false, false, false, false}, // relays
-        {0, 0, 0, 0, 0}, // relays_pin
-        0 // numSensors
+        {0, 0, 0, 0, 0},                     // relays_pin
+        0                                    // numSensors
     };
 }
 
