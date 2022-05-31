@@ -39,6 +39,8 @@ STATE: ['TO_DO' = [], 'IN_PROGRESS' [-],'DONE' = [x]]
 
     - [x] Implement Basic MQTT functionality - Done
 
+    - [x] Implement Basic NTP functionality - Done
+
     - [-] Implement Light detection functionality - In_Progress - TODO: LDR is implemented, need to implement the light detection from BH1750
 
     - [-] Implement Soil Moisture Sensor Functionality - In_Progress - TODO: Add proper soil moisture sensor implementation

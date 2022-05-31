@@ -9,6 +9,14 @@ public:
     PUMP();
     virtual ~PUMP();
     void SetupPump();
+    void PumpLoop();
+    void serialControl();
+    void scheduleFromUser();
+    void setPump();
+    void setNozzle();
+    void serialReport();
+    String timeReport();
+
 
 private:
     // LED pins (PWM pins: 3,5,6,9,10,11 on arduino UNO)
