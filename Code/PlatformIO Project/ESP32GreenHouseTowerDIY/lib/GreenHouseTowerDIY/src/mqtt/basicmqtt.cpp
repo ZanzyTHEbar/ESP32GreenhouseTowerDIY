@@ -20,8 +20,6 @@ PubSubClient mqttClient(BROKER_ADDR, MQTT_SECURE_PORT, callback, client); // Loc
 PubSubClient mqttClient(BROKER_ADDR, MQTT_PORT, callback, client); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
-int status = WL_IDLE_STATUS; // the Wifi radio's status
-
 const long interval = 60000;
 unsigned long previousMillis = 0;
 
@@ -62,15 +60,12 @@ BASEMQTT::~BASEMQTT()
 void callback(char *topic, byte *payload, unsigned int length)
 {
     String result;
-    Serial.print("Message arrived [");
-    Serial.print(topic);
-    Serial.print("]: ");
+    log_i("Message arrived on topic: [%s] ", topic);
     for (int i = 0; i < length; i++)
     {
-        Serial.print((char)payload[i]);
+        log_i("payload is: [%s]", (char)payload[i]);
         result += (char)payload[i];
     }
-    Serial.println("");
 }
 
 void BASEMQTT::mqttSetup()
@@ -78,35 +73,26 @@ void BASEMQTT::mqttSetup()
     pinMode(phUpPIN, OUTPUT);
     pinMode(phDnPIN, OUTPUT);
 
-    Serial.print("You're connected to the network");
-    // WiFi Connection -- End
+    log_i("Settings up MQTT...");
 
     // Local Mosquitto Connection -- Start
     if (mqttClient.connect("arduino"))
     {
         // connection succeeded
-        Serial.println("Connection succeeded.");
-        Serial.print("Subscribing to the topic [");
-        Serial.print(pHTopic);
-        Serial.println("]");
+        log_i("Connection succeeded. Subscribing to the topic [%s]", pHTopic);
         mqttClient.subscribe(pHTopic);
-        Serial.println("Successfully subscribed to the topic.");
+        log_i("Successfully subscribed to the topic.");
     }
     else
     {
         // connection failed
-        Serial.print("Connection failed. MQTT client state is: ");
-        Serial.println(mqttClient.state());
+        log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
     } // Local Mosquitto Connection -- End
 
     // Initialize a NTPClient to get time
     timeClient.begin();
-    // Set offset time in seconds to adjust for your timezone, for example:
-    // GMT +1 = 3600
-    // GMT +8 = 28800
-    // GMT -1 = -3600
-    // GMT 0 = 0
-    timeClient.setTimeOffset(3600);
+
+    timeClient.setTimeOffset(TIME_ZONE_OFFSET);
 }
 
 void BASEMQTT::mqttReconnect()
@@ -114,21 +100,20 @@ void BASEMQTT::mqttReconnect()
     // Loop until we're reconnected
     while (!mqttClient.connected())
     {
-        Serial.print("Attempting MQTT connection...");
+        log_i("Attempting MQTT connection...");
         // Attempt to connect
         if (mqttClient.connect("arduino"))
         {
-            Serial.println("connected");
+            log_i("connected");
             // Subscribe
             mqttClient.subscribe(pHTopic);
         }
         else
         {
-            Serial.print("failed, rc=");
-            Serial.print(mqttClient.state());
-            Serial.println(" try again in 5 seconds");
+            log_i("failed, rc= %d", mqttClient.state());
+            log_i(" try again in 5 seconds");
             // Wait 15 seconds before retrying
-            delay(15000);
+            my_delay(15L);
         }
     }
 }
@@ -143,17 +128,15 @@ void BASEMQTT::mqttLoop()
     // 2022-05-28T16:00:13Z
     // We need to extract date and time
     formattedDate = timeClient.getFormattedDate();
-    Serial.println(formattedDate);
+    log_d("Formatted Date: %s", formattedDate.c_str());
 
     // Extract date
     int splitT = formattedDate.indexOf("T");
     dayStamp = formattedDate.substring(0, splitT);
-    Serial.print("DATE: ");
-    Serial.println(dayStamp);
+    log_d("DATE: %s", dayStamp.c_str());
     // Extract time
     timeStamp = formattedDate.substring(splitT + 1, formattedDate.length() - 1);
-    Serial.print("HOUR: ");
-    Serial.println(timeStamp);
+    log_d("HOUR: %s", timeStamp.c_str());
 
     my_delay(1L);
 
@@ -178,22 +161,18 @@ void BASEMQTT::mqttLoop()
 
             if (user_bytes_received)
             {
-                parse_cmd(user_data);
+                phsensor.parse_cmd(user_data);
                 user_bytes_received = 0;
                 memset(user_data, 0, sizeof(user_data));
             }
 
-            Serial.print("Sending message to topic: ");
-            Serial.println(pHOutTopic);
+            log_i("Sending message to topic: %s", pHOutTopic);
 
             float newpH = cfg.config.pH;
 
-            Serial.print("pH: ");
-            Serial.println(String(newpH).c_str());
-            mqttClient.publish(pHOutTopic, String(newpH).c_str(), true); // UTC.dateTime doesn't compile
+            log_i("pH: %s", String(newpH).c_str());
+            mqttClient.publish(pHOutTopic, String(newpH).c_str(), true);
             mqttClient.publish(pHOutTopic, timeStamp.c_str(), true);
-
-            Serial.println();
         }
     }
 }

@@ -20,6 +20,8 @@ AccumulateData::~AccumulateData()
  ******************************************************************************/
 void AccumulateData::InitAccumulateData()
 {
+    cfg.config.numSensors = numSensors;
+
     // Initialize the library
 #if USE_SHT31_SENSOR
     humidity.ReadSensor();
@@ -62,7 +64,7 @@ void AccumulateData::InitAccumulateData()
     config.humidity_temp = humidity.result.temp;
 #endif // USE_DHT_SENSOR
 
-    cfg.config.numSensors = numSensors;
+    phsensor.getPH();
 
     // loop through and store temp data
     for (int i = 0; i < numSensors; i++)

@@ -35,6 +35,9 @@
 #include "sensors/humidity/Humidity.hpp"
 //#include <sfm3003.hpp>
 
+// PH Sensors
+#include "sensors/pH/pHsensor.hpp"
+
 // wifi definitions
 #include "network/network.hpp"
 

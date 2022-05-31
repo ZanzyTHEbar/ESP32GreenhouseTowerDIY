@@ -18,7 +18,6 @@ public:
     virtual ~BASEMQTT();
 
     void loadMQTTConfig();
-    void parse_cmd(char *string);
     void mqttSetup();
     void mqttLoop();
     void mqttReconnect();
