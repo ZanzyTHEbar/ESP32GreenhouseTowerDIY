@@ -8,19 +8,19 @@ PHSENSOR::PHSENSOR()
 
 PHSENSOR::~PHSENSOR()
 {
-    pHTopic = PH_TOPIC;
-    pHOutTopic = PH_OUT_TOPIC;
-    phDnPIN = PH_DN_PIN;
-    phUpPIN = PH_UP_PIN;
-    doseTimeSm = DOSE_TIME_SM;
-    doseTimeMed = DOSE_TIME_MED;
-    doseTimeLg = DOSE_TIME_LG;
+    _pHTopic = PH_TOPIC;
+    _pHOutTopic = PH_OUT_TOPIC;
+    _phDnPIN = PH_DN_PIN;
+    _phUpPIN = PH_UP_PIN;
+    _doseTimeSm = DOSE_TIME_SM;
+    _doseTimeMed = DOSE_TIME_MED;
+    _doseTimeLg = DOSE_TIME_LG;
 }
 
 void PHSENSOR::phSensorSetup()
 {
-    pinMode(phUpPIN, OUTPUT);
-    pinMode(phDnPIN, OUTPUT);
+    pinMode(_phUpPIN, OUTPUT);
+    pinMode(_phDnPIN, OUTPUT);
     // pH probe calibration serial commands
     Serial.println(F("Use commands \"CAL,7\", \"CAL,4\", and \"CAL,10\" to calibrate the circuit to those respective values"));
     Serial.println(F("Use command \"CAL,CLEAR\" to clear the calibration"));
@@ -46,44 +46,44 @@ void PHSENSOR::eventListener(const char *topic, const uint8_t *payload, uint16_t
     if (result.equalsIgnoreCase("UP MED"))
     {
         log_i("Adjust pH UP a medium amount!");
-        digitalWrite(phUpPIN, HIGH);
-        my_delay(doseTimeMed);
-        digitalWrite(phUpPIN, LOW);
+        digitalWrite(_phUpPIN, HIGH);
+        my_delay(_doseTimeMed);
+        digitalWrite(_phUpPIN, LOW);
     }
     else if (result.equalsIgnoreCase("DOWN MED"))
     {
         log_i("Adjusting pH DOWN a medium amount!");
-        digitalWrite(phDnPIN, HIGH);
-        my_delay(doseTimeMed);
-        digitalWrite(phDnPIN, LOW);
+        digitalWrite(_phDnPIN, HIGH);
+        my_delay(_doseTimeMed);
+        digitalWrite(_phDnPIN, LOW);
     }
     else if (result.equalsIgnoreCase("UP SM"))
     {
         log_i("Adjust pH UP a small amount!");
-        digitalWrite(phUpPIN, HIGH);
-        my_delay(doseTimeSm);
-        digitalWrite(phUpPIN, LOW);
+        digitalWrite(_phUpPIN, HIGH);
+        my_delay(_doseTimeSm);
+        digitalWrite(_phUpPIN, LOW);
     }
     else if (result.equalsIgnoreCase("DOWN SM"))
     {
         log_i("Adjusting pH DOWN a small amount!");
-        digitalWrite(phDnPIN, HIGH);
-        my_delay(doseTimeSm);
-        digitalWrite(phDnPIN, LOW);
+        digitalWrite(_phDnPIN, HIGH);
+        my_delay(_doseTimeSm);
+        digitalWrite(_phDnPIN, LOW);
     }
     else if (result.equalsIgnoreCase("UP LG"))
     {
         log_i("Adjust pH UP a large amount!");
-        digitalWrite(phUpPIN, HIGH);
-        my_delay(doseTimeLg);
-        digitalWrite(phUpPIN, LOW);
+        digitalWrite(_phUpPIN, HIGH);
+        my_delay(_doseTimeLg);
+        digitalWrite(_phUpPIN, LOW);
     }
     else if (result.equalsIgnoreCase("DOWN LG"))
     {
         log_i("Adjusting pH DOWN a large amount!");
-        digitalWrite(phDnPIN, HIGH);
-        my_delay(doseTimeLg);
-        digitalWrite(phDnPIN, LOW);
+        digitalWrite(_phDnPIN, HIGH);
+        my_delay(_doseTimeLg);
+        digitalWrite(_phDnPIN, LOW);
     }
 }
 
@@ -112,15 +112,15 @@ void PHSENSOR::parse_cmd(char *string)
     }
     else if (strcmp(string, "PHUP") == 0)
     {
-        digitalWrite(phUpPIN, HIGH);
-        my_delay(doseTimeSm);
-        digitalWrite(phUpPIN, LOW); // Dose of pH up
+        digitalWrite(_phUpPIN, HIGH);
+        my_delay(_doseTimeSm);
+        digitalWrite(_phUpPIN, LOW); // Dose of pH up
     }
     else if (strcmp(string, "PHDN") == 0)
     {
-        digitalWrite(phDnPIN, HIGH);
-        my_delay(doseTimeSm);
-        digitalWrite(phDnPIN, LOW); // Dose of pH down
+        digitalWrite(_phDnPIN, HIGH);
+        my_delay(_doseTimeSm);
+        digitalWrite(_phDnPIN, LOW); // Dose of pH down
     }
 }
 

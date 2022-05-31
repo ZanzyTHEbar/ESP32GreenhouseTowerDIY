@@ -24,13 +24,13 @@ private:
     // Private functions
 
     // Private variables
-    char *pHTopic;
-    char *pHOutTopic;
-    int phDnPIN;
-    int phUpPIN;
-    int doseTimeSm;
-    int doseTimeMed;
-    int doseTimeLg;
+    char *_pHTopic;
+    char *_pHOutTopic;
+    int _phDnPIN;
+    int _phUpPIN;
+    int _doseTimeSm;
+    int _doseTimeMed;
+    int _doseTimeLg;
 };
 
 extern PHSENSOR phsensor;
