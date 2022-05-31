@@ -100,58 +100,6 @@ void PUMP::PumpLoop()
     tDelay = t + runInterval;
 }
 
-/*
- * Messages consist of the letter S followed by
- * ,int(0-1),int(0-59),int(0-59)
- * S,0,20,5 (pump,nozzleInterval,nozzleDuration)
- */
-void PUMP::serialControl()
-{
-    char c = Serial.read();
-    switch (c)
-    {
-    case 'S':
-    {
-        pumpOn = Serial.parseInt();
-        nozzleInterval = Serial.parseInt();
-        nozzleDuration = Serial.parseInt();
-
-        setPump();
-        setNozzle();
-        break;
-    }
-    case 'R':
-    {
-        serialReport();
-        break;
-    }
-    case 'Q':
-    {
-        if (runProgram == 1)
-        {
-            runProgram = 0;
-            break;
-        }
-        if (runProgram == 0)
-        {
-            runProgram = 1;
-            break;
-        }
-        break;
-    }
-    case 'T':
-    {
-        int h = Serial.parseInt();    // First valid integer
-        int m = Serial.parseInt();    // Second valid integer
-        int d = Serial.parseInt();    // Third valid integer
-        setTime(h, m, 0, d, 1, 2014); // hour,min,sec,day,month,year
-        t = now();
-        tDelay = runInterval;
-        break;
-    }
-    }
-}
-
 void PUMP::scheduleFromUser()
 {
     // Change every hour
@@ -217,6 +165,58 @@ void PUMP::serialReport()
 
     reportValues = "-- Report ----\n" + timeReport() + reportValues;
     Serial.println(reportValues);
+}
+
+/*
+ * Messages consist of the letter S followed by
+ * ,int(0-1),int(0-59),int(0-59)
+ * S,0,20,5 (pump,nozzleInterval,nozzleDuration)
+ */
+void PUMP::serialControl()
+{
+    char c = Serial.read();
+    switch (c)
+    {
+    case 'S':
+    {
+        pumpOn = Serial.parseInt();
+        nozzleInterval = Serial.parseInt();
+        nozzleDuration = Serial.parseInt();
+
+        setPump();
+        setNozzle();
+        break;
+    }
+    case 'R':
+    {
+        serialReport();
+        break;
+    }
+    case 'Q':
+    {
+        if (runProgram == 1)
+        {
+            runProgram = 0;
+            break;
+        }
+        if (runProgram == 0)
+        {
+            runProgram = 1;
+            break;
+        }
+        break;
+    }
+    case 'T':
+    {
+        int h = Serial.parseInt();    // First valid integer
+        int m = Serial.parseInt();    // Second valid integer
+        int d = Serial.parseInt();    // Third valid integer
+        setTime(h, m, 0, d, 1, 2014); // hour,min,sec,day,month,year
+        t = now();
+        tDelay = runInterval;
+        break;
+    }
+    }
 }
 
 PUMP pump;
