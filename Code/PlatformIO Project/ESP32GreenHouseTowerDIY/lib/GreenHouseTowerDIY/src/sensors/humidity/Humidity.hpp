@@ -66,7 +66,7 @@ public:
 
   // Variables
 private:
-  uint32_t delayS;
+  uint32_t _delayS;
 };
 extern Humidity humidity;
 #endif

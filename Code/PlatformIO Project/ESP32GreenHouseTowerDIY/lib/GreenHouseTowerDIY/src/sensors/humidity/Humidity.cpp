@@ -18,7 +18,7 @@ Humidity::Hum result;
 
 Humidity::Humidity()
 {
-  delayS = 0;
+  _delayS = 0;
 }
 
 Humidity::~Humidity()
@@ -62,8 +62,8 @@ int Humidity::setupSensor()
     log_d("Resolution:  %d %%", sensor.resolution); // 0.5%
     log_d("------------------------------------");
     // Set delay between sensor readings based on sensor details.
-    delayS = sensor.min_delay / 1000000;
-    log_d("Delay: %d ms", delayS);
+    _delayS = sensor.min_delay / 1000000;
+    log_d("Delay: %d ms", _delayS);
     log_d("------------------------------------");
     log_d("");
     return status;
@@ -107,7 +107,7 @@ int Humidity::setupSensor()
 Humidity::Hum Humidity::readDHT()
 {
   // Delay between measurements.
-  my_delay(delayS);
+  my_delay(_delayS);
   // Get temperature event and print its value.
   sensors_event_t event;
   dht.temperature().getEvent(&event);
