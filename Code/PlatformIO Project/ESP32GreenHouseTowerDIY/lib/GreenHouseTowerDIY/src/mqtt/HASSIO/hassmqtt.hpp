@@ -28,6 +28,10 @@ private:
   // Private functions
 
   // Private variables
+  unsigned long lastReadAt;
+  unsigned long lastAvailabilityToggleAt;
+  bool lastInputState;
+  unsigned long lastSentAt;
 };
 
 extern HASSMQTT hassmqtt;

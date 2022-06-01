@@ -17,22 +17,18 @@ long lastReconnectAttempt = 0;
  * The ID of the device must only consist of characters from the character class [a-zA-Z0-9_-] (alphanumerics, underscore and hyphen).
  * Best practice for entities with a unique_id is to set <object_id> to unique_id and omit the <node_id>.
  **/
-/* #define MQTT_DISCOVERY_PREFIX "homeassistant/"
-
-bool mqttProcessing = false; */
-
-unsigned long lastReadAt = millis();
-unsigned long lastAvailabilityToggleAt = millis();
-bool lastInputState = false;
-unsigned long lastSentAt = millis();
+//#define MQTT_DISCOVERY_PREFIX "homeassistant/"
+// bool mqttProcessing = false;
 
 #if ENABLE_MDNS_SUPPORT
 #define BROKER_ADDR cfg.config.MQTTBroker // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
 #else
-#define BROKER_ADDR IPAddress(192, 168, 0, 17) // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
+#define BROKER_ADDR MQTT_BROKER // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
-#endif // !ENABLE_MDNS_SUPPORT
+#endif // ENABLE_MDNS_SUPPORT
+
+IPAddress broker_ip;
 
 HADevice device;
 HAMqtt mqtt(espClient, device);
@@ -55,9 +51,8 @@ HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
  * Class Global Variables
  * Please only make changes to the following class variables within the ini file. Do not change them here.
  **********************************************************************************************************************/
-HASSMQTT::HASSMQTT()
+HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(false), lastSentAt(millis())
 {
-    // Constructor
 }
 
 HASSMQTT::~HASSMQTT()
@@ -279,9 +274,9 @@ void HASSMQTT::mqttSetup()
     mqtt.setDiscoveryPrefix("Greenhouse_Tower");
 
 #if MQTT_SECURE
-    mqtt.begin(BROKER_ADDR, cfg.config.MQTTUser, cfg.config.MQTTPass);
+    mqtt.begin(broker_ip.fromString(BROKER_ADDR), cfg.config.MQTTUser, cfg.config.MQTTPass);
 #else
-    mqtt.begin(BROKER_ADDR);
+    mqtt.begin(broker_ip.fromString(BROKER_ADDR));
 #endif // MQTT_SECURE
 }
 

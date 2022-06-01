@@ -150,23 +150,15 @@ void NetworkNTP::sendNTPpacket(IPAddress &address)
 #else
 NTPClient timeClient(ntpUDP);
 
-NetworkNTP::NetworkNTP()
-{
-    // Variables to save date and time
-    _formattedDate = "";
-    _dayStamp = "";
-    _timeStamp = "";
-}
-
-NetworkNTP::~NetworkNTP()
-{
-}
-
-void NetworkNTP::SetupNTP()
+NetworkNTP::NetworkNTP(): _formattedDate(""), _dayStamp(""), _timeStamp("")
 {
     // Initialize a NTPClient to get time
     timeClient.begin();
     timeClient.setTimeOffset(TIME_ZONE_OFFSET);
+}
+
+NetworkNTP::~NetworkNTP()
+{
 }
 
 void NetworkNTP::NTPLoop()
