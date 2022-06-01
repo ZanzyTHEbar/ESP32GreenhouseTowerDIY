@@ -8,7 +8,7 @@
 #include <defines.hpp>
 #include <PubSubClient.h>
 
-class BASEMQTT
+class BASEMQTT : public IPAddress
 {
 public:
     // Constructor

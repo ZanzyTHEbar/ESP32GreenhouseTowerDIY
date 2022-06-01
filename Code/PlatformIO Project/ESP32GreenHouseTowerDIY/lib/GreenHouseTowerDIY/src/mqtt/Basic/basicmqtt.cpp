@@ -1,20 +1,21 @@
 #include "basicmqtt.hpp"
 
-// Class Objects
 #if ENABLE_MDNS_SUPPORT
 #define BROKER_ADDR cfg.config.MQTTBroker // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
 #else
-#define BROKER_ADDR IPAddress(192, 168, 0, 17) // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
+#define BROKER_ADDR MQTT_BROKER // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
 #endif // ENABLE_MDNS_SUPPORT
+
+IPAddress broker_ip;
 
 void callback(char *topic, byte *payload, unsigned int length);
 
 #if MQTT_SECURE
-PubSubClient mqttClient(BROKER_ADDR, MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(BROKER_ADDR), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
 #else
-PubSubClient mqttClient(BROKER_ADDR, MQTT_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(BROKER_ADDR), MQTT_PORT, callback, espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
 //***********************************************************************************************************************
@@ -24,7 +25,6 @@ PubSubClient mqttClient(BROKER_ADDR, MQTT_PORT, callback, espClient); // Local M
 
 BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}, _previousMillis(0), _user_bytes_received(0)
 {
-    // Constructor
 }
 
 BASEMQTT::~BASEMQTT()
