@@ -24,7 +24,7 @@ void AccumulateData::InitAccumulateData()
     humidity.ReadSensor();
     config.humidity_sht31_average = humidity.StackHumidity();
     config.humidity_temp_sht31_average = humidity.AverageStackTemp();
-    switch (HUMIDITY_SENSORS_ACTIVE)
+    switch (humidity._HUMIDITY_SENSORS_ACTIVE)
     {
     case 0:
         config.humidity_sht31 = 0;
