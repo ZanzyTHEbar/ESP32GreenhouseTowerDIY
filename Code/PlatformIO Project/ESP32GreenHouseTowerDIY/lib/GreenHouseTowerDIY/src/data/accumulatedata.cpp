@@ -1,10 +1,9 @@
 #include "accumulatedata.hpp"
 
-int numSensors = 10;
-
 AccumulateData::AccumulateData()
 {
     _maxTemp = 100;
+    _numTempSensors = 0;
 }
 
 AccumulateData::~AccumulateData()
@@ -19,7 +18,8 @@ AccumulateData::~AccumulateData()
  ******************************************************************************/
 void AccumulateData::InitAccumulateData()
 {
-    cfg.config.numSensors = numSensors;
+    _numTempSensors = tower_temp.getSensorCount();
+    cfg.config.numSensors = _numTempSensors;
 
     // Initialize the library
 #if USE_SHT31_SENSOR
@@ -68,7 +68,7 @@ void AccumulateData::InitAccumulateData()
 #endif // ENABLE_PH_SUPPORT
 
     // loop through and store temp data
-    for (int i = 0; i < numSensors; i++)
+    for (int i = 0; i < _numTempSensors; i++)
     {
         config.temp_sensors[i] = tower_temp.temp_sensor_results.temp[i];
     }

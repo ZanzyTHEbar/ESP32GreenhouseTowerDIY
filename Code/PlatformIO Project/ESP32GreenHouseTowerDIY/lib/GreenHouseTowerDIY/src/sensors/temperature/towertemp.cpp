@@ -11,18 +11,23 @@ DeviceAddress temp_sensor_addresses;
 
 TowerTemp::Temp temp_sensor_results;
 
-int sensors_count = 0;
 TowerTemp::TowerTemp()
 {
+    sensors_count = 0;
 }
 
 TowerTemp::~TowerTemp()
 {
 }
 
-int setSensorCount()
+void TowerTemp::setSensorCount()
 {
-    return sensors_count = sensors.getDeviceCount(); // returns the number of sensors found
+    sensors_count = sensors.getDeviceCount(); // returns the number of sensors found
+}
+
+int TowerTemp::getSensorCount()
+{
+    return sensors_count;
 }
 
 /******************************************************************************

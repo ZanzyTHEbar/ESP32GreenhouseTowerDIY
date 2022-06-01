@@ -233,7 +233,7 @@ bool Config::loadConfig()
     heapStr(&config.WIFIPASS, jsonBuffer["WIFIPASS"]);
     config.MQTTConnectedState = jsonBuffer["MQTTConnectedState"];
     heapStr(&config.MDNS, jsonBuffer["MDNS"]);
-    config.numSensors = jsonBuffer["Number_of_Sensors"];
+    config.numTempSensors = jsonBuffer["Number_of_Temp_Sensors"];
 
     for (int i = 0; i < sizeof(config.relays); i++)
     {
@@ -294,7 +294,7 @@ bool Config::saveConfig()
     json["WIFIPASS"] = config.WIFIPASS;
     json["MQTTConnectedState"] = config.MQTTConnectedState;
     json["MDNS"] = config.MDNS;
-    json["Number_of_Sensors"] = config.numSensors;
+    json["Number_of_Temp_Sensors"] = config.numTempSensors;
 
     // Relays
     JsonArray Relays = json.createNestedArray("Tower_Relays_State");
