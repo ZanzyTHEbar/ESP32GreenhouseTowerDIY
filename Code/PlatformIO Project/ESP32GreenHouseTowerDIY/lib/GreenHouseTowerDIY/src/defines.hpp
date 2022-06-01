@@ -52,12 +52,10 @@
 
 /*######################## MQTT Configuration ########################*/
 // MQTT includes
-//! Deprecated - TODO: REMOVE ME
-// #include "Oldmqtt.hpp"
-#include "mqtt/hassmqtt.hpp"
-#include "mqtt/basicmqtt.hpp"
+#include "mqtt/HASSIO/hassmqtt.hpp"
+#include "mqtt/BASIC/basicmqtt.hpp"
 #if ENABLE_MDNS_SUPPORT
-#include "mDNS.hpp"
+#include "mqtt/mDNS_Discovery/mDNS.hpp"
 #endif // ENABLE_MDNS_SUPPORT
 /*###################### MQTT Configuration END ######################*/
 
@@ -82,8 +80,7 @@
 
 #define _STR(x) #x
 #define STR(x) _STR(x)
-#define TODO(x) _Pragma(STR(message("TODO: " STR(x) "::" __FILE__ "@" \
-                                                    "(" $Line ")")))
+#define TODO(x) _Pragma(STR(message("TODO: " STR(x) "::" __FILE__ "@" "(" $Line ")")))
 #define Message(desc) _Pragma(STR(message(__FILE__ "(" $Line "):" #desc)))
 
 /**
