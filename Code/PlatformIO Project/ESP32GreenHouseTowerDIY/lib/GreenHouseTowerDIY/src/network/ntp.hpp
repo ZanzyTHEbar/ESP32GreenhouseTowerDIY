@@ -17,7 +17,6 @@ public:
     NetworkNTP();
     virtual ~NetworkNTP();
     // Functions
-    void SetupNTP();
     void NTPLoop();
 #if NTP_MANUAL_ENABLED
     time_t getNtpTime();

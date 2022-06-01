@@ -1,21 +1,14 @@
 #include "basicmqtt.hpp"
 
-#if ENABLE_MDNS_SUPPORT
-#define BROKER_ADDR cfg.config.MQTTBroker // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
-#else
-#define BROKER_ADDR MQTT_BROKER // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
-#endif // ENABLE_MDNS_SUPPORT
-
 IPAddress broker_ip;
 
 void callback(char *topic, byte *payload, unsigned int length);
+String getBroker();
 
 #if MQTT_SECURE
-PubSubClient mqttClient(broker_ip.fromString(BROKER_ADDR), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
 #else
-PubSubClient mqttClient(broker_ip.fromString(BROKER_ADDR), MQTT_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_PORT, callback, espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
 //***********************************************************************************************************************
@@ -48,6 +41,29 @@ BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}, _previousMillis(0), _use
 BASEMQTT::~BASEMQTT()
 {
     // Destructor
+}
+
+String getBroker()
+{
+#if ENABLE_MDNS_SUPPORT
+#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
+    if (mDNSDiscovery::DiscovermDNSBroker())
+    {
+        Serial.println(F("[mDNS responder started] Setting up Broker..."));
+        String BROKER_ADDR = cfg.config.MQTTBroker; // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
+        return BROKER_ADDR;
+    }
+    else
+    {
+        Serial.println(F("[mDNS responder failed]"));
+        String BROKER_ADDR = MQTT_BROKER;
+        return BROKER_ADDR;
+    }
+    return String(MQTT_BROKER);
+#else
+#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
+    return String(MQTT_BROKER);
+#endif // ENABLE_MDNS_SUPPORT
 }
 
 // Handles messages arrived on subscribed topic(s)

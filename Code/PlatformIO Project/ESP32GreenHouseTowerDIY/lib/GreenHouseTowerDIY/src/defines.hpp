@@ -126,12 +126,4 @@ char *appendChartoChar(const char *hostname, const char *def_host);
 void my_delay(volatile long delay_time);
 String generateDeviceID();
 
-// Global Variables
-extern const char *mqtt_mDNS_clientId;
-extern int period;
-extern unsigned long time_now;
-
-// Wifi Variables
-extern bool wifiConnected;
-
 #endif // DEFINES_hpp

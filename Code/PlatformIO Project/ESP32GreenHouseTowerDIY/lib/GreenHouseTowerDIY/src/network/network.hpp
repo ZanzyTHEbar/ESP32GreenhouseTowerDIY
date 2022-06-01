@@ -37,6 +37,7 @@ private:
     // Timer variables
     unsigned long previousMillis;
     const long interval; // interval to wait for Wi-Fi connection (milliseconds)
+    bool wifiConnected;
 };
 
 extern Network network;

@@ -49,7 +49,8 @@ WiFiClient espClient;
  */
 Network::Network() : MAX_FILESIZE(2 * 1024 * 1024),
                      previousMillis(0),
-                     interval(30000)
+                     interval(30000),
+                     wifiConnected(false)
 {
     log_i("[INFO]: Network::Network()\n");
     log_i("[INFO]: Creating network object\n");
@@ -211,7 +212,7 @@ bool Network::SetupNetworkStack()
             }
 
             WiFi.setHostname(cfg.config.hostname); // define hostname
-            
+
             WiFi.begin(cfg.config.WIFISSID, cfg.config.WIFIPASS);
 
             unsigned long currentMillis = millis();

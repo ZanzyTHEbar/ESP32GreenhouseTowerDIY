@@ -20,14 +20,6 @@ long lastReconnectAttempt = 0;
 //#define MQTT_DISCOVERY_PREFIX "homeassistant/"
 // bool mqttProcessing = false;
 
-#if ENABLE_MDNS_SUPPORT
-#define BROKER_ADDR cfg.config.MQTTBroker // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
-#else
-#define BROKER_ADDR MQTT_BROKER // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
-#endif // ENABLE_MDNS_SUPPORT
-
 IPAddress broker_ip;
 
 HADevice device;
@@ -51,6 +43,14 @@ HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
  * Class Global Variables
  * Please only make changes to the following class variables within the ini file. Do not change them here.
  **********************************************************************************************************************/
+void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
+void onMqttConnected();
+void onBeforeStateChanged(bool state, HASwitch *s);
+void onRelayStateChanged(bool state, HASwitch *s);
+void onMqttConnectionFailed();
+void onPHStateChanged(bool state, HASwitch *s);
+String getBroker();
+
 HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(digitalRead(pump._pump_relay_pin)), lastSentAt(millis())
 {
     // Unique ID must be set!
@@ -139,15 +139,38 @@ HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()),
     mqtt.setDiscoveryPrefix("Greenhouse_Tower");
 
 #if MQTT_SECURE
-    mqtt.begin(broker_ip.fromString(BROKER_ADDR), cfg.config.MQTTUser, cfg.config.MQTTPass);
+    mqtt.begin(broker_ip.fromString(getBroker()), cfg.config.MQTTUser, cfg.config.MQTTPass);
 #else
-    mqtt.begin(broker_ip.fromString(BROKER_ADDR));
+    mqtt.begin(broker_ip.fromString(getBroker()));
 #endif // MQTT_SECURE
 }
 
 HASSMQTT::~HASSMQTT()
 {
     // Destructor
+}
+
+String getBroker()
+{
+#if ENABLE_MDNS_SUPPORT
+#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
+    if (mDNSDiscovery::DiscovermDNSBroker())
+    {
+        Serial.println(F("[mDNS responder started] Setting up Broker..."));
+        String BROKER_ADDR = cfg.config.MQTTBroker; // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
+        return BROKER_ADDR;
+    }
+    else
+    {
+        Serial.println(F("[mDNS responder failed]"));
+        String BROKER_ADDR = MQTT_BROKER;
+        return BROKER_ADDR;
+    }
+    return String(MQTT_BROKER);
+#else
+#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
+    return String(MQTT_BROKER);
+#endif // ENABLE_MDNS_SUPPORT
 }
 
 void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)

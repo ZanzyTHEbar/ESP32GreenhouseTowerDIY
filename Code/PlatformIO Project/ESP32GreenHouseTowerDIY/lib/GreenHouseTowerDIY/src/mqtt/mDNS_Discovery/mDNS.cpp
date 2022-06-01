@@ -15,9 +15,10 @@ int mDNSDiscovery::DiscovermDNSBroker()
         log_i("[mDNS Broker Discovery]: connected!\n");
 
         log_i("[mDNS Broker Discovery]: Setting up mDNS: ");
-        if (!MDNS.begin(mqtt_mDNS_clientId))
+        if (!MDNS.begin(DEFAULT_HOSTNAME))
         {
-            log_i("[Fail]\n");
+            log_e("[Fail] Error setting up mDNS lookup\n");
+            return 0;
         }
         else
         {
@@ -29,7 +30,7 @@ int mDNSDiscovery::DiscovermDNSBroker()
             if (n == 0)
             {
                 // No service found
-                log_i("[Fail]\n");
+                log_e("[Fail] No mqtt service found on your network\n");
                 return 0;
             }
             else

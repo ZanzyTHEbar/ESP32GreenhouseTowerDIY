@@ -33,8 +33,6 @@ void setup()
   // initialize the Relay pins and set them to off state
   std::copy(temp, temp + sizeof(temp) / sizeof(temp[0]), cfg.config.relays_pin);
 
-  Serial.println(F("Starting NTP Client"));
-  networkntp.SetupNTP();
   Wire.begin();
 
   Serial.println(F("Green House Tower booting - please wait"));
@@ -63,20 +61,26 @@ void setup()
   Serial.println("");
   Relay.SetupPID();
   // Setup the network stack
-  // Setup the Wifi Manager
 #if ENABLE_HASS
   hassmqtt.loadMQTTConfig();
 #else
   basemqtt.loadMQTTConfig();
 #endif // ENABLE_HASS
-  network.SetupWebServer();
-  Serial.println(F("Starting Webserver"));
-  network.SetupServer();
   Serial.println(F("Setting up WiFi"));
+  Serial.println(F("Starting Webserver"));
+  network.SetupWebServer();
+  network.SetupServer();
   Serial.println(F("Setting up MQTT"));
 
 #if ENABLE_MDNS_SUPPORT
-  int mDNSDiscovery::DiscovermDNSBroker();
+  if (mDNSDiscovery::DiscovermDNSBroker())
+  {
+    Serial.println(F("[mDNS responder started] Setting up Broker..."));
+  }
+  else
+  {
+    Serial.println(F("[mDNS responder failed]"));
+  }
 #endif // ENABLE_MDNS_SUPPORT
 
   Serial.println("");
@@ -101,8 +105,8 @@ void loop()
   timedTasks.ScanI2CBus();
 #endif // ENABLE_I2C_SCANNER
   timedTasks.accumulateSensorData();
-  timedTasks.checkNetwork();
   timedTasks.updateCurrentData();
+  timedTasks.checkNetwork();
 
   if (cfg.config.data_json)
   {
