@@ -1,9 +1,7 @@
 #include "accumulatedata.hpp"
 
-AccumulateData::AccumulateData()
+AccumulateData::AccumulateData() : _maxTemp(100), _numTempSensors(0)
 {
-    _maxTemp = 100;
-    _numTempSensors = 0;
 }
 
 AccumulateData::~AccumulateData()

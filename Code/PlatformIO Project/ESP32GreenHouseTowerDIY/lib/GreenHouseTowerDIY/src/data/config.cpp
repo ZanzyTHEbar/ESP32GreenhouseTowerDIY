@@ -2,12 +2,11 @@
 
 // save last "timestamp" the config has been saved
 
-Config::Config()
+Config::Config() : _last_config_change(false),
+                   _last_config(0),
+                   _maxTemp(120),
+                   _doc_string("")
 {
-    _last_config_change = false;
-    _last_config = 0;
-    _maxTemp = 120;
-    _doc_string = "";
 }
 
 Config::~Config()

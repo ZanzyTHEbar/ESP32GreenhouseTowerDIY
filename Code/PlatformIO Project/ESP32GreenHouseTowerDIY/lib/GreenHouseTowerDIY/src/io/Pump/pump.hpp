@@ -8,7 +8,6 @@ class PUMP
 public:
     PUMP();
     virtual ~PUMP();
-    void SetupPump();
     void PumpLoop();
     void serialControl();
     void scheduleFromUser();
@@ -28,7 +27,7 @@ public:
 private:
     // LED pins (PWM pins: 3,5,6,9,10,11 on arduino UNO)
     int _pump_relay_pin; // Pin 4 on arduino maps to D2 on wemos
-    char *_pumpTopic;
+    const char *_pumpTopic;
     int _NOZZLE; // Pin 5 on arduino maps to D1 on wemos
     int _runInterval;
     int _pumpMaxRunTime;

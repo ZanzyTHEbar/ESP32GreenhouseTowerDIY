@@ -35,8 +35,6 @@ void setup()
 
   Serial.println(F("Starting NTP Client"));
   networkntp.SetupNTP();
-  Relay.SetupRelays();
-  pump.SetupPump();
   Wire.begin();
 
   Serial.println(F("HMS booting - please wait"));

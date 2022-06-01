@@ -13,44 +13,30 @@ int pumpScheduleIndex[1][24] = {
     {2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2} // Pump at 12:00
 };
 
-PUMP::PUMP()
+PUMP::PUMP() : _pumpTopic(PUMP_TOPIC),
+               _NOZZLE(PUMP_NOZZLE_PIN),
+               _runInterval(1),
+               _pumpMaxRunTime(0),
+               _pumpOn(0),
+               _nozzleInterval(10),
+               _nozzleDuration(1),
+               _runProgram(1),
+               _oneReport(0),
+               _t_(0),
+               _tDelay(_runInterval)
 {
-    _pump_relay_pin = PUMP_RELAY_PIN;
-    _pumpTopic = PUMP_TOPIC;
-    _NOZZLE = PUMP_NOZZLE_PIN;
-    _runInterval = 1;
-    _pumpMaxRunTime = 0;
-
-    _pumpOn = 0;          // 0 off, 1 on
-    _nozzleInterval = 10; // min interval between _nozzle activation >60 == off
-    _nozzleDuration = 1;  // sec active _nozzle <0 == off
-
-    // Run preprogrammed setup, _oneReport after _nozzle on
-    _runProgram = 1;
-    _oneReport = 0;
-
-    // Time
-    _t_ = 0;
-    _tDelay = _runInterval;
+    // Setup the pump relay pin
+    log_i("Setting up the pump...");
+    Relay.RelayOnOff(_pump_relay_pin, false);
+    // Setup the nozzle pin
+    pinMode(_NOZZLE, OUTPUT);
+    digitalWrite(_NOZZLE, LOW);
+    // Set the time
+    setTime(12, 0, 0, networkntp.getDay().toInt(), networkntp.getMonth().toInt(), networkntp.getYear().toInt()); // hour,min,sec,day,month,year
 }
 
 PUMP::~PUMP()
 {
-}
-
-void PUMP::SetupPump()
-{
-    log_i("Setting up the pump...");
-    Relay.RelayOnOff(_pump_relay_pin, false);
-
-    pinMode(_NOZZLE, OUTPUT);
-    digitalWrite(_NOZZLE, LOW);
-
-    pinMode(LED_BUILTIN, OUTPUT); // Pin 13 on arduino and 2 on wemos
-    digitalWrite(LED_BUILTIN, LOW);
-
-    // Set the time
-    setTime(12, 0, 0, networkntp.getDay().toInt(), networkntp.getMonth().toInt(), networkntp.getYear().toInt()); // hour,min,sec,day,month,year
 }
 
 void PUMP::PumpLoop()

@@ -9,9 +9,9 @@ WiFiClient client;
 #else
 #define BROKER_ADDR IPAddress(192, 168, 0, 17) // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
-#endif // !ENABLE_MDNS_SUPPORT
+#endif // ENABLE_MDNS_SUPPORT
 
-void callback(char* topic, byte* payload, unsigned int length);
+void callback(char *topic, byte *payload, unsigned int length);
 
 #if MQTT_SECURE
 PubSubClient mqttClient(BROKER_ADDR, MQTT_SECURE_PORT, callback, client); // Local Mosquitto Connection
@@ -23,13 +23,11 @@ PubSubClient mqttClient(BROKER_ADDR, MQTT_PORT, callback, client); // Local Mosq
 //***********************************************************************************************************************
 // * Class Global Variables
 // * Please only make changes to the following class variables within the ini file. Do not change them here.
-//***********************************************************************************************************************
+//************************************************************************************************************************
 
-BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}
+BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}, _previousMillis(0), _user_bytes_received(0)
 {
     // Constructor
-    _previousMillis = 0;
-    _user_bytes_received = 0;
 }
 
 BASEMQTT::~BASEMQTT()

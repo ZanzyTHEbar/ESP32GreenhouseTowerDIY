@@ -7,20 +7,16 @@ unsigned long windowStartTime;
 
 Relays::Relays()
 {
-}
-
-Relays::~Relays()
-{
-}
-
-void Relays::SetupRelays()
-{
     // use a c++ ranged for loop to iterate through the relay pins
     for (auto pin : cfg.config.relays_pin)
     {
         pinMode(pin, OUTPUT);
         digitalWrite(pin, LOW);
     }
+}
+
+Relays::~Relays()
+{
 }
 
 /******************************************************************************
