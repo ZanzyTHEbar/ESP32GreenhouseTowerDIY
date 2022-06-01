@@ -25,6 +25,24 @@ PubSubClient mqttClient(broker_ip.fromString(BROKER_ADDR), MQTT_PORT, callback, 
 
 BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}, _previousMillis(0), _user_bytes_received(0)
 {
+    log_i("Setting up MQTT...");
+
+    // Local Mosquitto Connection -- Start
+    if (mqttClient.connect(DEFAULT_HOSTNAME))
+    {
+#if ENABLE_PH_SUPPORT
+        // connection succeeded
+        log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
+        mqttClient.subscribe(phsensor._pHTopic);
+#endif // ENABLE_PH_SUPPORT
+        log_i("Successfully subscribed to the topic.");
+    }
+    else
+    {
+        // connection failed
+        log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
+    }
+    // Local Mosquitto Connection -- End
 }
 
 BASEMQTT::~BASEMQTT()
@@ -67,26 +85,36 @@ void callback(char *topic, byte *payload, unsigned int length)
 #endif // ENABLE_PH_SUPPORT
 }
 
-void BASEMQTT::mqttSetup()
+void BASEMQTT::loadMQTTConfig()
 {
-    log_i("Settings up MQTT...");
+    log_i("Checking if hostname is set and valid");
+    size_t size = sizeof(cfg.config.hostname);
+    if (!cfg.isValidHostname(cfg.config.hostname, size - 1))
+    {
+        heapStr(&cfg.config.hostname, DEFAULT_HOSTNAME);
+        cfg.setConfigChanged();
+    }
 
-    // Local Mosquitto Connection -- Start
-    if (mqttClient.connect(DEFAULT_HOSTNAME))
-    {
-#if ENABLE_PH_SUPPORT
-        // connection succeeded
-        log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
-        mqttClient.subscribe(phsensor._pHTopic);
-#endif // ENABLE_PH_SUPPORT
-        log_i("Successfully subscribed to the topic.");
-    }
-    else
-    {
-        // connection failed
-        log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
-    }
-    // Local Mosquitto Connection -- End
+    String MQTT_CLIENT_ID = generateDeviceID();
+    const char *mqtt_user = MQTT_USER;
+    const char *mqtt_pass = MQTT_PASS;
+    char *mqtt_client_id = StringtoChar(MQTT_CLIENT_ID);
+    heapStr(&cfg.config.MQTTUser, mqtt_user);
+    heapStr(&cfg.config.MQTTPass, mqtt_pass);
+    heapStr(&cfg.config.MQTTClientID, mqtt_client_id);
+    WiFi.setHostname(cfg.config.hostname); // define hostname
+    cfg.setConfigChanged();
+    free(mqtt_client_id);
+
+    log_i("Loaded config: hostname %s, MQTT enable relay %s, MQTT host %s, MQTT port %d, MQTT user %s, MQTT pass %s, MQTT topic %s, MQTT set topic %s, MQTT device name %s",
+          cfg.config.hostname,
+          cfg.config.MQTTBroker,
+          cfg.config.MQTTPort,
+          cfg.config.MQTTUser,
+          cfg.config.MQTTPass,
+          cfg.config.MQTTDeviceName);
+
+    log_i("Loaded config: hostname %s", cfg.config.hostname);
 }
 
 void BASEMQTT::mqttReconnect()

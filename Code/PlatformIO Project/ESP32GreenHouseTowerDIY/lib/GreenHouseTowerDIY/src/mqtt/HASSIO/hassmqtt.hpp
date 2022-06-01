@@ -16,7 +16,6 @@ public:
   virtual ~HASSMQTT();
 
   void loadMQTTConfig();
-  void mqttSetup();
   void mqttLoop();
 
   // Friends

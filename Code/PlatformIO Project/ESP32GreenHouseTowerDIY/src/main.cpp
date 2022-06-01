@@ -37,7 +37,7 @@ void setup()
   networkntp.SetupNTP();
   Wire.begin();
 
-  Serial.println(F("HMS booting - please wait"));
+  Serial.println(F("Green House Tower booting - please wait"));
   Serial.println(F("Starting..."));
   tower_temp.SetupSensors();
 
@@ -64,6 +64,11 @@ void setup()
   Relay.SetupPID();
   // Setup the network stack
   // Setup the Wifi Manager
+#if ENABLE_HASS
+  hassmqtt.loadMQTTConfig();
+#else
+  basemqtt.loadMQTTConfig();
+#endif // ENABLE_HASS
   network.SetupWebServer();
   Serial.println(F("Starting Webserver"));
   network.SetupServer();
@@ -73,7 +78,6 @@ void setup()
 #if ENABLE_MDNS_SUPPORT
   int mDNSDiscovery::DiscovermDNSBroker();
 #endif // ENABLE_MDNS_SUPPORT
-  hassmqtt.loadMQTTConfig();
 
   Serial.println("");
   if (network.SetupNetworkStack())
@@ -93,7 +97,9 @@ void setup()
 
 void loop()
 {
+#if ENABLE_I2C_SCANNER
   timedTasks.ScanI2CBus();
+#endif // ENABLE_I2C_SCANNER
   timedTasks.accumulateSensorData();
   timedTasks.checkNetwork();
   timedTasks.updateCurrentData();
@@ -113,7 +119,11 @@ void loop()
 
   if (WiFi.status() == WL_CONNECTED)
   {
+    timedTasks.NTPService();
+#if ENABLE_HASS
     hassmqtt.mqttLoop();
+#else
+    basemqtt.mqttLoop();
+#endif // ENABLE_HASS
   }
-  my_delay(1L);
 }

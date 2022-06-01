@@ -211,6 +211,7 @@ bool Network::SetupNetworkStack()
             }
 
             WiFi.setHostname(cfg.config.hostname); // define hostname
+            
             WiFi.begin(cfg.config.WIFISSID, cfg.config.WIFIPASS);
 
             unsigned long currentMillis = millis();

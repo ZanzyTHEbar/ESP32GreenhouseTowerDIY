@@ -25,7 +25,9 @@
 
 // IO
 #include <Wire.h>
+#if ENABLE_I2C_SCANNER
 #include "io/i2cScanner/i2cscan.hpp"
+#endif // ENABLE_I2C_SCANNER
 
 // Light Sensors
 #include "sensors/light/ldr.hpp"
@@ -35,10 +37,11 @@
 
 // Humidity Sensors
 #include "sensors/humidity/Humidity.hpp"
-//#include <sfm3003.hpp>
 
 // PH Sensors
+#if ENABLE_PH_SUPPORT
 #include "sensors/pH/pHsensor.hpp"
+#endif // ENABLE_PH_SUPPORT
 
 // Network definitions
 #include "network/network.hpp"
@@ -55,8 +58,11 @@
 #if ENABLE_MDNS_SUPPORT
 #include "mqtt/mDNS_Discovery/mDNS.hpp"
 #endif // ENABLE_MDNS_SUPPORT
+#if ENABLE_HASS
 #include "mqtt/HASSIO/hassmqtt.hpp"
+#else
 #include "mqtt/BASIC/basicmqtt.hpp"
+#endif // ENABLE_HASS
 /*###################### MQTT Configuration END ######################*/
 
 // Relays and other IO

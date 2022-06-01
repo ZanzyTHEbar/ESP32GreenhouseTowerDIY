@@ -21,6 +21,7 @@ void TimedTasks::setupTimers()
   _Timer_5m.setTime(300000);
 }
 
+#if ENABLE_I2C_SCANNER
 void TimedTasks::ScanI2CBus()
 {
   if (ENABLE_I2C_SCANNER)
@@ -37,6 +38,7 @@ void TimedTasks::ScanI2CBus()
     return;
   }
 }
+#endif // ENABLE_I2C_SCANNER
 
 void TimedTasks::accumulateSensorData()
 {

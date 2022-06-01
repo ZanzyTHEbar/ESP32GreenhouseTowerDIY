@@ -51,8 +51,98 @@ HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
  * Class Global Variables
  * Please only make changes to the following class variables within the ini file. Do not change them here.
  **********************************************************************************************************************/
-HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(false), lastSentAt(millis())
+HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(digitalRead(pump._pump_relay_pin)), lastSentAt(millis())
 {
+    // Unique ID must be set!
+    String mac = WiFi.macAddress();
+    byte buf[100];
+    mac.getBytes(buf, sizeof(buf));
+    device.setUniqueId(buf, sizeof(buf));
+
+    for (int i = 0; i < 10; i++)
+    {
+        log_d("%c", buf[i]);
+    }
+    log_d("\n");
+
+    // connect to broker
+    log_i("Connecting to Broker");
+
+    // set device's details (optional)
+    strcmp(cfg.config.MQTTDeviceName, DEFAULT_HOSTNAME) != 0 ? device.setName(DEFAULT_HOSTNAME) : device.setName(cfg.config.MQTTDeviceName);
+    device.setSoftwareVersion(String(VERSION).c_str());
+
+    // handle switch state
+    relay.onBeforeStateChanged(onBeforeStateChanged); // optional
+    relay.onStateChanged(onRelayStateChanged);
+    relay.setName("Pump Relay"); // optional
+
+    // This method enables availability for all device types registered on the device.
+    // For example, if you have 5 sensors on the same device, you can enable
+    // shared availability and change availability state of all sensors using
+    // single method call "device.setAvailability(false|true)"
+    device.enableSharedAvailability();
+
+    // Optionally, you can enable MQTT LWT feature. If device will lose connection
+    // to the broker, all device types related to it will be marked as offline in
+    // the Home Assistant Panel.
+    device.enableLastWill();
+
+    // configure sensors
+#if USE_DHT_SENSOR
+    tower_humidity_temp.setUnitOfMeasurement("°C");
+    tower_humidity_temp.setDeviceClass("temperature");
+    tower_humidity_temp.setIcon("mdi:thermometer-lines");
+    tower_humidity_temp.setName("Tower temperature");
+
+    tower_humidity.setUnitOfMeasurement("%");
+    tower_humidity.setDeviceClass("humidity");
+    tower_humidity.setIcon("mdi:water-percent");
+    tower_humidity.setName("Tower Humidity");
+#endif // USE_DHT_SENSOR
+
+    water_temp.setUnitOfMeasurement("°C");
+    water_temp.setDeviceClass("temperature");
+    water_temp.setIcon("mdi:coolant-temperature");
+    water_temp.setName("Tower water temperature");
+
+#if USE_SHT31_SENSOR
+    sht31_humidity.setUnitOfMeasurement("%");
+    sht31_humidity.setDeviceClass("humidity");
+    sht31_humidity.setIcon("mdi:water-percent");
+    sht31_humidity.setName("Tower Humidity");
+
+    sht31_humidity_temp.setUnitOfMeasurement("°C");
+    sht31_humidity_temp.setDeviceClass("temperature");
+    sht31_humidity_temp.setIcon("mdi:thermometer-lines");
+    sht31_humidity_temp.setName("Tower Temperature");
+
+    sht31_humidity_2.setUnitOfMeasurement("%");
+    sht31_humidity_2.setDeviceClass("humidity");
+    sht31_humidity_2.setIcon("mdi:water-percent");
+    sht31_humidity_2.setName("Tower Humidity Sensor 2");
+
+    sht31_humidity_temp_2.setUnitOfMeasurement("°C");
+    sht31_humidity_temp_2.setDeviceClass("humidity");
+    sht31_humidity_temp_2.setIcon("mdi:thermometer-lines");
+    sht31_humidity_temp_2.setName("Tower Temperature Sensor 2");
+#endif // USE_SHT31_SENSOR
+
+    light.setUnitOfMeasurement("lx");
+    light.setDeviceClass("illuminance");
+    light.setIcon("mdi:lightbulb");
+    light.setName("Light");
+    mqtt.onMessage(onMqttMessage);
+    mqtt.onConnected(onMqttConnected);
+    mqtt.onConnectionFailed(onMqttConnectionFailed);
+
+    mqtt.setDiscoveryPrefix("Greenhouse_Tower");
+
+#if MQTT_SECURE
+    mqtt.begin(broker_ip.fromString(BROKER_ADDR), cfg.config.MQTTUser, cfg.config.MQTTPass);
+#else
+    mqtt.begin(broker_ip.fromString(BROKER_ADDR));
+#endif // MQTT_SECURE
 }
 
 HASSMQTT::~HASSMQTT()
@@ -143,8 +233,6 @@ void onPHStateChanged(bool state, HASwitch *s)
 }
 #endif // ENABLE_PH_SUPPORT
 
-// ############## functions to update current server settings ###################
-
 /**
  * @brief Check if the current hostname is the same as the one in the config file
  * Call in the Setup BEFORE the WiFi.begin()
@@ -181,103 +269,6 @@ void HASSMQTT::loadMQTTConfig()
           cfg.config.MQTTDeviceName);
 
     log_i("Loaded config: hostname %s", cfg.config.hostname);
-}
-
-void HASSMQTT::mqttSetup()
-{
-    lastInputState = digitalRead(pump._pump_relay_pin);
-    // Unique ID must be set!
-    String mac = WiFi.macAddress();
-    byte buf[100];
-    mac.getBytes(buf, sizeof(buf));
-    device.setUniqueId(buf, sizeof(buf));
-
-    lastReadAt = millis();
-    lastAvailabilityToggleAt = millis();
-
-    /* for (int i = 0; i < 10; i++)
-    {
-        log_i("%c", buf[i]);
-    }
-    log_i("\n"); */
-    // connect to broker
-    log_i("Connecting to Broker");
-
-    // set device's details (optional)
-    device.setName(cfg.config.MQTTDeviceName);
-    device.setSoftwareVersion(String(VERSION).c_str());
-
-    // handle switch state
-    relay.onBeforeStateChanged(onBeforeStateChanged); // optional
-    relay.onStateChanged(onRelayStateChanged);
-    relay.setName("Pump Relay"); // optional
-
-    // This method enables availability for all device types registered on the device.
-    // For example, if you have 5 sensors on the same device, you can enable
-    // shared availability and change availability state of all sensors using
-    // single method call "device.setAvailability(false|true)"
-    device.enableSharedAvailability();
-
-    // Optionally, you can enable MQTT LWT feature. If device will lose connection
-    // to the broker, all device types related to it will be marked as offline in
-    // the Home Assistant Panel.
-    device.enableLastWill();
-
-    // configure sensors
-#if USE_DHT_SENSOR
-    tower_humidity_temp.setUnitOfMeasurement("°C");
-    tower_humidity_temp.setDeviceClass("temperature");
-    tower_humidity_temp.setIcon("mdi:thermometer-lines");
-    tower_humidity_temp.setName("Tower temperature");
-
-    tower_humidity.setUnitOfMeasurement("%");
-    tower_humidity.setDeviceClass("humidity");
-    tower_humidity.setIcon("mdi:water-percent");
-    tower_humidity.setName("Tower Humidity");
-#endif // USE_DHT_SENSOR
-
-    water_temp.setUnitOfMeasurement("°C");
-    water_temp.setDeviceClass("temperature");
-    water_temp.setIcon("mdi:coolant-temperature");
-    water_temp.setName("Tower water temperature");
-
-#if USE_SHT31_SENSOR
-    sht31_humidity.setUnitOfMeasurement("%");
-    sht31_humidity.setDeviceClass("humidity");
-    sht31_humidity.setIcon("mdi:water-percent");
-    sht31_humidity.setName("Tower Humidity");
-
-    sht31_humidity_temp.setUnitOfMeasurement("°C");
-    sht31_humidity_temp.setDeviceClass("temperature");
-    sht31_humidity_temp.setIcon("mdi:thermometer-lines");
-    sht31_humidity_temp.setName("Tower Temperature");
-
-    sht31_humidity_2.setUnitOfMeasurement("%");
-    sht31_humidity_2.setDeviceClass("humidity");
-    sht31_humidity_2.setIcon("mdi:water-percent");
-    sht31_humidity_2.setName("Tower Humidity Sensor 2");
-
-    sht31_humidity_temp_2.setUnitOfMeasurement("°C");
-    sht31_humidity_temp_2.setDeviceClass("humidity");
-    sht31_humidity_temp_2.setIcon("mdi:thermometer-lines");
-    sht31_humidity_temp_2.setName("Tower Temperature Sensor 2");
-#endif // USE_SHT31_SENSOR
-
-    light.setUnitOfMeasurement("lx");
-    light.setDeviceClass("illuminance");
-    light.setIcon("mdi:lightbulb");
-    light.setName("Light");
-    mqtt.onMessage(onMqttMessage);
-    mqtt.onConnected(onMqttConnected);
-    mqtt.onConnectionFailed(onMqttConnectionFailed);
-
-    mqtt.setDiscoveryPrefix("Greenhouse_Tower");
-
-#if MQTT_SECURE
-    mqtt.begin(broker_ip.fromString(BROKER_ADDR), cfg.config.MQTTUser, cfg.config.MQTTPass);
-#else
-    mqtt.begin(broker_ip.fromString(BROKER_ADDR));
-#endif // MQTT_SECURE
 }
 
 void HASSMQTT::mqttLoop()

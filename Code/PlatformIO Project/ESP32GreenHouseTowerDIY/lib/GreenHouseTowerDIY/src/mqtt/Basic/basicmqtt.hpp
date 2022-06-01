@@ -16,7 +16,6 @@ public:
     virtual ~BASEMQTT();
 
     void loadMQTTConfig();
-    void mqttSetup();
     void mqttLoop();
     void mqttReconnect();
 
