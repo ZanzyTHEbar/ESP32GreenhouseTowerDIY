@@ -73,7 +73,7 @@ void setup()
   Serial.println(F("Setting up MQTT"));
 
 #if ENABLE_MDNS_SUPPORT
-  int DiscovermDNSBroker();
+  int mDNSDiscovery::DiscovermDNSBroker();
 #endif // ENABLE_MDNS_SUPPORT
   hassmqtt.loadMQTTConfig();
 

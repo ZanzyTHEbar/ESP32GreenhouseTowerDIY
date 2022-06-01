@@ -30,12 +30,12 @@ int TowerTemp::getSensorCount()
     return sensors_count;
 }
 
-/******************************************************************************
- * Function: Setup DS18B20 sensors
- * Description: Setup DS18B20 sensors by beginning the Dallas Temperature library and counting the connected sensors
- * Parameters: None
- * Return: None
- ******************************************************************************/
+//******************************************************************************
+// * Function: Setup DS18B20 sensors
+// * Description: Setup DS18B20 sensors by beginning the Dallas Temperature library and counting the connected sensors
+// * Parameters: None
+// * Return: None
+//******************************************************************************
 void TowerTemp::SetupSensors()
 {
     // Start up the ds18b20 library
@@ -69,12 +69,12 @@ void TowerTemp::SetupSensors()
     }
 }
 
-/******************************************************************************
- * Function: Print Address
- * Description: Print the addresses of the sensors
- * Parameters: DeviceAddress - Address of the sensor
- * Return: None
- ******************************************************************************/
+//******************************************************************************
+// * Function: Print Address
+// * Description: Print the addresses of the sensors
+// * Parameters: DeviceAddress - Address of the sensor
+// * Return: None
+//******************************************************************************
 // function to print a device address
 void TowerTemp::printAddress(DeviceAddress deviceAddress)
 {
@@ -99,12 +99,12 @@ void TowerTemp::checkSensors()
     }
 }
 
-/******************************************************************************
- * Function: Get Temperature
- * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
- * Parameters: None
- * Return: float array - Temperature of the sensors
- ******************************************************************************/
+//******************************************************************************
+// * Function: Get Temperature
+// * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
+// * Parameters: None
+// * Return: float array - Temperature of the sensors
+//******************************************************************************
 TowerTemp::Temp TowerTemp::ReadTempSensorData()
 {
     // handle the case where no sensors are connected
@@ -126,12 +126,12 @@ TowerTemp::Temp TowerTemp::ReadTempSensorData()
     return temp_sensor_results;
 }
 
-/******************************************************************************
- * Function: Get Temperature
- * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
- * Parameters: None
- * Return: float array - Temperature of the sensors in fahrenheit
- ******************************************************************************/
+//******************************************************************************
+// * Function: Get Temperature
+// * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
+// * Parameters: None
+// * Return: float array - Temperature of the sensors in fahrenheit
+//******************************************************************************
 TowerTemp::Temp TowerTemp::GetTempF()
 {
     // handle the case where no sensors are connected
