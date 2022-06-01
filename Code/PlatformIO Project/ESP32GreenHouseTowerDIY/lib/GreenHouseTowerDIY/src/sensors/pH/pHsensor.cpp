@@ -2,14 +2,8 @@
 
 Gravity_pH pH = Gravity_pH(PH_SENSOR_PIN);
 
-PHSENSOR::PHSENSOR()
+PHSENSOR::PHSENSOR() : _pHTopic(PH_TOPIC), _pHOutTopic(PH_OUT_TOPIC), _inputstring_array{0} // a char array needed for string parsing
 {
-}
-
-PHSENSOR::~PHSENSOR()
-{
-    _pHTopic = PH_TOPIC;
-    _pHOutTopic = PH_OUT_TOPIC;
     _phDnPIN = PH_DN_PIN;
     _phUpPIN = PH_UP_PIN;
     _doseTimeSm = DOSE_TIME_SM;
@@ -18,7 +12,10 @@ PHSENSOR::~PHSENSOR()
 
     _inputstring = "";              // a string to hold incoming data from the PC
     _input_string_complete = false; // a flag to indicate have we received all the data from the PC
-    _inputstring_array[10] = {0};   // a char array needed for string parsing
+}
+
+PHSENSOR::~PHSENSOR() 
+{
 }
 
 void PHSENSOR::serialEvent()
@@ -151,3 +148,5 @@ void PHSENSOR::eventListener(const char *topic, const uint8_t *payload, uint16_t
         digitalWrite(_phDnPIN, LOW);
     }
 }
+
+PHSENSOR phsensor;

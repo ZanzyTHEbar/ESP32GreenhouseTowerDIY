@@ -33,8 +33,8 @@ private:
     void serialEvent();
 
     // Private variables
-    char *_pHTopic;
-    char *_pHOutTopic;
+    const char *_pHTopic;
+    const char *_pHOutTopic;
     int _phDnPIN;
     int _phUpPIN;
     int _doseTimeSm;

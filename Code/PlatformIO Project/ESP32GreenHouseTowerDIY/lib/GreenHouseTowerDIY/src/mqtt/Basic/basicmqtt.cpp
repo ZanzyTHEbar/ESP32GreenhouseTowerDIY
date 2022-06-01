@@ -11,33 +11,25 @@ WiFiClient client;
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
 #endif // !ENABLE_MDNS_SUPPORT
 
+void callback(char* topic, byte* payload, unsigned int length);
+
 #if MQTT_SECURE
 PubSubClient mqttClient(BROKER_ADDR, MQTT_SECURE_PORT, callback, client); // Local Mosquitto Connection
 #else
 PubSubClient mqttClient(BROKER_ADDR, MQTT_PORT, callback, client); // Local Mosquitto Connection
+
 #endif // MQTT_SECURE
 
-const long interval = 60000;
-unsigned long previousMillis = 0;
+//***********************************************************************************************************************
+// * Class Global Variables
+// * Please only make changes to the following class variables within the ini file. Do not change them here.
+//***********************************************************************************************************************
 
-uint8_t user_bytes_received = 0;
-const uint8_t bufferlen = 32;
-char user_data[bufferlen];
-
-const long interval = 60000;
-unsigned long previousMillis = 0;
-
-uint8_t user_bytes_received = 0;
-const uint8_t bufferlen = 32;
-char user_data[bufferlen];
-
-/***********************************************************************************************************************
- * Class Global Variables
- * Please only make changes to the following class variables within the ini file. Do not change them here.
- **********************************************************************************************************************/
-BASEMQTT::BASEMQTT()
+BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}
 {
     // Constructor
+    _previousMillis = 0;
+    _user_bytes_received = 0;
 }
 
 BASEMQTT::~BASEMQTT()
@@ -141,20 +133,20 @@ void BASEMQTT::mqttLoop()
         callback;
 
         unsigned long currentMillis = millis();
-        if (currentMillis - previousMillis >= interval)
+        if (currentMillis - _previousMillis >= _interval)
         {
-            previousMillis = currentMillis;
+            _previousMillis = currentMillis;
 
             if (Serial.available() > 0)
             {
-                user_bytes_received = Serial.readBytesUntil(13, user_data, sizeof(user_data));
+                _user_bytes_received = Serial.readBytesUntil(13, _user_data, sizeof(_user_data));
             }
 
-            if (user_bytes_received)
+            if (_user_bytes_received)
             {
-                phsensor.parse_cmd(user_data);
-                user_bytes_received = 0;
-                memset(user_data, 0, sizeof(user_data));
+                phsensor.parse_cmd(_user_data);
+                _user_bytes_received = 0;
+                memset(_user_data, 0, sizeof(_user_data));
             }
 #if ENABLE_PH_SUPPORT
             log_i("Sending message to topic: %s", phsensor._pHOutTopic);

@@ -19,7 +19,7 @@ AccumulateData::~AccumulateData()
 void AccumulateData::InitAccumulateData()
 {
     _numTempSensors = tower_temp.getSensorCount();
-    cfg.config.numSensors = _numTempSensors;
+    cfg.config.numTempSensors = _numTempSensors;
 
     // Initialize the library
 #if USE_SHT31_SENSOR
@@ -84,6 +84,9 @@ void AccumulateData::InitAccumulateData()
 bool AccumulateData::SendData()
 {
     // Send the data to the server - Use ArduinoJson library
+    return false;
+    TODO("Implement FEATURE");
+    Message("Make sure to implement this feature before building in release mode");
 }
 
 AccumulateData accumulatedata;

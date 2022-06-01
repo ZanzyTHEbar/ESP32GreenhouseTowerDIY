@@ -28,6 +28,10 @@ private:
     // Private functions
 
     // Private variables
+    const long _interval;
+    unsigned long _previousMillis;
+    uint8_t _user_bytes_received;
+    char _user_data[100];
 };
 
 extern BASEMQTT basemqtt;

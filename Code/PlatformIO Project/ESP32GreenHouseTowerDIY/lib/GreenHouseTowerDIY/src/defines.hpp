@@ -52,11 +52,11 @@
 
 /*######################## MQTT Configuration ########################*/
 // MQTT includes
-#include "mqtt/HASSIO/hassmqtt.hpp"
-#include "mqtt/BASIC/basicmqtt.hpp"
 #if ENABLE_MDNS_SUPPORT
 #include "mqtt/mDNS_Discovery/mDNS.hpp"
 #endif // ENABLE_MDNS_SUPPORT
+#include "mqtt/HASSIO/hassmqtt.hpp"
+#include "mqtt/BASIC/basicmqtt.hpp"
 /*###################### MQTT Configuration END ######################*/
 
 // Relays and other IO
