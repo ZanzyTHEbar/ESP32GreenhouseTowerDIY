@@ -43,19 +43,14 @@ AsyncWebServer server(80);
 
 WiFiClient espClient;
 
-const size_t MAX_FILESIZE = 1024 * 1024 * 2; // 2MB
-
-// Timer variables
-unsigned long previousMillis = 0;
-const long interval = 30000; // interval to wait for Wi-Fi connection (milliseconds)
-
 /**
  * @brief Construct a new Network:: Network object
  *
  */
-Network::Network()
+Network::Network() : MAX_FILESIZE(2 * 1024 * 1024),
+                     previousMillis(0),
+                     interval(30000)
 {
-    // constructor
     log_i("[INFO]: Network::Network()\n");
     log_i("[INFO]: Creating network object\n");
 }

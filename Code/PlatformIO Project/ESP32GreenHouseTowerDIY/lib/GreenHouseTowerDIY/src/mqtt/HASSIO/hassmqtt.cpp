@@ -34,9 +34,8 @@ unsigned long lastSentAt = millis();
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
 #endif // !ENABLE_MDNS_SUPPORT
 
-WiFiClient client;
 HADevice device;
-HAMqtt mqtt(client, device);
+HAMqtt mqtt(espClient, device);
 HASwitch relay("pump_relay", false); // is unique ID.
 HASensor water_temp("water_temp");
 #if USE_DHT_SENSOR
@@ -168,8 +167,8 @@ void HASSMQTT::loadMQTTConfig()
     }
 
     String MQTT_CLIENT_ID = generateDeviceID();
-    char *mqtt_user = MQTT_USER;
-    char *mqtt_pass = MQTT_PASS;
+    const char *mqtt_user = MQTT_USER;
+    const char *mqtt_pass = MQTT_PASS;
     char *mqtt_client_id = StringtoChar(MQTT_CLIENT_ID);
     heapStr(&cfg.config.MQTTUser, mqtt_user);
     heapStr(&cfg.config.MQTTPass, mqtt_pass);

@@ -1,8 +1,6 @@
 #include "basicmqtt.hpp"
 
 // Class Objects
-WiFiClient client;
-
 #if ENABLE_MDNS_SUPPORT
 #define BROKER_ADDR cfg.config.MQTTBroker // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
@@ -14,10 +12,9 @@ WiFiClient client;
 void callback(char *topic, byte *payload, unsigned int length);
 
 #if MQTT_SECURE
-PubSubClient mqttClient(BROKER_ADDR, MQTT_SECURE_PORT, callback, client); // Local Mosquitto Connection
+PubSubClient mqttClient(BROKER_ADDR, MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
 #else
-PubSubClient mqttClient(BROKER_ADDR, MQTT_PORT, callback, client); // Local Mosquitto Connection
-
+PubSubClient mqttClient(BROKER_ADDR, MQTT_PORT, callback, espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
 //***********************************************************************************************************************
