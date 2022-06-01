@@ -1,11 +1,14 @@
 #include "Relays.hpp"
 
-double Setpoint, Input, Output;
-PID myPID(&Input, &Output, &Setpoint, 2, 5, 1, DIRECT); // Specify the links and initial tuning parameters
-int WindowSize = 5000;
-unsigned long windowStartTime;
-
 Relays::Relays()
+#if USE_PID
+    : _Setpoint(),
+      _Input(),
+      _Output(),
+      _WindowSize(5000),
+      _windowStartTime(),
+      myPID(&_Input, &_Output, &_Setpoint, 2, 5, 1, DIRECT)
+#endif // USE_PID
 {
     // use a c++ ranged for loop to iterate through the relay pins
     for (auto pin : cfg.config.relays_pin)
@@ -13,6 +16,15 @@ Relays::Relays()
         pinMode(pin, OUTPUT);
         digitalWrite(pin, LOW);
     }
+#if USE_PID
+    _windowStartTime = millis();
+    // initialize the variables we're linked to
+    _Setpoint = 80;
+    // tell the PID to range between 0 and the full window size
+    myPID.SetOutputLimits(0, _WindowSize);
+    // turn the PID on
+    myPID.SetMode(AUTOMATIC);
+#endif // USE_PID
 }
 
 Relays::~Relays()
@@ -39,34 +51,13 @@ void Relays::RelayOnOff(int relay, bool on, long double delay)
 }
 
 /******************************************************************************
- * Function: Setup PID Controller
- * Description: This function sets up the PID controller
- * Parameters: None
- * Return: None
- ******************************************************************************/
-void Relays::SetupPID()
-{
-    windowStartTime = millis();
-
-    // initialize the variables we're linked to
-    Setpoint = 80;
-
-    // tell the PID to range between 0 and the full window size
-    myPID.SetOutputLimits(0, WindowSize);
-
-    // turn the PID on
-    myPID.SetMode(AUTOMATIC);
-}
-
-/******************************************************************************
  * Function: Humidity Related Relay Control
  * Description: Initialise a PID controller to control a relay based on humidity sensor readings
  * Parameters: None
  * Return: None
- * SFM3003 Mass Air _Flow Sensor code to be integrated
  * Below PID Relay code is an example of how to use the PID controller
- * This code should only be used during the Charging phase. Integrate State Machine to use this code
  ******************************************************************************/
+#if USE_PID
 #if USE_SHT31_SENSOR
 void Relays::HumRelayOnOff()
 {
@@ -76,15 +67,16 @@ void Relays::HumRelayOnOff()
 
     // turn the output pin on/off based on pid output
     unsigned long now = millis();
-    if (now - windowStartTime > WindowSize)
+    if (now - _windowStartTime > _WindowSize)
     { // time to shift the Relay Window
-        windowStartTime += WindowSize;
+        _windowStartTime += _WindowSize;
     }
-    if (Output > now - windowStartTime)
+    if (Output > now - _windowStartTime)
         digitalWrite(cfg.config.relays_pin[0], HIGH);
     else
         digitalWrite(cfg.config.relays_pin[0], LOW);
 }
-#endif
+#endif // USE_SHT31_SENSOR
+#endif // USE_PID
 
 Relays Relay;

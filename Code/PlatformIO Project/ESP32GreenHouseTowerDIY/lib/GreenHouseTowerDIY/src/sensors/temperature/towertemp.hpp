@@ -36,7 +36,7 @@ public:
     // Friends
 
 private:
-    int sensors_count;
+    int _sensors_count;
 };
 
 extern TowerTemp tower_temp;

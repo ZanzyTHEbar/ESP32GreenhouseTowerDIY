@@ -20,7 +20,6 @@ public:
   double readWaterLevel();
   void indicateWaterLevel();
 
-
 private:
   // Private variables
 };

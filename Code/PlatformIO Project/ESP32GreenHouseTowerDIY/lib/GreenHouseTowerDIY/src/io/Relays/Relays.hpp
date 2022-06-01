@@ -14,6 +14,13 @@ public:
 #endif // USE_SHT31_SENSOR
 
 private:
+
+#if USE_PID
+    double _Setpoint, _Input, _Output;
+    int _WindowSize;
+    unsigned long _windowStartTime;
+    PID myPID;
+#endif // USE_PID
 };
 extern Relays Relay;
 #endif

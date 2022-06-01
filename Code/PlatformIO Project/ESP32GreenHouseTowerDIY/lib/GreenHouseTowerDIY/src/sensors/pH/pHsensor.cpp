@@ -2,29 +2,16 @@
 
 Gravity_pH pH = Gravity_pH(PH_SENSOR_PIN);
 
-PHSENSOR::PHSENSOR() : _pHTopic(PH_TOPIC), _pHOutTopic(PH_OUT_TOPIC), _inputstring_array{0} // a char array needed for string parsing
-{
-    _phDnPIN = PH_DN_PIN;
-    _phUpPIN = PH_UP_PIN;
-    _doseTimeSm = DOSE_TIME_SM;
-    _doseTimeMed = DOSE_TIME_MED;
-    _doseTimeLg = DOSE_TIME_LG;
-
-    _inputstring = "";              // a string to hold incoming data from the PC
-    _input_string_complete = false; // a flag to indicate have we received all the data from the PC
-}
-
-PHSENSOR::~PHSENSOR() 
-{
-}
-
-void PHSENSOR::serialEvent()
-{                                              // if the hardware serial port_0 receives a char
-    _inputstring = Serial.readStringUntil(13); // read the string until we see a <CR>
-    _input_string_complete = true;             // set the flag used to tell if we have received a completed string from the PC
-}
-
-void PHSENSOR::phSensorSetup()
+PHSENSOR::PHSENSOR() : _pHTopic(PH_TOPIC),
+                       _pHOutTopic(PH_OUT_TOPIC),
+                       _inputstring_array{0},
+                       _phDnPIN(PH_DN_PIN),
+                       _phUpPIN(PH_UP_PIN),
+                       _doseTimeSm(DOSE_TIME_SM),
+                       _doseTimeMed(DOSE_TIME_MED),
+                       _doseTimeLg(DOSE_TIME_LG),
+                       _inputstring(""),
+                       _input_string_complete(false)
 {
     pinMode(_phUpPIN, OUTPUT);
     pinMode(_phDnPIN, OUTPUT);
@@ -35,6 +22,16 @@ void PHSENSOR::phSensorSetup()
     {
         log_i("Loaded EEPROM");
     }
+}
+
+PHSENSOR::~PHSENSOR()
+{
+}
+
+void PHSENSOR::serialEvent()
+{                                              // if the hardware serial port_0 receives a char
+    _inputstring = Serial.readStringUntil(13); // read the string until we see a <CR>
+    _input_string_complete = true;             // set the flag used to tell if we have received a completed string from the PC
 }
 
 void PHSENSOR::parse_cmd(char *string)

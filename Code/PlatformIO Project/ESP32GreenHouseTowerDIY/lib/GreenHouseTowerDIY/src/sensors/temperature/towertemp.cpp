@@ -11,9 +11,8 @@ DeviceAddress temp_sensor_addresses;
 
 TowerTemp::Temp temp_sensor_results;
 
-TowerTemp::TowerTemp()
+TowerTemp::TowerTemp() : _sensors_count(0)
 {
-    sensors_count = 0;
 }
 
 TowerTemp::~TowerTemp()
@@ -22,12 +21,12 @@ TowerTemp::~TowerTemp()
 
 void TowerTemp::setSensorCount()
 {
-    sensors_count = sensors.getDeviceCount(); // returns the number of sensors found
+    _sensors_count = sensors.getDeviceCount(); // returns the number of sensors found
 }
 
 int TowerTemp::getSensorCount()
 {
-    return sensors_count;
+    return _sensors_count;
 }
 
 //******************************************************************************
@@ -44,16 +43,16 @@ void TowerTemp::SetupSensors()
 
     // handle the case where no sensors are connected
     log_i("Locating devices...");
-    if (sensors_count == 0)
+    if (_sensors_count == 0)
     {
         log_e("No temperature sensors found - please connect them and restart the device");
         return;
     }
     // locate devices on the bus
-    log_i("Found %d devices", sensors_count, DEC);
+    log_i("Found %d devices", _sensors_count, DEC);
 
     // Loop through each device, print out address
-    for (int i = 0; i < sensors_count; i++)
+    for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
@@ -78,7 +77,7 @@ void TowerTemp::SetupSensors()
 // function to print a device address
 void TowerTemp::printAddress(DeviceAddress deviceAddress)
 {
-    for (uint8_t i = 0; i < sensors_count; i++)
+    for (uint8_t i = 0; i < _sensors_count; i++)
     {
         if (deviceAddress[i] < 16)
             Serial.println("0");
@@ -88,10 +87,10 @@ void TowerTemp::printAddress(DeviceAddress deviceAddress)
 
 void TowerTemp::checkSensors()
 {
-    if (sensors_count == 0)
+    if (_sensors_count == 0)
     {
         float no_sensors[] = {0};
-        for (int i = 0; i < sensors_count; i++)
+        for (int i = 0; i < _sensors_count; i++)
         {
             temp_sensor_results.temp[i] = no_sensors[i];
         }
@@ -109,7 +108,7 @@ TowerTemp::Temp TowerTemp::ReadTempSensorData()
 {
     // handle the case where no sensors are connected
     checkSensors();
-    for (int i = 0; i < sensors_count; i++)
+    for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
@@ -136,7 +135,7 @@ TowerTemp::Temp TowerTemp::GetTempF()
 {
     // handle the case where no sensors are connected
     checkSensors();
-    for (int i = 0; i < sensors_count; i++)
+    for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
