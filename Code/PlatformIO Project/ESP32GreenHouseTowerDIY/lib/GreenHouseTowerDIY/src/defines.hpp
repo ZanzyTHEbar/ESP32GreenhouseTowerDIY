@@ -30,7 +30,12 @@
 #endif // ENABLE_I2C_SCANNER
 
 // Light Sensors
+#if USE_BH1750
+#include "sensors/light/bh1750.hpp"
+#else
 #include "sensors/light/ldr.hpp"
+#endif // USE_BH1750
+
 
 // Temp Sensors
 #include "sensors/temperature/towertemp.hpp"

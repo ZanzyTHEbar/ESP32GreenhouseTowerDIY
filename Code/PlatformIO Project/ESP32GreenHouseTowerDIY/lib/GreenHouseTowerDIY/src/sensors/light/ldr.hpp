@@ -7,11 +7,11 @@ class LDR
 public:
     LDR();
     virtual ~LDR();
-    void setupLDR();
-    void loopLDR();
     float getLux();
 
 private:
+    const float _GAMMA;
+    const float _RL10;
 };
 extern LDR ldr;
 #endif

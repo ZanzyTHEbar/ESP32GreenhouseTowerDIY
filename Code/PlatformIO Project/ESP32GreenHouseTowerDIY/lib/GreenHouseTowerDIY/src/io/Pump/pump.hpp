@@ -12,6 +12,7 @@ public:
     void serialControl();
     void scheduleFromUser();
     void setPump();
+    void setLux(float lux);
     void setNozzle();
     void serialReport();
     String timeReport();

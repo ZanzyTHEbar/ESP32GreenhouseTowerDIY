@@ -64,6 +64,11 @@ void PUMP::PumpLoop()
         {
             _pumpOn = 0;
         }
+#if USE_BH1750
+        setLux(bh1750.getLux());
+#else
+        setLux(ldr.getLux());
+#endif // USE_BH1750
         setPump();
     }
     if (_nozzleInterval - 1 == minute(_t_) % _nozzleInterval)
@@ -113,6 +118,18 @@ void PUMP::setPump()
     }
 }
 
+void PUMP::setLux(float lux)
+{
+    if (lux <= 7)
+    {
+        _pumpOn = 0;
+    }
+    else
+    {
+        _pumpOn = 1;
+    }
+}
+
 void PUMP::setNozzle()
 {
     if (_nozzleDuration == 0)
@@ -143,12 +160,11 @@ void PUMP::serialReport()
     String reportValues;
 
     reportValues = "Settings:\n";
-    reportValues = "Pump(0=off, 1=on):      ";
-    reportValues = reportValues + _pumpOn;
+    reportValues = "Pump: " + _pumpOn ? "On" : "Off";
     reportValues = reportValues + "\nMinutes between sprays: ";
-    reportValues = reportValues + _nozzleInterval;
-    reportValues = reportValues + "\nSeconds of spray:       ";
-    reportValues = reportValues + _nozzleDuration;
+    reportValues = reportValues + String(_nozzleInterval);
+    reportValues = reportValues + "\nSeconds of spray: ";
+    reportValues = reportValues + String(_nozzleDuration);
 
     reportValues = "-- Report ----\n" + timeReport() + reportValues;
     Serial.println(reportValues);
@@ -195,10 +211,10 @@ void PUMP::serialControl()
     }
     case 'T':
     {
-        int h = Serial.parseInt();    // First valid integer
-        int m = Serial.parseInt();    // Second valid integer
-        int d = Serial.parseInt();    // Third valid integer
-        setTime(h, m, 0, d, 1, 2014); // hour,min,sec,day,month,year
+        int h = Serial.parseInt();                                                        // First valid integer
+        int m = Serial.parseInt();                                                        // Second valid integer
+        int d = Serial.parseInt();                                                        // Third valid integer
+        setTime(h, m, 0, d, networkntp.getMonth().toInt(), networkntp.getYear().toInt()); // hour,min,sec,day,month,year
         _t_ = now();
         _tDelay = _runInterval;
         break;
