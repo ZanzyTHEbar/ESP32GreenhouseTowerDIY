@@ -125,8 +125,9 @@ bool Config::initSPIFFS()
 String Config::readFile(fs::FS &fs, const char *path)
 {
     log_i("Reading file: %s\r\n", path);
+    const char* fullPath = appendChartoChar("/", path);
 
-    File file = fs.open(path);
+    File file = fs.open(fullPath);
     if (!file || file.isDirectory())
     {
         log_e("[INFO]: Failed to open file for reading");

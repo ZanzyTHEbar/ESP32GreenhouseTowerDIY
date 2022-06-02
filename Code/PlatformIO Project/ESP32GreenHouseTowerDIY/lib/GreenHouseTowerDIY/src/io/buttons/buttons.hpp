@@ -1,12 +1,12 @@
 #ifndef BUTTONS_HPP
 #define BUTTONS_HPP
 #include <defines.hpp>
-#include <TimeLib.h> // For timekeeping
 #include <mechButton.h>
 #include <idlers.h>
 
+#define Buttons_DEBUG 0
 #define BUTTON_CALLBACK(name) void (*name)()
-#define BUTTON_MESSAGE_CALLBACK(name) void (*name)(const char *topic, const uint8_t *payload, uint16_t length)
+#define BUTTON_MESSAGE_CALLBACK(name) void (*name)()
 
 // ***********************************************************
 //                Buttons class definition
@@ -18,10 +18,16 @@ class Buttons : public mechButton
 {
 
 public:
-    Buttons(int inPin, bool input = false);
+    inline static Buttons *instance()
+    {
+        return _instance;
+    }
+
+    Buttons(byte inPin, bool input = false);
     virtual ~Buttons(void);
 
-    void begin(void);
+    bool begin(void);
+    void processState(void);
     virtual void takeAction(void);
     void ButtonLoop(void);
 
@@ -55,10 +61,27 @@ public:
         _connectionFailedCallback = callback;
     }
 
+    inline bool getPin(byte &_pin)
+    {
+        if (_pin > 0)
+        {
+            _inPin = _pin;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 private:
+    static Buttons *_instance;
     BUTTON_MESSAGE_CALLBACK(_messageCallback);
     BUTTON_CALLBACK(_connectedCallback);
     BUTTON_CALLBACK(_connectionFailedCallback);
+    byte _inPin;
+    bool _input;
+    bool _initialized;
 };
 
 extern Buttons buttons(int inPin);

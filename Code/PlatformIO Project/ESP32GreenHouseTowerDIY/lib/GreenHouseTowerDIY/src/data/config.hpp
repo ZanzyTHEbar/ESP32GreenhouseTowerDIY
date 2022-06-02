@@ -67,6 +67,12 @@ public:
     String readFile(fs::FS &fs, const char *path);
     void writeFile(fs::FS &fs, const char *path, const char *message);
 
+    void printASCII(const char *fileName)
+    {
+        String asciiART = readFile(SPIFFS, fileName);
+        Serial.write(asciiART.c_str());
+    }
+
 private:
     Config_t _default_cfg;
     int _last_config;

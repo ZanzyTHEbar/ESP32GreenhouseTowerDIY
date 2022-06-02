@@ -13,7 +13,8 @@ int pumpScheduleIndex[1][24] = {
     {2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2} // Pump at 12:00
 };
 
-PUMP::PUMP() : _pumpTopic(PUMP_TOPIC),
+PUMP::PUMP() : _pump_relay_pin(PUMP_RELAY_PIN),
+               _pumpTopic(PUMP_TOPIC),
                _NOZZLE(PUMP_NOZZLE_PIN),
                _runInterval(1),
                _pumpMaxRunTime(0),

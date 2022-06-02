@@ -10,15 +10,14 @@ char *StringtoChar(String inputString)
   return outputString;
 }
 
-char *appendChartoChar(const char *hostname, const char *def_host)
+char *appendChartoChar(const char *first, const char *second)
 {
-  // create hostname
-  int numBytes = strlen(hostname) + strlen(def_host) + 1; // +1 for the null terminator | allocate a buffer of the required size
-  char *hostname_str = NULL;
-  resizeBuff(numBytes, &hostname_str);
-  strcpy(hostname_str, hostname);
-  strcat(hostname_str, def_host); // append default hostname to hostname
-  return hostname_str;
+  int numBytes = strlen(first) + strlen(second) + 1; // +1 for the null terminator | allocate a buffer of the required size
+  char *first_str = NULL;
+  resizeBuff(numBytes, &first_str);
+  strcpy(first_str, first);
+  strcat(first_str, second); // append second to first
+  return first_str;
 }
 
 void my_delay(volatile long delay_time)
