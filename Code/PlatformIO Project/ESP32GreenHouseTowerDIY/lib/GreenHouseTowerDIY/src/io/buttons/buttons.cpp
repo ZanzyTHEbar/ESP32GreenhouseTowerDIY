@@ -85,7 +85,7 @@ void Buttons::ButtonLoop(void)
     bool Buttonstate;
     idle();                             // Let all the idlers have time to do their thing.
     Buttonstate = trueFalse();          // Have a look at what the current Buttons state is.
-    digitalWrite(_inPin, !Buttonstate); // Since the Buttons grounds when pushed, invert logic with !
+    digitalWrite(_inPin, !Buttonstate); // Since the Buttons ground when pushed, invert logic with !
 }
 
-Buttons buttons(int inPin);
+Buttons buttons(byte inPin);
