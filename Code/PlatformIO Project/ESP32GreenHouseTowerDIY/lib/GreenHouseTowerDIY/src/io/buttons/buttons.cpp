@@ -73,10 +73,13 @@ void Buttons::takeAction(void)
 
 void Buttons::processState(void)
 {
-    if (_messageCallback)
+    if (_messageCallback == nullptr)
     {
-        _messageCallback();
+        takeAction();
+        return;
     }
+
+    _messageCallback();
 }
 
 // Your standard sketch loop()
