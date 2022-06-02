@@ -244,7 +244,7 @@ void onRelayStateChanged(bool state, HASwitch *s)
     for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
     {
         log_i("switching state of pin: %s\n", relay ? "HIGH" : "LOW");
-        cfg.config.relays[i] = (cfg.config.relays[i] == true) ? false : true;
+        cfg.config.relays[i] = (cfg.config.relays[i]) ? false : true;
     }
 }
 

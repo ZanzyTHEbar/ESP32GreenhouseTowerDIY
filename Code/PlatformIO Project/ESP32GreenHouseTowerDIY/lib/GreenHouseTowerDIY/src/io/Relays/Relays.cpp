@@ -11,7 +11,7 @@ Relays::Relays()
 #endif // USE_PID
 {
     // use a c++ ranged for loop to iterate through the relay pins
-    for (auto pin : cfg.config.relays_pin)
+    for (int pin : cfg.config.relays_pin)
     {
         pinMode(pin, OUTPUT);
         digitalWrite(pin, LOW);
