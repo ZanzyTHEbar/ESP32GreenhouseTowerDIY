@@ -8,15 +8,16 @@
 class TimedTasks : public timeObj
 {
 public:
-  TimedTasks();
-  virtual ~TimedTasks();
+  TimedTasks(void);
+  virtual ~TimedTasks(void);
 
-  void setupTimers();
-  void updateCurrentData();
-  void ScanI2CBus();
-  void accumulateSensorData();
-  void NTPService();
-  void checkNetwork();
+  void updateCurrentData(void);
+#if ENABLE_I2C_SCANNER
+  void ScanI2CBus(void);
+#endif // ENABLE_I2C_SCANNER
+  void accumulateSensorData(void);
+  void NTPService(void);
+  void checkNetwork(void);
 
 private:
   // Timers

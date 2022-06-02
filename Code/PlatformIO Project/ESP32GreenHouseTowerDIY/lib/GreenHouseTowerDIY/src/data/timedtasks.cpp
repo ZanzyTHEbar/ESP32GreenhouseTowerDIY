@@ -1,15 +1,7 @@
 
 #include "timedtasks.hpp"
 
-TimedTasks::TimedTasks()
-{
-}
-
-TimedTasks::~TimedTasks()
-{
-}
-
-void TimedTasks::setupTimers()
+TimedTasks::TimedTasks(void)
 {
   _Timer_1s.setTime(1000);
   _Timer_5s.setTime(5000);
@@ -21,8 +13,12 @@ void TimedTasks::setupTimers()
   _Timer_5m.setTime(300000);
 }
 
+TimedTasks::~TimedTasks(void)
+{
+}
+
 #if ENABLE_I2C_SCANNER
-void TimedTasks::ScanI2CBus()
+void TimedTasks::ScanI2CBus(void)
 {
   if (ENABLE_I2C_SCANNER)
   {
@@ -40,7 +36,7 @@ void TimedTasks::ScanI2CBus()
 }
 #endif // ENABLE_I2C_SCANNER
 
-void TimedTasks::accumulateSensorData()
+void TimedTasks::accumulateSensorData(void)
 {
   if (_Timer_1s.ding())
   {
@@ -49,7 +45,7 @@ void TimedTasks::accumulateSensorData()
   }
 }
 
-void TimedTasks::NTPService()
+void TimedTasks::NTPService(void)
 {
   if (_Timer_1s.ding())
   {
@@ -58,7 +54,7 @@ void TimedTasks::NTPService()
   }
 }
 
-void TimedTasks::checkNetwork()
+void TimedTasks::checkNetwork(void)
 {
   if (_Timer_10s.ding())
   {
@@ -67,7 +63,7 @@ void TimedTasks::checkNetwork()
   }
 }
 
-void TimedTasks::updateCurrentData() // check to see if the data has changed
+void TimedTasks::updateCurrentData(void) // check to see if the data has changed
 {
   if (_Timer_10s_2.ding())
   {
