@@ -41,4 +41,4 @@ ____
 
 ## Assembly Time Required
 
-Minimal unit assembly takes a few minutes, assuming you’ve already eaten the hummus from the hummus container. The file box + fan assembly can be done in _`2 hours`_ following the provided instructions.
+Minimal unit assembly takes a few minutes, assuming you’ve already eaten the hummus from the hummus container. The file box + fan assembly can be done in *`2 hours`* following the provided instructions.
