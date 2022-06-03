@@ -44,7 +44,8 @@ public:
         String data_json_string;
         bool relays[5];
         int relays_pin[5];
-        int numSensors;
+        int numTempSensors;
+        float pH;
     };
     Config_t config;
 
@@ -58,7 +59,7 @@ public:
     bool isValidHostname(char *hostname_to_check, long size);
     // parse and set a new hostname to config
     void setHostname(String new_hostname);
-    // we can't assing wifiManager.resetSettings(); to reset, somehow it gets called straight away.
+    // we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
     void setWiFiConf(String ssid, String password);
     void InitDataStruct();
     void CreateDefaultConfig();
@@ -66,15 +67,20 @@ public:
     String readFile(fs::FS &fs, const char *path);
     void writeFile(fs::FS &fs, const char *path, const char *message);
 
+    void printASCII(const char *fileName)
+    {
+        String asciiART = readFile(SPIFFS, fileName);
+        Serial.write(asciiART.c_str());
+    }
+
 private:
-    Config_t default_cfg;
-    int last_config;
+    Config_t _default_cfg;
+    int _last_config;
     // save last "timestamp" the config has been saved
-    bool last_config_change;
+    bool _last_config_change;
     // Variables
-    int maxVoltage;
-    int maxTemp;
-    String doc_string;
+    int _maxTemp;
+    String _doc_string;
     // Temporary function to ensure that the correct number of cells are being read - this will be removed when the cell count is dynamically allocated
 };
 

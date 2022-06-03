@@ -11,8 +11,7 @@ DeviceAddress temp_sensor_addresses;
 
 TowerTemp::Temp temp_sensor_results;
 
-int sensors_count = 0;
-TowerTemp::TowerTemp()
+TowerTemp::TowerTemp() : _sensors_count(0)
 {
 }
 
@@ -20,17 +19,22 @@ TowerTemp::~TowerTemp()
 {
 }
 
-int setSensorCount()
+void TowerTemp::setSensorCount()
 {
-    return sensors_count = sensors.getDeviceCount(); // returns the number of sensors found
+    _sensors_count = sensors.getDeviceCount(); // returns the number of sensors found
 }
 
-/******************************************************************************
- * Function: Setup DS18B20 sensors
- * Description: Setup DS18B20 sensors by beginning the Dallas Temperature library and counting the connected sensors
- * Parameters: None
- * Return: None
- ******************************************************************************/
+int TowerTemp::getSensorCount()
+{
+    return _sensors_count;
+}
+
+//******************************************************************************
+// * Function: Setup DS18B20 sensors
+// * Description: Setup DS18B20 sensors by beginning the Dallas Temperature library and counting the connected sensors
+// * Parameters: None
+// * Return: None
+//******************************************************************************
 void TowerTemp::SetupSensors()
 {
     // Start up the ds18b20 library
@@ -39,16 +43,16 @@ void TowerTemp::SetupSensors()
 
     // handle the case where no sensors are connected
     log_i("Locating devices...");
-    if (sensors_count == 0)
+    if (_sensors_count == 0)
     {
         log_e("No temperature sensors found - please connect them and restart the device");
         return;
     }
     // locate devices on the bus
-    log_i("Found %d devices", sensors_count, DEC);
+    log_i("Found %d devices", _sensors_count, DEC);
 
     // Loop through each device, print out address
-    for (int i = 0; i < sensors_count; i++)
+    for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
@@ -64,16 +68,16 @@ void TowerTemp::SetupSensors()
     }
 }
 
-/******************************************************************************
- * Function: Print Address
- * Description: Print the addresses of the sensors
- * Parameters: DeviceAddress - Address of the sensor
- * Return: None
- ******************************************************************************/
+//******************************************************************************
+// * Function: Print Address
+// * Description: Print the addresses of the sensors
+// * Parameters: DeviceAddress - Address of the sensor
+// * Return: None
+//******************************************************************************
 // function to print a device address
 void TowerTemp::printAddress(DeviceAddress deviceAddress)
 {
-    for (uint8_t i = 0; i < sensors_count; i++)
+    for (uint8_t i = 0; i < _sensors_count; i++)
     {
         if (deviceAddress[i] < 16)
             Serial.println("0");
@@ -81,31 +85,30 @@ void TowerTemp::printAddress(DeviceAddress deviceAddress)
     }
 }
 
-TowerTemp::Temp TowerTemp::checkSensors()
+void TowerTemp::checkSensors()
 {
-    if (sensors_count == 0)
+    if (_sensors_count == 0)
     {
         float no_sensors[] = {0};
-        for (int i = 0; i < sensors_count; i++)
+        for (int i = 0; i < _sensors_count; i++)
         {
             temp_sensor_results.temp[i] = no_sensors[i];
         }
         log_i("No temperature sensors found - please connect them and restart the device");
-        return temp_sensor_results;
     }
 }
 
-/******************************************************************************
- * Function: Get Temperature
- * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
- * Parameters: None
- * Return: float array - Temperature of the sensors
- ******************************************************************************/
+//******************************************************************************
+// * Function: Get Temperature
+// * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
+// * Parameters: None
+// * Return: float array - Temperature of the sensors
+//******************************************************************************
 TowerTemp::Temp TowerTemp::ReadTempSensorData()
 {
     // handle the case where no sensors are connected
     checkSensors();
-    for (int i = 0; i < sensors_count; i++)
+    for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
@@ -122,18 +125,17 @@ TowerTemp::Temp TowerTemp::ReadTempSensorData()
     return temp_sensor_results;
 }
 
-/******************************************************************************
- * Function: Get Temperature
- * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
- * Parameters: None
- * Return: float array - Temperature of the sensors in fahrenheit
- ******************************************************************************/
+//******************************************************************************
+// * Function: Get Temperature
+// * Description: Get the temperatures of the sensors and allocate the memory for the temperatures
+// * Parameters: None
+// * Return: float array - Temperature of the sensors in fahrenheit
+//******************************************************************************
 TowerTemp::Temp TowerTemp::GetTempF()
 {
     // handle the case where no sensors are connected
     checkSensors();
-
-    for (int i = 0; i < sensors_count; i++)
+    for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
@@ -150,4 +152,4 @@ TowerTemp::Temp TowerTemp::GetTempF()
     return temp_sensor_results;
 }
 
-TowerTemp Tower_Temp;
+TowerTemp tower_temp;

@@ -2,13 +2,11 @@
 
 // save last "timestamp" the config has been saved
 
-Config::Config()
+Config::Config() : _last_config_change(false),
+                   _last_config(0),
+                   _maxTemp(120),
+                   _doc_string("")
 {
-    last_config_change = false;
-    last_config = 0;
-    maxVoltage = 24;
-    maxTemp = 120;
-    doc_string = "";
 }
 
 Config::~Config()
@@ -79,35 +77,35 @@ Config::~Config()
 void Config::CreateDefaultConfig()
 {
     config = {
-        NULL, // hostname
-        NULL, // MQTTClientID
-        1883, // MQTTPort
-        8883, // MQTTPort_Secure
-        NULL, // MQTTUser
-        NULL, // MQTTPass
-        NULL, // MQTTTopic
-        NULL, // MQTTSetTopic
-        NULL, // MQTTDeviceName
-        NULL, // MQTTBroker
-        false, // MQTTSecureState
-        false, // MQTTConnectedState
-        0, // last_mqtt_connect_attempt
-        0, // last_mqtt_publish_attempt
-        0, // lastMillis
-        NULL, // IP
-        NULL, // netmask
-        NULL, // gateway
-        0, // lastMsg
-        NULL, // msg
-        0, // value
-        NULL, // WIFISSID
-        NULL, // WIFIPASS
-        NULL, // MDNS
-        false, // data_json
-        "", // data_json_string
+        NULL,                                // hostname
+        NULL,                                // MQTTClientID
+        1883,                                // MQTTPort
+        8883,                                // MQTTPort_Secure
+        NULL,                                // MQTTUser
+        NULL,                                // MQTTPass
+        NULL,                                // MQTTTopic
+        NULL,                                // MQTTSetTopic
+        NULL,                                // MQTTDeviceName
+        NULL,                                // MQTTBroker
+        false,                               // MQTTSecureState
+        false,                               // MQTTConnectedState
+        0,                                   // last_mqtt_connect_attempt
+        0,                                   // last_mqtt_publish_attempt
+        0,                                   // lastMillis
+        NULL,                                // IP
+        NULL,                                // netmask
+        NULL,                                // gateway
+        0,                                   // lastMsg
+        NULL,                                // msg
+        0,                                   // value
+        NULL,                                // WIFISSID
+        NULL,                                // WIFIPASS
+        NULL,                                // MDNS
+        false,                               // data_json
+        "",                                  // data_json_string
         {false, false, false, false, false}, // relays
-        {0, 0, 0, 0, 0}, // relays_pin
-        0 // numSensors
+        {0, 0, 0, 0, 0},                     // relays_pin
+        0                                    // numSensors
     };
 }
 
@@ -127,8 +125,9 @@ bool Config::initSPIFFS()
 String Config::readFile(fs::FS &fs, const char *path)
 {
     log_i("Reading file: %s\r\n", path);
+    const char* fullPath = appendChartoChar("/", path);
 
-    File file = fs.open(path);
+    File file = fs.open(fullPath);
     if (!file || file.isDirectory())
     {
         log_e("[INFO]: Failed to open file for reading");
@@ -234,7 +233,7 @@ bool Config::loadConfig()
     heapStr(&config.WIFIPASS, jsonBuffer["WIFIPASS"]);
     config.MQTTConnectedState = jsonBuffer["MQTTConnectedState"];
     heapStr(&config.MDNS, jsonBuffer["MDNS"]);
-    config.numSensors = jsonBuffer["Number_of_Sensors"];
+    config.numTempSensors = jsonBuffer["Number_of_Temp_Sensors"];
 
     for (int i = 0; i < sizeof(config.relays); i++)
     {
@@ -247,7 +246,7 @@ bool Config::loadConfig()
 // trigger a config write/commit
 bool Config::setConfigChanged()
 {
-    last_config_change = true;
+    _last_config_change = true;
     saveConfig();
     log_i("[Set Config Changed]: Config save set to true");
     return true;
@@ -256,7 +255,7 @@ bool Config::setConfigChanged()
 bool Config::saveConfig()
 {
     // check if the data in config is different from the data in the file
-    if (!last_config_change)
+    if (!_last_config_change)
     {
         log_i("[Save Config Changes]: Config has not changed because it is the same as the file");
         return false;
@@ -295,7 +294,7 @@ bool Config::saveConfig()
     json["WIFIPASS"] = config.WIFIPASS;
     json["MQTTConnectedState"] = config.MQTTConnectedState;
     json["MDNS"] = config.MDNS;
-    json["Number_of_Sensors"] = config.numSensors;
+    json["Number_of_Temp_Sensors"] = config.numTempSensors;
 
     // Relays
     JsonArray Relays = json.createNestedArray("Tower_Relays_State");
@@ -321,7 +320,7 @@ bool Config::saveConfig()
     configFile.close();
     // end save
     log_i("[Save Config Changes]: Config written");
-    last_config_change = false;
+    _last_config_change = false;
 
     return true;
 }
@@ -329,7 +328,7 @@ bool Config::saveConfig()
 bool Config::updateCurrentData()
 {
     // check if the data in config is different from the data in the file
-    if (!last_config_change)
+    if (!_last_config_change)
     {
         log_i("[Update Current Data]: Config has not changed because it is the same as the file");
         return false;

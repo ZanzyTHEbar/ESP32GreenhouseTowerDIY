@@ -8,25 +8,27 @@
 class TimedTasks : public timeObj
 {
 public:
-  TimedTasks();
-  virtual ~TimedTasks();
+  TimedTasks(void);
+  virtual ~TimedTasks(void);
 
-  void setupTimers();
-  void updateCurrentData();
-  void ScanI2CBus();
-  void accumulateSensorData();
-  void checkNetwork();
+  void updateCurrentData(void);
+#if ENABLE_I2C_SCANNER
+  void ScanI2CBus(void);
+#endif // ENABLE_I2C_SCANNER
+  void accumulateSensorData(void);
+  void NTPService(void);
+  void checkNetwork(void);
 
 private:
   // Timers
-  timeObj Timer_1s;
-  timeObj Timer_5s;
-  timeObj Timer_5s_2;
-  timeObj Timer_10s;
-  timeObj Timer_10s_2;
-  timeObj Timer_30s;
-  timeObj Timer_1m;
-  timeObj Timer_5m;
+  timeObj _Timer_1s;
+  timeObj _Timer_5s;
+  timeObj _Timer_5s_2;
+  timeObj _Timer_10s;
+  timeObj _Timer_10s_2;
+  timeObj _Timer_30s;
+  timeObj _Timer_1m;
+  timeObj _Timer_5m;
 };
 
 extern TimedTasks timedTasks;

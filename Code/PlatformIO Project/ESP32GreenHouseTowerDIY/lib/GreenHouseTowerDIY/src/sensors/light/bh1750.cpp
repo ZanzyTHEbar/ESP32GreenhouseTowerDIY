@@ -4,14 +4,6 @@ hp_BH1750 BH1750_sensor; // create the sensor object
 
 BH1750::BH1750()
 {
-}
-
-BH1750::~BH1750()
-{
-}
-
-void BH1750::setupLightSensor()
-{
     // Initialize the sensor
     // use BH1750_TO_GROUND or BH1750_TO_VCC depending how you wired the address pin of the sensor.
 #if bh1750_GND
@@ -34,6 +26,10 @@ void BH1750::setupLightSensor()
     }
 }
 
+BH1750::~BH1750()
+{
+}
+
 float BH1750::getLux()
 {
 #if bh1750_FAST
@@ -49,3 +45,5 @@ float BH1750::getLux()
     }
     return 0;
 }
+
+BH1750 bh1750; // create the sensor object

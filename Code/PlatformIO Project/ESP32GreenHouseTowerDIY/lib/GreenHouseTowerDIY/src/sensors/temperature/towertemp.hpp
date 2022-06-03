@@ -19,6 +19,9 @@ public:
     void SetupSensors();
     void readAddresses(DeviceAddress deviceAddress);
     void printAddress(DeviceAddress deviceAddress);
+    void checkSensors();
+    void setSensorCount();
+    int getSensorCount();
 
     struct Temp
     {
@@ -29,11 +32,12 @@ public:
 
     Temp ReadTempSensorData();
     Temp GetTempF();
-    Temp checkSensors();
+
+    // Friends
 
 private:
+    int _sensors_count;
 };
 
-extern int sensors_count;
-extern TowerTemp Tower_Temp;
+extern TowerTemp tower_temp;
 #endif

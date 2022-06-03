@@ -43,19 +43,15 @@ AsyncWebServer server(80);
 
 WiFiClient espClient;
 
-const size_t MAX_FILESIZE = 1024 * 1024 * 2; // 2MB
-
-// Timer variables
-unsigned long previousMillis = 0;
-const long interval = 30000; // interval to wait for Wi-Fi connection (milliseconds)
-
 /**
  * @brief Construct a new Network:: Network object
  *
  */
-Network::Network()
+Network::Network() : MAX_FILESIZE(2 * 1024 * 1024),
+                     previousMillis(0),
+                     interval(30000),
+                     wifiConnected(false)
 {
-    // constructor
     log_i("[INFO]: Network::Network()\n");
     log_i("[INFO]: Creating network object\n");
 }
@@ -216,6 +212,7 @@ bool Network::SetupNetworkStack()
             }
 
             WiFi.setHostname(cfg.config.hostname); // define hostname
+
             WiFi.begin(cfg.config.WIFISSID, cfg.config.WIFIPASS);
 
             unsigned long currentMillis = millis();
@@ -252,7 +249,7 @@ void Network::SetupWebServer()
     }
     else
     {
-        // TODO: Route for root to  "Please Scan QR code" - Route for Wifi Manager /HBAT_HMS wifi page
+        // TODO: Route for root to  "Please Scan QR code"
         // TODO: There should be a reset mode that will reset the device to factory settings and restart the device.
         // TODO: Should be a physical reset button on the PCB itself - not a touch button - hold for 5 seconds to reset. Flash LED to indicate reset per second.
         // Connect to Wi-Fi Network with SSID and password
@@ -270,7 +267,7 @@ void Network::SetupWebServer()
 
         if (!PRODUCTION)
         {
-            WiFi.softAP("HBAT_HMS", NULL, 10, 1, 2); // AP mode without password
+            WiFi.softAP(DEFAULT_HOSTNAME, NULL, 10, 1, 2); // AP mode without password
         }
         else
         {

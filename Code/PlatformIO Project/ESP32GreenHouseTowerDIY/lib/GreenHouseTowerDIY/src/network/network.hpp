@@ -33,8 +33,11 @@ public:
     // variables
 private:
     int CheckWifiState();
-    int maxVoltage;
-    int maxTemp;
+    const size_t MAX_FILESIZE; // 2MB
+    // Timer variables
+    unsigned long previousMillis;
+    const long interval; // interval to wait for Wi-Fi connection (milliseconds)
+    bool wifiConnected;
 };
 
 extern Network network;

@@ -7,9 +7,6 @@
 #define HAMQTT_HPP
 #include <defines.hpp>
 #include <ArduinoHA.h>
-#if ENABLE_MDNS_SUPPORT
-#include <ESPmDNS.h>
-#endif // ENABLE_MDNS_SUPPORT
 
 class HASSMQTT
 {
@@ -19,15 +16,21 @@ public:
   virtual ~HASSMQTT();
 
   void loadMQTTConfig();
-  void mqttSetup();
   void mqttLoop();
 
-#if ENABLE_MDNS_SUPPORT
-  int DiscovermDNSBroker();
-#endif // ENABLE_MDNS_SUPPORT
+  // Friends
+  friend class LDR;
+  friend void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
+  friend void onMqttConnected();
 
-  int pump_relay_pin;
 private:
+  // Private functions
+
+  // Private variables
+  unsigned long lastReadAt;
+  unsigned long lastAvailabilityToggleAt;
+  bool lastInputState;
+  unsigned long lastSentAt;
 };
 
 extern HASSMQTT hassmqtt;

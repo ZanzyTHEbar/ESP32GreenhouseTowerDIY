@@ -1,6 +1,11 @@
 ---
 TO_DO:
-STATE: ['TO_DO' = [], 'IN_PROGRESS' [-],'DONE' = [x]]
+STATE: [
+  'TO_DO' = [], 
+  'IN_PROGRESS' [-], 
+  'DONE' = [x]
+  ]
+
   Description: This is a list of things that need to be done.
   Tasks:
     - [ ] Optimize the code - Optimize
@@ -13,11 +18,11 @@ STATE: ['TO_DO' = [], 'IN_PROGRESS' [-],'DONE' = [x]]
 
     - [ ] Document the code - Document
 
-  --------- HIGH PRIORITY ---------
+#  --------- HIGH PRIORITY ---------
 
     - [x] Implement Relay functionality - Done
 
-    - [x] Implement Air Temperature per cell functionality - Done
+    - [x] Implement Air Temperature functionality - Done
 
     - [x] Implement Water Temperature functionality - Done
 
@@ -31,32 +36,35 @@ STATE: ['TO_DO' = [], 'IN_PROGRESS' [-],'DONE' = [x]]
 
     - [x] Implement Config file stored in flash functionality - Done
 
-    - [x] Implement Auto Adjust HalSensor functionality - Done
-
     - [x] Implement Background Tasks Class and set Network and Update Config checks to the background task object - Done
 
     - [x] Implement Home assistant MQTT functionality - Done - Needs to be tested
 
-    - [-] Implement Light detection functionality - In_Progress - TODO: LDR is implemented, need to implement the light detection from BH1750
+    - [x] Implement Basic MQTT functionality - Done
 
-    - [-] Implement Basic MQTT functionality - In_Progress - TODO: code is added to the main file, but needs a trigger to start the MQTT service
+    - [x] Implement Basic NTP functionality - Done
+
+    - [x] Implement pH Sensor functionality -  Done
+
+    - [x] Implement Pump and pump timer - Done
+
+    - [-] Implement pH Sensor calibration via Button interface - In_Progress - TODO: code is added to the main file, still in progress
+    
+    - [-] Implement Light detection functionality - In_Progress - TODO: LDR is implemented, need to implement the light detection from BH1750
 
     - [-] Implement Soil Moisture Sensor Functionality - In_Progress - TODO: Add proper soil moisture sensor implementation
 
     - [-] Implement Water Level Sensor Functionality, both Ultrasonic support and Capacitive Sensor Support - In_Progress - TODO: Add proper soil moisture sensor implementation
 
-    - [-] Implement Flow Sensor functionality - In_Progress - TODO: Add proper flow sensor implementation
+    - [-] Implement I2C scanner functionality - In_Progress - TODO: code is added to the main file, but needs a button trigger to start the scanner
 
-    - [-] Implement I2C scanner functionality - In_Progress - TODO: code is added to the main file, but needs a trigger to start the scanner
-    
-
-  -------- LOW PRIORITY --------
+#  -------- LOW PRIORITY --------
 
   TO_DO_ITEMS:
     Done: false
     Due: Null
     Priority:
-    Tags:
+    Tags: [
       - In_Progress
       - Optimize
       - Formatting
@@ -66,11 +74,30 @@ STATE: ['TO_DO' = [], 'IN_PROGRESS' [-],'DONE' = [x]]
       - Reboot
       - Connecting
       - Done
+    ]
     Contexts:
     Projects:
     Notes:
       Links: [
         - https://www.home-assistant.io/docs/mqtt/discovery/
+      ]
+    features: [
+        - Home assistant, 
+        - MQTT, 
+        - NTP, 
+        - WiFi, 
+        - Relay, 
+        - Air Temperature, 
+        - Water Temperature, 
+        - Tower Humidity, 
+        - pH Sensor,
+        - Automated pH adjustment, 
+        - Light Detection, 
+        - Soil Moisture Sensor,
+        - Water Level Sensor, 
+        - I2C Scanner, 
+        - Pump, 
+        - Pump Timer
       ]
     Creator:
        Name: ZanzyTHEbar

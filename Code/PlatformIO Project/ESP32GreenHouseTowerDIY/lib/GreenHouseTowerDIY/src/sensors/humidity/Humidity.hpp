@@ -64,9 +64,21 @@ public:
   Hum ReadSensor();
 #endif // USE_SHT31_SENSOR
 
+  // Friends
+  friend class Config;
+  friend class AccumulateData;
+
   // Variables
 private:
-  uint32_t delayS;
+  uint32_t _delayS;
+#if USE_DHT_SENSOR
+  int _status;
+#endif // USE_DHT_SENSOR
+#if USE_SHT31_SENSOR
+  bool _enableHeater;
+  int _loopCnt;
+  byte _HUMIDITY_SENSORS_ACTIVE;
+#endif // USE_SHT31_SENSOR
 };
 extern Humidity humidity;
 #endif

@@ -1,11 +1,7 @@
 #include "accumulatedata.hpp"
 
-int numSensors = 10;
-
-AccumulateData::AccumulateData()
+AccumulateData::AccumulateData() : _maxTemp(100), _numTempSensors(0)
 {
-    maxVoltage = 24;
-    maxTemp = 100;
 }
 
 AccumulateData::~AccumulateData()
@@ -20,12 +16,15 @@ AccumulateData::~AccumulateData()
  ******************************************************************************/
 void AccumulateData::InitAccumulateData()
 {
+    _numTempSensors = tower_temp.getSensorCount();
+    cfg.config.numTempSensors = _numTempSensors;
+
     // Initialize the library
 #if USE_SHT31_SENSOR
     humidity.ReadSensor();
     config.humidity_sht31_average = humidity.StackHumidity();
     config.humidity_temp_sht31_average = humidity.AverageStackTemp();
-    switch (HUMIDITY_SENSORS_ACTIVE)
+    switch (humidity._HUMIDITY_SENSORS_ACTIVE)
     {
     case 0:
         config.humidity_sht31 = 0;
@@ -62,12 +61,14 @@ void AccumulateData::InitAccumulateData()
     config.humidity_temp = humidity.result.temp;
 #endif // USE_DHT_SENSOR
 
-    cfg.config.numSensors = numSensors;
+#if ENABLE_PH_SUPPORT
+    phsensor.phSensorLoop();
+#endif // ENABLE_PH_SUPPORT
 
     // loop through and store temp data
-    for (int i = 0; i < numSensors; i++)
+    for (int i = 0; i < _numTempSensors; i++)
     {
-        config.temp_sensors[i] = Tower_Temp.temp_sensor_results.temp[i];
+        config.temp_sensors[i] = tower_temp.temp_sensor_results.temp[i];
     }
 
     // Relays
@@ -81,6 +82,9 @@ void AccumulateData::InitAccumulateData()
 bool AccumulateData::SendData()
 {
     // Send the data to the server - Use ArduinoJson library
+    return false;
+    TODO("Implement FEATURE");
+    Message("Make sure to implement this feature before building in release mode");
 }
 
 AccumulateData accumulatedata;

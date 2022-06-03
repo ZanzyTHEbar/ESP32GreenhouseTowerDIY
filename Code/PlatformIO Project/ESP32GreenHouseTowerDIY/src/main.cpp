@@ -7,6 +7,17 @@
  * Parameters: None
  * Return: None
  ******************************************************************************/
+
+#ifdef DEFAULT_HOSTNAME
+#pragma message(Reminder DEFAULT_HOSTNAME " is defined as the default hostname.")
+#endif
+
+#if PRODUCTION
+#pragma message(Reminder "This is a production build.")
+#else
+#pragma message(Reminder "This is a development build.")
+#endif
+
 void setup()
 {
   Serial.begin(115200);
@@ -22,25 +33,11 @@ void setup()
   // initialize the Relay pins and set them to off state
   std::copy(temp, temp + sizeof(temp) / sizeof(temp[0]), cfg.config.relays_pin);
 
-  // use a c++ ranged for loop to iterate through the relay pins
-  for (auto pin : cfg.config.relays_pin)
-  {
-    pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
-  }
-
-  // C for loop - legacy function
-  /* for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
-  {
-      pinMode(cfg.config.relays_pin[i], OUTPUT);
-      digitalWrite(cfg.config.relays_pin[i], LOW);
-  } */
-
   Wire.begin();
 
-  Serial.println(F("HMS booting - please wait"));
+  Serial.println(F("Green House Tower booting - please wait"));
   Serial.println(F("Starting..."));
-  Cell_Temp.SetupSensors();
+  tower_temp.SetupSensors();
 
   switch (humidity.setupSensor())
   {
@@ -64,22 +61,27 @@ void setup()
   Serial.println("");
   Relay.SetupPID();
   // Setup the network stack
-  // Setup the Wifi Manager
-  network.SetupWebServer();
-  Serial.println(F("Starting Webserver"));
-  network.SetupServer();
+#if ENABLE_HASS
+  hassmqtt.loadMQTTConfig();
+#else
+  basemqtt.loadMQTTConfig();
+#endif // ENABLE_HASS
   Serial.println(F("Setting up WiFi"));
+  Serial.println(F("Starting Webserver"));
+  network.SetupWebServer();
+  network.SetupServer();
   Serial.println(F("Setting up MQTT"));
-  HMSmqtt.loadMQTTConfig();
 
 #if ENABLE_MDNS_SUPPORT
-  if (ENABLE_MQTT_SUPPORT)
+  if (mDNSDiscovery::DiscovermDNSBroker())
   {
-    HMSmqtt.DiscovermDNSBroker(); // discover the mDNS broker for mqtt
+    Serial.println(F("[mDNS responder started] Setting up Broker..."));
+  }
+  else
+  {
+    Serial.println(F("[mDNS responder failed]"));
   }
 #endif // ENABLE_MDNS_SUPPORT
-
-  HMSmqtt.MQTTSetup();
 
   Serial.println("");
   if (network.SetupNetworkStack())
@@ -99,10 +101,12 @@ void setup()
 
 void loop()
 {
+#if ENABLE_I2C_SCANNER
   timedTasks.ScanI2CBus();
+#endif // ENABLE_I2C_SCANNER
   timedTasks.accumulateSensorData();
-  timedTasks.checkNetwork();
   timedTasks.updateCurrentData();
+  timedTasks.checkNetwork();
 
   if (cfg.config.data_json)
   {
@@ -119,7 +123,11 @@ void loop()
 
   if (WiFi.status() == WL_CONNECTED)
   {
-    HMSmqtt.RunMqttService();
+    timedTasks.NTPService();
+#if ENABLE_HASS
+    hassmqtt.mqttLoop();
+#else
+    basemqtt.mqttLoop();
+#endif // ENABLE_HASS
   }
-  my_delay(1L);
 }

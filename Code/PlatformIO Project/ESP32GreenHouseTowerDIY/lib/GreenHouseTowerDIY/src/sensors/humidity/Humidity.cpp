@@ -4,21 +4,25 @@
 #if USE_SHT31_SENSOR
 Adafruit_SHT31 sht31;
 Adafruit_SHT31 sht31_2;
-bool enableHeater = false;
-int loopCnt = 0;
-int HUMIDITY_SENSORS_ACTIVE = 0;
 #endif // USE_SHT31_SENSOR
 
 #if USE_DHT_SENSOR
 DHT_Unified dht(DHTPIN, DHTTYPE);
-int status = 0;
 #endif // USE_DHT_SENSOR
 
 Humidity::Hum result;
 
-Humidity::Humidity()
+Humidity::Humidity() : _delayS(0),
+#if USE_DHT_SENSOR
+                       _status(0)
+#endif // USE_DHT_SENSOR
+#if USE_SHT31_SENSOR
+                       ,
+                       _enableHeater(false),
+                       _loopCnt(0),
+                       _HUMIDITY_SENSORS_ACTIVE(0)
+#endif // USE_SHT31_SENSOR
 {
-  delayS = 0;
 }
 
 Humidity::~Humidity()
@@ -38,7 +42,7 @@ int Humidity::setupSensor()
   if (dht.begin())
   {
     log_i("DHT Sensor connected!");
-    status = 1;
+    _status = 1;
     // Print temperature sensor details.
     sensor_t sensor;
     dht.temperature().getSensor(&sensor);
@@ -62,11 +66,11 @@ int Humidity::setupSensor()
     log_d("Resolution:  %d %%", sensor.resolution); // 0.5%
     log_d("------------------------------------");
     // Set delay between sensor readings based on sensor details.
-    delayS = sensor.min_delay / 1000000;
-    log_d("Delay: %d ms", delayS);
+    _delayS = sensor.min_delay / 1000000;
+    log_d("Delay: %d ms", _delayS);
     log_d("------------------------------------");
     log_d("");
-    return status;
+    return _status;
   }
 #endif // USE_DHT_SENSOR
 
@@ -77,25 +81,25 @@ int Humidity::setupSensor()
   {
     log_d("Couldn't find SHT31 sensors");
     log_d("SHT31 Sensors Setup did not complete successfully, check your wiring or the addresses and try again");
-    HUMIDITY_SENSORS_ACTIVE = 0;
+    _HUMIDITY_SENSORS_ACTIVE = 0;
     return 0;
   }
   else if (!sht31.begin(0x44) && sht31_2.begin(0x45))
   {
     log_d("Found 1 SHT31 Sensor");
-    HUMIDITY_SENSORS_ACTIVE = 1;
+    _HUMIDITY_SENSORS_ACTIVE = 1;
     return 1;
   }
   else if (!sht31_2.begin(0x45) && sht31.begin(0x44))
   {
     log_d("Found 2 SHT31 Sensor");
-    HUMIDITY_SENSORS_ACTIVE = 2;
+    _HUMIDITY_SENSORS_ACTIVE = 2;
     return 2;
   }
   else
   {
     log_d("SHT31 Sensors Setup Complete");
-    HUMIDITY_SENSORS_ACTIVE = 3;
+    _HUMIDITY_SENSORS_ACTIVE = 3;
     return 3;
   }
   my_delay(2L); // delay in between reads for stability
@@ -107,7 +111,7 @@ int Humidity::setupSensor()
 Humidity::Hum Humidity::readDHT()
 {
   // Delay between measurements.
-  my_delay(delayS);
+  my_delay(_delayS);
   // Get temperature event and print its value.
   sensors_event_t event;
   dht.temperature().getEvent(&event);
@@ -138,7 +142,7 @@ Humidity::Hum Humidity::readDHT()
 #if USE_SHT31_SENSOR
 bool Humidity::checkHeaterEnabled()
 {
-  switch (HUMIDITY_SENSORS_ACTIVE)
+  switch (_HUMIDITY_SENSORS_ACTIVE)
   {
   case 0:
     return false;
@@ -147,11 +151,11 @@ bool Humidity::checkHeaterEnabled()
   {
     bool _sensor1 = sht31.isHeaterEnabled();
     bool heaterenabled = false;
-    if (loopCnt >= 30)
+    if (_loopCnt >= 30)
     {
-      enableHeater = !enableHeater;
-      sht31.heater(enableHeater);
-      log_d("Heater Enabled State: %s", enableHeater ? "Enabled" : "Disabled");
+      _enableHeater = !_enableHeater;
+      sht31.heater(_enableHeater);
+      log_d("Heater Enabled State: %s", _enableHeater ? "Enabled" : "Disabled");
       if (_sensor1)
       {
         log_d("Sensor 1 Heater ENABLED");
@@ -162,9 +166,9 @@ bool Humidity::checkHeaterEnabled()
         log_d("Sensor 1 Heater Disabled");
         heaterenabled = false;
       }
-      loopCnt = 0;
+      _loopCnt = 0;
     }
-    loopCnt++;
+    _loopCnt++;
     return heaterenabled;
     break;
   }
@@ -172,11 +176,11 @@ bool Humidity::checkHeaterEnabled()
   {
     bool _sensor2 = sht31_2.isHeaterEnabled();
     bool heaterenabled = false;
-    if (loopCnt >= 30)
+    if (_loopCnt >= 30)
     {
-      enableHeater = !enableHeater;
-      sht31_2.heater(enableHeater);
-      log_d("Heater Enabled State: %s", enableHeater ? "Enabled" : "Disabled");
+      _enableHeater = !_enableHeater;
+      sht31_2.heater(_enableHeater);
+      log_d("Heater Enabled State: %s", _enableHeater ? "Enabled" : "Disabled");
       if (_sensor2)
       {
         log_d("Sensors have Heater ENABLED");
@@ -187,9 +191,9 @@ bool Humidity::checkHeaterEnabled()
         log_d("Sensor 1 Heater Disabled");
         heaterenabled = false;
       }
-      loopCnt = 0;
+      _loopCnt = 0;
     }
-    loopCnt++;
+    _loopCnt++;
     return heaterenabled;
     break;
   }
@@ -198,12 +202,12 @@ bool Humidity::checkHeaterEnabled()
     bool _sensor1 = sht31.isHeaterEnabled();
     bool _sensor2 = sht31_2.isHeaterEnabled();
     bool heaterenabled = false;
-    if (loopCnt >= 30)
+    if (_loopCnt >= 30)
     {
-      enableHeater = !enableHeater;
-      sht31.heater(enableHeater);
-      sht31_2.heater(enableHeater);
-      log_d("Heater Enabled State: %s", enableHeater ? "Enabled" : "Disabled");
+      _enableHeater = !_enableHeater;
+      sht31.heater(_enableHeater);
+      sht31_2.heater(_enableHeater);
+      log_d("Heater Enabled State: %s", _enableHeater ? "Enabled" : "Disabled");
       if (_sensor1 != _sensor2)
       {
         log_d("Sensors have Heater ENABLED");
@@ -214,9 +218,9 @@ bool Humidity::checkHeaterEnabled()
         log_d("Sensor 1 Heater Disabled");
         heaterenabled = false;
       }
-      loopCnt = 0;
+      _loopCnt = 0;
     }
-    loopCnt++;
+    _loopCnt++;
     return heaterenabled;
     break;
   }
@@ -235,7 +239,7 @@ bool Humidity::checkHeaterEnabled()
  ******************************************************************************/
 float Humidity::AverageStackTemp()
 {
-  switch (HUMIDITY_SENSORS_ACTIVE)
+  switch (_HUMIDITY_SENSORS_ACTIVE)
   {
   case 0:
     float stack_temp = 0;
@@ -271,7 +275,7 @@ float Humidity::AverageStackTemp()
  ******************************************************************************/
 float Humidity::StackHumidity()
 {
-  switch (HUMIDITY_SENSORS_ACTIVE)
+  switch (_HUMIDITY_SENSORS_ACTIVE)
   {
   case 0:
   {
@@ -314,9 +318,9 @@ float Humidity::StackHumidity()
  * Parameters: None
  * Return: float array
  ******************************************************************************/
-Hum Humidity::ReadSensor()
+Humidity::Hum Humidity::ReadSensor()
 {
-  switch (HUMIDITY_SENSORS_ACTIVE)
+  switch (_HUMIDITY_SENSORS_ACTIVE)
   {
   case 0:
   {
