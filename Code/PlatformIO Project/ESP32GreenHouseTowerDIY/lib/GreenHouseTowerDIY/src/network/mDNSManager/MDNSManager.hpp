@@ -12,7 +12,8 @@ namespace mDNSManager
         Config *deviceConfig;
 
     public:
-        MDNSHandler(StateManager *stateManager, Config *deviceConfig) : stateManager(stateManager), deviceConfig(deviceConfig) {}
+        MDNSHandler(StateManager *stateManager, Config *deviceConfig);
+        virtual ~MDNSHandler();
         bool startMDNS();
         void update(ObserverEvent::Event event);
 

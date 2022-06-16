@@ -2,6 +2,13 @@
 
 namespace mDNSManager
 {
+    MDNSHandler::MDNSHandler(StateManager *stateManager, Config *deviceConfig) : stateManager(stateManager),
+                                                                                 deviceConfig(deviceConfig) {}
+
+    MDNSHandler::~MDNSHandler()
+    {
+    }
+
     bool MDNSHandler::startMDNS()
     {
         auto localConfig = deviceConfig->getDeviceConfig();
