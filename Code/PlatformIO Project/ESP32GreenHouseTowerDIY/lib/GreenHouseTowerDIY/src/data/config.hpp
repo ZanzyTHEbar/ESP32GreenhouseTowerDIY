@@ -49,19 +49,27 @@ public:
     };
     Config_t config;
 
+    Config_t *getDeviceConfig() { return &this->config; }
+
+    /* Erase all data in SPIFFS - VERY DESTRUCTIVE */
+    void reset() { SPIFFS.format(); }
+
     bool loadConfig();
+
     // trigger a config write/commit
     bool setConfigChanged();
     bool updateCurrentData();
+
     // overwrite all config settings with "0"
     void resetConfig();
     bool saveConfig();
+    
     bool isValidHostname(char *hostname_to_check, long size);
     // parse and set a new hostname to config
     void setHostname(String new_hostname);
+
     // we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
     void setWiFiConf(String ssid, String password);
-    void InitDataStruct();
     void CreateDefaultConfig();
     bool initSPIFFS();
     String readFile(fs::FS &fs, const char *path);

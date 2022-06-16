@@ -275,7 +275,7 @@ bool Config::updateCurrentData()
     return true;
 }
 
-// overwrite all config settings with "0"
+// overwrite all config settings with "0" in the config struct
 void Config::resetConfig()
 {
     CreateDefaultConfig();

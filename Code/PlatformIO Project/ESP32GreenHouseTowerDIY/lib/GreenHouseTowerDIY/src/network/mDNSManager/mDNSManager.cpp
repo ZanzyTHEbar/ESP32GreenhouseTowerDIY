@@ -1,12 +1,11 @@
-#include <defines.hpp>
-#include <mDNSManager.hpp>
+#include "mDNSManager.hpp"
 
 namespace mDNSManager
 {
     void MDNSHandler::startMDNS()
     {
-        auto deviceConfig = trackerConfig->getDeviceConfig();
-        if (MDNS.begin(deviceConfig->name))
+        auto localConfig = deviceConfig->getDeviceConfig();
+        if (MDNS.begin(localConfig->hostname))
         {
             stateManager->setState(_State::MDNSSuccess);
             MDNS.addService("GreenhouseTowerDIY", "tcp", 80);
@@ -38,14 +37,14 @@ namespace mDNSManager
     int MDNSHandler::DiscovermDNSBroker()
     {
         IPAddress mqttServer;
-        auto deviceConfig = trackerConfig->getDeviceConfig();
+        auto localConfig = deviceConfig->getDeviceConfig();
         // check if there is a WiFi connection
         if (WiFi.status() == WL_CONNECTED)
         {
             log_i("[mDNS Broker Discovery]: connected!\n");
 
             log_i("[mDNS Broker Discovery]: Setting up mDNS: ");
-            if (!MDNS.begin(deviceConfig->name))
+            if (!MDNS.begin(localConfig->hostname))
             {
                 log_e("[Fail] Error setting up mDNS lookup\n");
                 return 0;

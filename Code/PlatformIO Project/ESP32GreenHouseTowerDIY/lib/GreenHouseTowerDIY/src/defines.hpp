@@ -20,6 +20,8 @@
 // File System
 #include <SPIFFS.h>
 
+#include <data/StateManager/StateManager.hpp>
+
 // data Struct
 #include "data/config.hpp"
 

@@ -1,8 +1,7 @@
 #ifndef MDNSMANAGER_HPP
 #define MDNSMANAGER_HPP
+#include <defines.hpp>
 #include <ESPmDNS.h>
-#include <StateManager.hpp>
-#include <storage.hpp>
 
 namespace mDNSManager
 {
@@ -10,10 +9,10 @@ namespace mDNSManager
     {
     private:
         StateManager *stateManager;
-        Configuration *trackerConfig;
+        Config *deviceConfig;
 
     public:
-        MDNSHandler(StateManager *stateManager, Configuration *trackerConfig) : stateManager(stateManager), trackerConfig(trackerConfig) {}
+        MDNSHandler(StateManager *stateManager, Config *deviceConfig) : stateManager(stateManager), deviceConfig(deviceConfig) {}
         void startMDNS();
         void update(ObserverEvent::Event event);
 
