@@ -1,7 +1,7 @@
 
 #include "timedtasks.hpp"
 
-TimedTasks::TimedTasks(void)
+TimedTasks::TimedTasks(void) : linkList()
 {
 }
 
@@ -78,40 +78,20 @@ void TimedTasks::updateCurrentData(void) // check to see if the data has changed
   }
 }
 
-/* --------------------------------------------------------------------------------------------- */
 
-exeClass::exeClass(void) { inList = false; }
-
-// Before we die, we need to tell our master to let us go.
-exeClass::~exeClass(void) { taskList.unlinkObj(this); }
-
-void exeClass::addSelf(void)
-{
-  if (!inList)
-  {
-    taskList.addToTop(this);
-    inList = true;
-  }
-}
-
-// Our call that goes into loop() to run the idlers.
-exeMgr::exeMgr(void) : linkList() {}
-
-exeMgr::~exeMgr(void) {}
 
 // Run down the list and call the idle() method on each one.
-void exeMgr::execute(void)
+//! TODO: Turn this into a template that can accept any class type.
+void TimedTasks::execute(void)
 {
+  AccumulateData *trace;
 
-  exeClass *trace;
-
-  trace = (exeClass *)getFirst();
+  trace = (AccumulateData *)getFirst();
   while (trace != NULL)
   {
     trace->execute();
-    trace = (exeClass *)trace->getNext();
+    trace = (AccumulateData *)trace->getNext();
   }
 }
 
 TimedTasks timedTasks;
-exeMgr taskList;

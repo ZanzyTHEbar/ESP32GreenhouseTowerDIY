@@ -1,12 +1,16 @@
 #ifndef ACCUMULATEDATA_HPP
 #define ACCUMULATEDATA_HPP
 #include <defines.hpp>
+#include <lists.h>
 
-class AccumulateData
+class AccumulateData : public linkListObj
 {
 public:
     AccumulateData();
     virtual ~AccumulateData();
+
+    void addSelf(void);
+    virtual void execute(void);
 
     void InitAccumulateData();
     int ChargeStatus();
@@ -28,6 +32,7 @@ public:
         int flow_rate_sensor_temp;
     };
     Data config;
+    bool inList;
 
 private:
     // Stack Data to send

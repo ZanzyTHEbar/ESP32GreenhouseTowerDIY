@@ -1,27 +1,33 @@
-#include <LEDManager.hpp>
+#include "LEDManager.hpp"
+
+LEDManager::LEDManager(uint8_t pin) : _ledPin(pin) {}
+
+LEDManager::~LEDManager() {}
 
 void LEDManager::setupLED() const
 {
-    pinMode(ledPin, OUTPUT);
+    pinMode(_ledPin, OUTPUT);
 }
 
 void LEDManager::on() const
 {
-    digitalWrite(ledPin, LOW);
+    digitalWrite(_ledPin, LOW);
 }
 
 void LEDManager::off() const
 {
-    digitalWrite(ledPin, HIGH);
+    digitalWrite(_ledPin, HIGH);
 }
 
-void LEDManager::blink(unsigned int time)
+void LEDManager::blink(unsigned long time)
 {
     on();
-    delay(time);
+    my_delay(time);
     off();
 }
 
 void LEDManager::displayStatus()
 {
 }
+
+LEDManager ledManager(LED_BUILTIN);

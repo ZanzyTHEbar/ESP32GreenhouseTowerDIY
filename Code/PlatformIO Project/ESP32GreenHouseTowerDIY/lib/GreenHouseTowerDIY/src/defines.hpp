@@ -20,10 +20,12 @@
 // File System
 #include <SPIFFS.h>
 
-#include <data/StateManager/StateManager.hpp>
-
 // data Struct
 #include "data/config.hpp"
+
+#include <data/StateManager/StateManager.hpp>
+#include <network/mDNSManager/mDNSManager.hpp>
+#include <io/LEDManager/LEDManager.hpp>
 
 // IO
 #include <Wire.h>
@@ -53,6 +55,7 @@
 // Network definitions
 #include "network/network.hpp"
 #include "network/ntp.hpp"
+#include "network/OTA/OTA.hpp"
 
 // Accumulate Data
 #include "data/accumulatedata.hpp"
@@ -63,7 +66,7 @@
 /*######################## MQTT Configuration ########################*/
 // MQTT includes
 #if ENABLE_MDNS_SUPPORT
-#include "mqtt/mDNS_Discovery/mDNS.hpp"
+#include "network/mDNSManager/mDNSManager.hpp"
 #endif // ENABLE_MDNS_SUPPORT
 #if ENABLE_HASS
 #include "mqtt/HASSIO/hassmqtt.hpp"

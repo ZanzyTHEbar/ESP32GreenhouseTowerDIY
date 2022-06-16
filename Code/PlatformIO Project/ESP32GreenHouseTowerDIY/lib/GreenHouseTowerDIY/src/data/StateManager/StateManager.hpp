@@ -54,5 +54,5 @@ public:
 private:
     _State current_state;
 };
-
+extern StateManager stateManager;
 #endif // STATEMANAGER_HPP

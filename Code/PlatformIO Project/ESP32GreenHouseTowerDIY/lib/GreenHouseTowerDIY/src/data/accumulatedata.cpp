@@ -1,11 +1,22 @@
 #include "accumulatedata.hpp"
 
-AccumulateData::AccumulateData() : _maxTemp(100), _numTempSensors(0)
+AccumulateData::AccumulateData() : _maxTemp(100), _numTempSensors(0), inList(false)
 {
 }
 
 AccumulateData::~AccumulateData()
 {
+    // Before we die, we need to tell our master to let us go.
+    timedTasks.unlinkObj(this);
+}
+
+void AccumulateData::addSelf(void)
+{
+    if (!inList)
+    {
+        timedTasks.addToTop(this);
+        inList = true;
+    }
 }
 
 /******************************************************************************

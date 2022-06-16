@@ -6,34 +6,13 @@
 #include <idlers.h>
 #include <lists.h>
 
-class exeClass : public linkListObj
-{
-
-public:
-  exeClass(void);
-  virtual ~exeClass(void);
-
-  void addSelf(void);
-  virtual void execute(void);
-  bool inList;
-};
-
-class exeMgr : public linkList
-{
-
-public:
-  exeMgr(void);
-  virtual ~exeMgr(void);
-
-  void execute(void);
-};
-
-class TimedTasks : public timeObj
+class TimedTasks : public timeObj, public linkList
 {
 public:
   TimedTasks(void);
   virtual ~TimedTasks(void);
   bool begin(void);
+  void execute(void);
 
   void updateCurrentData(void);
 #if ENABLE_I2C_SCANNER
@@ -55,7 +34,22 @@ private:
   timeObj _Timer_5m;
 };
 
-extern exeMgr taskList;
 extern TimedTasks timedTasks;
 
 #endif
+
+/*
+
+AccumulateData data1;
+
+void setup(void) {
+   data1.begin(&sensorMgr);
+   data1.addSelf();
+}
+
+void loop() {
+   sensorMgr.checkStuff();
+   theList.execute();
+}
+
+ */

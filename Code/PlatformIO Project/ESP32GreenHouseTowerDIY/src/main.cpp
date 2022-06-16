@@ -1,12 +1,11 @@
-#include <Arduino.h>
 #include <defines.hpp>
 
-/******************************************************************************
- * Function: Setup Main Loop
- * Description: This is the setup function for the main loop of the whole program. Use this to setup the main loop.
- * Parameters: None
- * Return: None
- ******************************************************************************/
+//******************************************************************************
+//* Function: Main program entry point.
+//* Description: This is the entry point of the program.
+//* Parameters: None
+//* Return: None
+// ******************************************************************************
 
 #ifdef DEFAULT_HOSTNAME
 #pragma message(Reminder DEFAULT_HOSTNAME " is defined as the default hostname.")
@@ -18,13 +17,17 @@
 #pragma message(Reminder "This is a development build.")
 #endif
 
+mDNSManager::MDNSHandler mdnsHandler = mDNSManager::MDNSHandler(&stateManager, &cfg);
+
 void setup()
 {
   Serial.begin(115200);
+  Serial.setDebugOutput(true);
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
-  timedTasks.setupTimers();
+  timedTasks.begin();
+  ledManager.setupLED();
 
   Serial.println(F("Setting up the program, standby..."));
   // Setup the main loop
@@ -59,7 +62,7 @@ void setup()
   }
 
   Serial.println("");
-  Relay.SetupPID();
+  // Relay.SetupPID();
   // Setup the network stack
 #if ENABLE_HASS
   hassmqtt.loadMQTTConfig();
@@ -69,11 +72,13 @@ void setup()
   Serial.println(F("Setting up WiFi"));
   Serial.println(F("Starting Webserver"));
   network.SetupWebServer();
+  cfg.attach(&mdnsHandler);
   network.SetupServer();
   Serial.println(F("Setting up MQTT"));
 
 #if ENABLE_MDNS_SUPPORT
-  if (mDNSDiscovery::DiscovermDNSBroker())
+  mdnsHandler.startMDNS();
+  if (mdnsHandler.DiscovermDNSBroker())
   {
     Serial.println(F("[mDNS responder started] Setting up Broker..."));
   }
@@ -83,7 +88,6 @@ void setup()
   }
 #endif // ENABLE_MDNS_SUPPORT
 
-  Serial.println("");
   if (network.SetupNetworkStack())
   {
     Serial.println(F("Network Stack Setup Successful"));
@@ -94,6 +98,9 @@ void setup()
     Serial.println(F("Network Stack Setup Failed - Activating Access-Point Mode"));
   }
 
+  ledManager.on();
+  ota.SetupOTA(cfg);
+
   Serial.print(F("\n===================================\n"));
   Serial.println(F("Setup Complete"));
   my_delay(1L);
@@ -101,6 +108,9 @@ void setup()
 
 void loop()
 {
+  ota.HandleOTAUpdate();
+  ledManager.displayStatus();
+
 #if ENABLE_I2C_SCANNER
   timedTasks.ScanI2CBus();
 #endif // ENABLE_I2C_SCANNER
@@ -121,7 +131,7 @@ void loop()
     }
   }
 
-  if (WiFi.status() == WL_CONNECTED)
+  if (stateManager.getCurrentState() == ConnectingToWifiSuccess)
   {
     timedTasks.NTPService();
 #if ENABLE_HASS

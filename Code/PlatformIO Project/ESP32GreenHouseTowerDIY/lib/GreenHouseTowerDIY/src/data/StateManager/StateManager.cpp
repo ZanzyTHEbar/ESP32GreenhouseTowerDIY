@@ -9,3 +9,5 @@ _State StateManager::getCurrentState()
 {
     return current_state;
 }
+
+StateManager stateManager;

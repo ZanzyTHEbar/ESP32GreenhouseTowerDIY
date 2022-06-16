@@ -8,7 +8,7 @@
 #define CONFIG_HPP
 #include <defines.hpp>
 
-class Config
+class Config : public ISubject
 {
 public:
     Config();
