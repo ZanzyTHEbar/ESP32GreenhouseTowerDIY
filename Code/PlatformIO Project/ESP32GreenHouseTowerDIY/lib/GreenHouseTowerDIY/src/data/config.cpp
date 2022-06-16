@@ -5,74 +5,9 @@
 Config::Config() : _last_config_change(false),
                    _last_config(0),
                    _maxTemp(120),
-                   _doc_string("")
-{
-}
+                   _doc_string("") {}
 
-Config::~Config()
-{
-    /* // Free the allocated memory
-    if (config.hostname)
-    {
-        freeStr(&config.hostname);
-    }
-    if (config.MQTTBroker)
-    {
-        freeStr(&config.MQTTBroker);
-    }
-    if (config.MQTTPort)
-    {
-        freeStr(&config.MQTTPort);
-    }
-    if (config.MQTTUser)
-    {
-        freeStr(&config.MQTTUser);
-    }
-    if (config.MQTTPass)
-    {
-        freeStr(&config.MQTTPass);
-    }
-    if (config.MQTTTopic)
-    {
-        freeStr(&config.MQTTTopic);
-    }
-    if (config.MQTTSetTopic)
-    {
-        freeStr(&config.MQTTSetTopic);
-    }
-    if (config.MQTTDeviceName)
-    {
-        freeStr(&config.MQTTDeviceName);
-    }
-    if (config.NTPTIME)
-    {
-        freeStr(&config.NTPTIME);
-    }
-    if (config.NTPTIMEOFFSET)
-    {
-        freeStr(&config.NTPTIMEOFFSET);
-    }
-    if (config.WIFISSID)
-    {
-        freeStr(&config.WIFISSID);
-    }
-    if (config.WIFIPASS)
-    {
-        freeStr(&config.WIFIPASS);
-    }
-    if (config.MDNS)
-    {
-        freeStr(&config.MDNS);
-    }
-    if (config.DHCPCHECK)
-    {
-        freeStr(&config.DHCPCHECK);
-    }
-    if (config.configData)
-    {
-        freeStr(&config.configData);
-    } */
-}
+Config::~Config() {}
 
 void Config::CreateDefaultConfig()
 {
@@ -125,7 +60,7 @@ bool Config::initSPIFFS()
 String Config::readFile(fs::FS &fs, const char *path)
 {
     log_i("Reading file: %s\r\n", path);
-    const char* fullPath = appendChartoChar("/", path);
+    const char *fullPath = appendChartoChar("/", path);
 
     File file = fs.open(fullPath);
     if (!file || file.isDirectory())
