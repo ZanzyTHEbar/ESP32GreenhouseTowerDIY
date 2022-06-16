@@ -47,25 +47,15 @@ WiFiClient espClient;
  * @brief Construct a new Network:: Network object
  *
  */
-Network::Network() : MAX_FILESIZE(2 * 1024 * 1024),
-                     previousMillis(0),
+Network::Network() : previousMillis(0),
                      interval(30000),
-                     wifiConnected(false)
-{
-    log_i("[INFO]: Network::Network()\n");
-    log_i("[INFO]: Creating network object\n");
-}
+                     wifiConnected(false) {}
 
 /**
  * @brief Destroy the Network:: Network object
  *
  */
-Network::~Network()
-{
-    // destructor
-    log_i("[INFO]: Network::~Network()\n");
-    log_i("[INFO]: Destroying network object\n");
-}
+Network::~Network() {}
 
 void notFound(AsyncWebServerRequest *request)
 {
@@ -171,69 +161,70 @@ bool Network::SetupNetworkStack()
     if (!cfg.loadConfig())
     {
         log_i("[INFO]: Failed to load config\n");
+        return false;
     }
-    else
+
+    log_i("[INFO]: Loaded config\n");
+    // Load values saved in SPIFFS
+    SSID = cfg.config.WIFISSID;
+    PASS = cfg.config.WIFIPASS;
+
+    if (!PRODUCTION)
     {
-        log_i("[INFO]: Loaded config\n");
-        // Load values saved in SPIFFS
-        SSID = cfg.config.WIFISSID;
-        PASS = cfg.config.WIFIPASS;
+        // print it on the serial monitor
+        log_i("%s\n", PASS.c_str());
+    }
 
-        if (!PRODUCTION)
-        {
-            // print it on the serial monitor
-            log_i("%s\n", PASS.c_str());
-        }
+    if (SSID[0] == '\0' || PASS[0] == '\0')
+    {
+        log_i("[INFO]: No SSID or password has been set.\n");
+        log_i("[INFO]: Please configure the Wifi Manager by scanning the QR code on your device.\r\n");
+        return false;
+    }
+    log_i("[INFO]: Configured SSID: %s\r\n", SSID.c_str());
 
-        if (SSID[0] == '\0' || PASS[0] == '\0')
+    // Set your Gateway IP address
+    IPAddress localIP;
+    IPAddress gateway;
+    IPAddress subnet;
+
+    WiFi.mode(WIFI_STA);
+    /* localIP.fromString(WiFi.localIP().toString());
+    gateway.fromString(WiFi.gatewayIP().toString());
+    subnet.fromString(WiFi.subnetMask().toString());
+
+    if (!WiFi.config(localIP, gateway, subnet))
+    {
+        log_e("[INFO]: STA Failed to configure\n");
+        return false;
+    } */
+
+    WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+
+    WiFi.setHostname(cfg.config.hostname); // define hostname
+
+    WiFi.begin(cfg.config.WIFISSID, cfg.config.WIFIPASS);
+
+    unsigned long currentMillis = millis();
+    previousMillis = currentMillis;
+
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        stateManager.setState(_State::ConnectingToWifi);
+        currentMillis = millis();
+        if (currentMillis - previousMillis >= interval)
         {
-            log_i("[INFO]: No SSID or password has been set.\n");
-            log_i("[INFO]: Please configure the Wifi Manager by scanning the QR code on your device.\r\n");
+            log_i("[INFO]: WiFi connection timed out.\n");
+            stateManager.setState(_State::ConnectingToWifiError);
             return false;
         }
-        else
-        {
-            log_i("[INFO]: Configured SSID: %s\r\n", SSID.c_str());
-
-            // Set your Gateway IP address
-            IPAddress localIP;
-            IPAddress gateway;
-            IPAddress subnet;
-
-            WiFi.mode(WIFI_STA);
-            localIP.fromString(WiFi.localIP().toString());
-            gateway.fromString(WiFi.gatewayIP().toString());
-            subnet.fromString(WiFi.subnetMask().toString());
-
-            if (!WiFi.config(localIP, gateway, subnet))
-            {
-                log_e("[INFO]: STA Failed to configure\n");
-                return false;
-            }
-
-            WiFi.setHostname(cfg.config.hostname); // define hostname
-
-            WiFi.begin(cfg.config.WIFISSID, cfg.config.WIFIPASS);
-
-            unsigned long currentMillis = millis();
-            previousMillis = currentMillis;
-
-            while (WiFi.status() != WL_CONNECTED)
-            {
-                currentMillis = millis();
-                if (currentMillis - previousMillis >= interval)
-                {
-                    log_i("[INFO]: WiFi connection timed out.\n");
-                    return false;
-                }
-            }
-
-            log_i("[INFO]: Connected to WiFi.\n");
-            log_i("IP address: %s\n", WiFi.localIP().toString().c_str());
-            return true;
-        }
     }
-    return false;
+
+    log_i("[INFO]: Connected to WiFi.\n");
+    log_i("IP address: %s\n", WiFi.localIP().toString().c_str());
+    stateManager.setState(_State::ConnectingToWifiSuccess);
+
+    return true;
 }
 
 /**
@@ -310,7 +301,7 @@ void Network::CheckConnectionLoop_Active()
     {
         Serial.print(millis());
         Serial.println("Reconnecting to WiFi...");
-        WiFi.disconnect();
+        WiFi.disconnect(); // disconnect from previous Access Point's - if connected
         WiFi.reconnect();
         previousMillis = currentMillis;
     }
@@ -356,16 +347,6 @@ void Network::SetupServer()
           (float)100 / totalBytes * usedBytes);
     log_i("\n");
 #endif
-}
-
-void Network::SetupWifiScan()
-{
-    // Set WiFi to station mode and disconnect from an AP if it was previously connected
-    WiFi.mode(WIFI_STA);
-    WiFi.disconnect(); // Disconnect from the access point if connected before
-    my_delay(0.1L);
-
-    log_i("[INFO]: Setup done\n");
 }
 
 bool Network::LoopWifiScan()

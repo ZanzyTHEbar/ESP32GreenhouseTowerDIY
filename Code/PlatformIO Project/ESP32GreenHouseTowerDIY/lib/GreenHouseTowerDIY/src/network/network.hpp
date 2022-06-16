@@ -21,19 +21,16 @@ public:
     virtual ~Network();
     // Functions
     bool SetupNetworkStack();
-    bool connectToApWithFailToStation();
     void SetupWebServer();
     void SetupServer();
+    void networkRoutes();
     void CheckNetworkLoop();
     void CheckConnectionLoop_Active();
-    void SetupWifiScan();
-    void networkRoutes();
     bool LoopWifiScan();
 
     // variables
 private:
     int CheckWifiState();
-    const size_t MAX_FILESIZE; // 2MB
     // Timer variables
     unsigned long previousMillis;
     const long interval; // interval to wait for Wi-Fi connection (milliseconds)

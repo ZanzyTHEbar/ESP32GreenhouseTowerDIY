@@ -7,10 +7,10 @@ namespace ObserverEvent
 {
     enum Event
     {
-        configLoaded = 1,
-        deviceConfigUpdated = 2,
-        pumpConfigUpdated = 3,
-        networksConfigUpdated = 4,
+        configLoaded,
+        deviceConfigUpdated,
+        pumpConfigUpdated,
+        networksConfigUpdated
     };
 }
 
