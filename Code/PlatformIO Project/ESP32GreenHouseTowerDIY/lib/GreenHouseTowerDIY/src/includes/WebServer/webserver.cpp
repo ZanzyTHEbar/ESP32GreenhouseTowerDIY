@@ -1,4 +1,4 @@
-#include "webserverHandler.hpp"
+#include <webServerHandler.hpp>
 
 HTTPDHandler::HTTPDHandler(Configuration *filterConfig)
 {
@@ -17,7 +17,7 @@ void HTTPDHandler::startStreamServer()
         HTTP_GET,
         std::bind(&HTTPDHandler::config_update_handler, this, std::placeholders::_1));
 
-    Serial.println("Initializing web server");
+    log_i("Initializing web server");
     this->server->begin();
 }
 

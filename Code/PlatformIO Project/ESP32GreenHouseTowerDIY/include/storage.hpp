@@ -5,8 +5,6 @@
 #include <vector>
 #include <string>
 
-#define DEBUG_CONFIG true
-
 #define DESERIALIZE_CONFIG_SIZE 1024
 #define SERIALIZE_CONFIG_SIZE 1024
 
@@ -17,16 +15,12 @@ struct DeviceConfig
     int OTAPort = 0;
 };
 
-struct CameraConfig
+struct PumpConfig
 {
-    int vflip = 0;
-    int framesize = 0;
-    int href = 0;
-    int pointX = 0;
-    int pointY = 0;
-    int outputX = 0;
-    int outputY = 0;
-    int quality = 0;
+    char name[32];
+    int pin = 0;
+    int onTime = 0;
+    int offTime = 0;
 };
 
 struct WiFiConfig
@@ -36,11 +30,16 @@ struct WiFiConfig
     char password[64];
 };
 
-struct TrackerConfig
+struct MQTTConfig
+{
+};
+
+struct TowerConfig
 {
     DeviceConfig device{};
-    CameraConfig camera{};
+    PumpConfig pump_config{};
     std::vector<WiFiConfig> networks;
+    MQTTConfig mqtt_config{};
 };
 
 class Configuration : public ISubject
@@ -50,17 +49,19 @@ public:
     void loadConfig();
 
     DeviceConfig *getDeviceConfig() { return &this->config.device; }
-    CameraConfig *getCameraConfig() { return &this->config.camera; }
+    PumpConfig *getPumpConfig() { return &this->config.pump_config; }
     std::vector<WiFiConfig> *getWifiConfigs() { return &this->config.networks; }
+    MQTTConfig *getMQTTConfig() { return &this->config.mqtt_config; }
 
     void updateDeviceConfig(JsonObject &deviceConfig, bool shouldNotify);
-    void updateCameraConfig(JsonObject &cameraConfig, bool shouldNotify);
+    void updatePumpConfig(JsonObject &pumpConfig, bool shouldNotify);
     void updateNetwork(char *networkName, JsonObject &wifiConfig, bool shouldNotify);
+    void updateMQTTConfig(JsonObject &mqttConfig, bool shouldNotify);
     void reset() { SPIFFS.format(); }
     void save();
 
 private:
     char configFileName[20];
-    TrackerConfig config;
+    TowerConfig config;
     bool already_loaded = false;
 };

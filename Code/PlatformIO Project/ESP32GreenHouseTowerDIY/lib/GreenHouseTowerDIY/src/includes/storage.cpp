@@ -67,9 +67,9 @@ void Configuration::loadConfig()
 #endif
 
     JsonObject deviceConfig = config_doc["device"].as<JsonObject>();
-    JsonObject cameraConfig = config_doc["camera"].as<JsonObject>();
+    JsonObject pumpConfig = config_doc["pump"].as<JsonObject>();
     this->updateDeviceConfig(deviceConfig, false);
-    this->updateCameraConfig(cameraConfig, false);
+    this->updatePumpConfig(pumpConfig, false);
 
     for (JsonPair wifi_item : config_doc["wifi"].as<JsonObject>())
     {
@@ -105,15 +105,15 @@ void Configuration::save()
     configurationDoc["device"]["OTAPassword"] = this->config.device.OTAPassword;
     configurationDoc["device"]["OTAPort"] = this->config.device.OTAPort;
 
-    JsonObject camera = configurationDoc.createNestedObject("camera");
-    camera["vflip"] = this->config.camera.vflip;
-    camera["framesize"] = this->config.camera.framesize;
-    camera["href"] = this->config.camera.href;
-    camera["pointX"] = this->config.camera.pointX;
-    camera["pointY"] = this->config.camera.pointY;
-    camera["outputX"] = this->config.camera.outputX;
-    camera["outputY"] = this->config.camera.outputY;
-    camera["quality"] = this->config.camera.quality;
+    JsonObject pump = configurationDoc.createNestedObject("pump");
+    pump["vflip"] = this->config.pump_config.vflip;
+    pump["framesize"] = this->config.pump_config.framesize;
+    pump["href"] = this->config.pump_config.href;
+    pump["pointX"] = this->config.pump_config.pointX;
+    pump["pointY"] = this->config.pump_config.pointY;
+    pump["outputX"] = this->config.pump_config.outputX;
+    pump["outputY"] = this->config.pump_config.outputY;
+    pump["quality"] = this->config.pump_config.quality;
 
     JsonObject wifi = configurationDoc.createNestedObject("wifi");
 
@@ -123,6 +123,13 @@ void Configuration::save()
         network_config["ssid"] = this->config.networks[i].ssid;
         network_config["pass"] = this->config.networks[i].password;
     }
+
+    JsonObject mqtt = configurationDoc.createNestedObject("mqtt");
+    mqtt["host"] = this->config.mqtt_config.host;
+    mqtt["port"] = this->config.mqtt_config.port;
+    mqtt["user"] = this->config.mqtt_config.user;
+    mqtt["pass"] = this->config.mqtt_config.pass;
+    mqtt["topic"] = this->config.mqtt_config.topic;
 
     if (serializeJson(configurationDoc, configFile) == 0)
     {
@@ -140,18 +147,18 @@ void Configuration::updateDeviceConfig(JsonObject &deviceConfig, bool shouldNoti
         this->notify(ObserverEvent::deviceConfigUpdated);
 }
 
-void Configuration::updateCameraConfig(JsonObject &cameraConfig, bool shouldNotify)
+void Configuration::updatePumpConfig(JsonObject &pumpConfig, bool shouldNotify)
 {
-    this->config.camera.framesize = cameraConfig["framesize"];
-    this->config.camera.vflip = cameraConfig["vlip"];
-    this->config.camera.href = cameraConfig["href"];
-    this->config.camera.pointX = cameraConfig["pointX"];
-    this->config.camera.pointY = cameraConfig["pointY"];
-    this->config.camera.outputX = cameraConfig["outputX"];
-    this->config.camera.outputY = cameraConfig["outputY"];
-    this->config.camera.quality = cameraConfig["quality"];
+    this->config.pump_config.framesize = pumpConfig["framesize"];
+    this->config.pump_config.vflip = pumpConfig["vlip"];
+    this->config.pump_config.href = pumpConfig["href"];
+    this->config.pump_config.pointX = pumpConfig["pointX"];
+    this->config.pump_config.pointY = pumpConfig["pointY"];
+    this->config.pump_config.outputX = pumpConfig["outputX"];
+    this->config.pump_config.outputY = pumpConfig["outputY"];
+    this->config.pump_config.quality = pumpConfig["quality"];
     if (shouldNotify)
-        this->notify(ObserverEvent::cameraConfigUpdated);
+        this->notify(ObserverEvent::pumpConfigUpdated);
 }
 
 void Configuration::updateNetwork(char *networkName, JsonObject &wifiConfig, bool shouldNotify)
