@@ -53,9 +53,9 @@ void OTA::HandleOTAUpdate()
     {
         if (_bootTimestamp + 30000 < millis())
         {
-            // we're disabling ota after first 30sec so that nothing bad happens during playtime
+            // we're disabling ota after first 30sec so that nothing bad happens during runtime
             _isOtaEnabled = false;
-            log_w("From now on, OTA is disabled");
+            log_i("From now on, OTA is disabled");
             return;
         }
         ArduinoOTA.handle();
