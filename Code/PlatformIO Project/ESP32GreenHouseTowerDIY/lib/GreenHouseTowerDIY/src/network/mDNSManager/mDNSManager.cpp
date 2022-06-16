@@ -2,21 +2,21 @@
 
 namespace mDNSManager
 {
-    void MDNSHandler::startMDNS()
+    bool MDNSHandler::startMDNS()
     {
         auto localConfig = deviceConfig->getDeviceConfig();
-        if (MDNS.begin(localConfig->hostname))
-        {
-            stateManager->setState(_State::MDNSSuccess);
-            MDNS.addService("GreenhouseTowerDIY", "tcp", 80);
-            MDNS.addServiceTxt("GreenhouseTowerDIY", "tcp", "webserver_port", String(80));
-            log_i("MDNS initialized!");
-        }
-        else
+        if (!MDNS.begin(localConfig->hostname))
         {
             stateManager->setState(_State::MDNSError);
             log_e("Error initializing MDNS");
+            return false;
         }
+
+        stateManager->setState(_State::MDNSSuccess);
+        MDNS.addService("GreenhouseTowerDIY", "tcp", 80);
+        MDNS.addServiceTxt("GreenhouseTowerDIY", "tcp", "webserver_port", String(80));
+        log_i("MDNS initialized!");
+        return true;
     }
 
     void MDNSHandler::update(ObserverEvent::Event event)
@@ -37,16 +37,15 @@ namespace mDNSManager
     int MDNSHandler::DiscovermDNSBroker()
     {
         IPAddress mqttServer;
-        auto localConfig = deviceConfig->getDeviceConfig();
         // check if there is a WiFi connection
         if (WiFi.status() == WL_CONNECTED)
         {
             log_i("[mDNS Broker Discovery]: connected!\n");
 
             log_i("[mDNS Broker Discovery]: Setting up mDNS: ");
-            if (!MDNS.begin(localConfig->hostname))
+            if (!startMDNS())
             {
-                log_e("[Fail] Error setting up mDNS lookup\n");
+                log_e("[mDNS Broker Discovery]: failed to start mDNS!");
                 return 0;
             }
 

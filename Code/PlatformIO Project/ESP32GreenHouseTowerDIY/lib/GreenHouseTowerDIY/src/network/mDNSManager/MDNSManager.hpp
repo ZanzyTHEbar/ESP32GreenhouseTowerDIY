@@ -13,7 +13,7 @@ namespace mDNSManager
 
     public:
         MDNSHandler(StateManager *stateManager, Config *deviceConfig) : stateManager(stateManager), deviceConfig(deviceConfig) {}
-        void startMDNS();
+        bool startMDNS();
         void update(ObserverEvent::Event event);
 
         //******************************************************************************
