@@ -7,7 +7,8 @@ class Relays
 public:
     Relays();
     virtual ~Relays();
-    void RelayOnOff(int relay, bool on, long double delay = 0.1L);
+    bool begin();
+    void RelayOnOff(int relay, bool state, long double delay = 0.1L);
     void SetupPID();
 #if USE_SHT31_SENSOR
     void HumRelayOnOff();

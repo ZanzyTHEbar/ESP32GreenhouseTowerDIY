@@ -10,6 +10,15 @@ Relays::Relays()
       myPID(&_Input, &_Output, &_Setpoint, 2, 5, 1, DIRECT)
 #endif // USE_PID
 {
+}
+
+Relays::~Relays()
+{
+}
+
+bool Relays::begin()
+{
+    log_i("Setting up Relays...");
     // use a c++ ranged for loop to iterate through the relay pins
     for (int pin : cfg.config.relays_pin)
     {
@@ -25,10 +34,7 @@ Relays::Relays()
     // turn the PID on
     myPID.SetMode(AUTOMATIC);
 #endif // USE_PID
-}
-
-Relays::~Relays()
-{
+    return true;
 }
 
 /******************************************************************************
@@ -37,16 +43,9 @@ Relays::~Relays()
  * Parameters: int, bool, long (in seconds)
  * Return: None
  ******************************************************************************/
-void Relays::RelayOnOff(int relay, bool on, long double delay)
+void Relays::RelayOnOff(int relay, bool state, long double delay)
 {
-    if (on)
-    {
-        digitalWrite(relay, HIGH);
-    }
-    else
-    {
-        digitalWrite(relay, LOW);
-    }
+    digitalWrite(relay, state);
     my_delay(delay);
 }
 

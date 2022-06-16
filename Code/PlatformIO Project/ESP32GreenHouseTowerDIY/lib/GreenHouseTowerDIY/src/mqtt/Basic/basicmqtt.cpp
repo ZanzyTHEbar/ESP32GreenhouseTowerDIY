@@ -84,26 +84,35 @@ void callback(char *topic, byte *payload, unsigned int length)
 #endif // ENABLE_PH_SUPPORT
 }
 
-void BASEMQTT::begin()
+bool BASEMQTT::begin()
 {
     log_i("Setting up MQTT...");
 
     // Local Mosquitto Connection -- Start
-    if (mqttClient.connect(DEFAULT_HOSTNAME))
-    {
-#if ENABLE_PH_SUPPORT
-        // connection succeeded
-        log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
-        mqttClient.subscribe(phsensor._pHTopic);
-#endif // ENABLE_PH_SUPPORT
-        log_i("Successfully subscribed to the topic.");
-    }
-    else
+    if (!mqttClient.connect(DEFAULT_HOSTNAME))
     {
         // connection failed
         log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
+        cfg.config.MQTTConnectedState = mqttClient.state();
+        return false;
     }
-    // Local Mosquitto Connection -- End
+
+    cfg.config.MQTTConnectedState = mqttClient.state();
+#if ENABLE_PH_SUPPORT
+    // connection succeeded
+    log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
+    mqttClient.subscribe(phsensor._pHTopic);
+#endif // ENABLE_PH_SUPPORT
+    log_i("Subscribing to the topic [%s]", pump._pumpTopic);
+    mqttClient.subscribe(pump._pumpTopic);
+
+    log_i("Successfully subscribed to the topic.");
+
+    _menuTopic = "menuControl/menu";
+    _infoTopic = "user/info";
+    /* _speakerTopic = SPEAKER_TOPIC;
+    _waterlevelTopic = WATER_LEVEL_TOPIC; */
+    return true;
 }
 
 void BASEMQTT::loadMQTTConfig()

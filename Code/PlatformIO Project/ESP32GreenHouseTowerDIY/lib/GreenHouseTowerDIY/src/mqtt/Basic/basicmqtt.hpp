@@ -14,12 +14,11 @@ public:
     // Constructor
     BASEMQTT();
     virtual ~BASEMQTT();
-    
-    void begin();
+
+    bool begin();
     void loadMQTTConfig();
     void mqttLoop();
     void mqttReconnect();
-
 
     // Friends
     friend class LDR;
@@ -33,6 +32,12 @@ private:
     unsigned long _previousMillis;
     uint8_t _user_bytes_received;
     char _user_data[100];
+
+    char *_infoTopic;
+    char *_statusTopic;
+    char *_commandTopic;
+    char *_configTopic;
+    char *_menuTopic;
 };
 
 extern BASEMQTT basemqtt;

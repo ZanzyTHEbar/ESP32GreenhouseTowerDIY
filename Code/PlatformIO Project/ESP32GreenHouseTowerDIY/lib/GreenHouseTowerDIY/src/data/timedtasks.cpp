@@ -3,6 +3,14 @@
 
 TimedTasks::TimedTasks(void)
 {
+}
+
+TimedTasks::~TimedTasks(void)
+{
+}
+
+bool TimedTasks::begin(void)
+{
   _Timer_1s.setTime(1000);
   _Timer_5s.setTime(5000);
   _Timer_5s_2.setTime(5000);
@@ -11,10 +19,7 @@ TimedTasks::TimedTasks(void)
   _Timer_30s.setTime(30000);
   _Timer_1m.setTime(60000);
   _Timer_5m.setTime(300000);
-}
-
-TimedTasks::~TimedTasks(void)
-{
+  return true;
 }
 
 #if ENABLE_I2C_SCANNER
@@ -73,22 +78,40 @@ void TimedTasks::updateCurrentData(void) // check to see if the data has changed
   }
 }
 
-// Timer delay Settings
-/* void TimedTasks::setCallback(void (*funct)())
+/* --------------------------------------------------------------------------------------------- */
+
+exeClass::exeClass(void) { inList = false; }
+
+// Before we die, we need to tell our master to let us go.
+exeClass::~exeClass(void) { taskList.unlinkObj(this); }
+
+void exeClass::addSelf(void)
 {
-  callback = funct;
-  hookup();
+  if (!inList)
+  {
+    taskList.addToTop(this);
+    inList = true;
+  }
 }
 
-void TimedTasks::setSeconds(float seconds) { setTime(seconds * 1000); }
+// Our call that goes into loop() to run the idlers.
+exeMgr::exeMgr(void) : linkList() {}
 
-void TimedTasks::idle()
+exeMgr::~exeMgr(void) {}
+
+// Run down the list and call the idle() method on each one.
+void exeMgr::execute(void)
 {
-  if (ding())
+
+  exeClass *trace;
+
+  trace = (exeClass *)getFirst();
+  while (trace != NULL)
   {
-    stepTime();
-    callback();
+    trace->execute();
+    trace = (exeClass *)trace->getNext();
   }
-} */
+}
 
 TimedTasks timedTasks;
+exeMgr taskList;

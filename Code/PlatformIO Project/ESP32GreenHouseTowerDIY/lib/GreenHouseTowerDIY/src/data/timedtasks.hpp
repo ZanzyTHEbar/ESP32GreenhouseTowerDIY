@@ -3,13 +3,37 @@
 #define TIMEDTASKS_HPP
 #include <defines.hpp>
 #include <timeObj.h>
-/* #include <idlers.h> */
+#include <idlers.h>
+#include <lists.h>
+
+class exeClass : public linkListObj
+{
+
+public:
+  exeClass(void);
+  virtual ~exeClass(void);
+
+  void addSelf(void);
+  virtual void execute(void);
+  bool inList;
+};
+
+class exeMgr : public linkList
+{
+
+public:
+  exeMgr(void);
+  virtual ~exeMgr(void);
+
+  void execute(void);
+};
 
 class TimedTasks : public timeObj
 {
 public:
   TimedTasks(void);
   virtual ~TimedTasks(void);
+  bool begin(void);
 
   void updateCurrentData(void);
 #if ENABLE_I2C_SCANNER
@@ -31,6 +55,7 @@ private:
   timeObj _Timer_5m;
 };
 
+extern exeMgr taskList;
 extern TimedTasks timedTasks;
 
 #endif
