@@ -22,7 +22,7 @@
  *   https://github.com/espressif/arduino-esp32/issues/5086
  *
  * You need to add the following lines in `build_flags`:
- *                            -I$PROJECT_DIR/include
+ *                            -I include
  *                            -include "esp32x_fixes.h"
  */
 #ifdef __riscv
