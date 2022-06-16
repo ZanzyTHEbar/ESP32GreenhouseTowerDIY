@@ -18,24 +18,7 @@ PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_PORT, callback, 
 
 BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}, _previousMillis(0), _user_bytes_received(0)
 {
-    log_i("Setting up MQTT...");
-
-    // Local Mosquitto Connection -- Start
-    if (mqttClient.connect(DEFAULT_HOSTNAME))
-    {
-#if ENABLE_PH_SUPPORT
-        // connection succeeded
-        log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
-        mqttClient.subscribe(phsensor._pHTopic);
-#endif // ENABLE_PH_SUPPORT
-        log_i("Successfully subscribed to the topic.");
-    }
-    else
-    {
-        // connection failed
-        log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
-    }
-    // Local Mosquitto Connection -- End
+    // Constructor
 }
 
 BASEMQTT::~BASEMQTT()
@@ -99,6 +82,28 @@ void callback(char *topic, byte *payload, unsigned int length)
         phsensor.eventListener(topic, payload, length);
     }
 #endif // ENABLE_PH_SUPPORT
+}
+
+void BASEMQTT::begin()
+{
+    log_i("Setting up MQTT...");
+
+    // Local Mosquitto Connection -- Start
+    if (mqttClient.connect(DEFAULT_HOSTNAME))
+    {
+#if ENABLE_PH_SUPPORT
+        // connection succeeded
+        log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
+        mqttClient.subscribe(phsensor._pHTopic);
+#endif // ENABLE_PH_SUPPORT
+        log_i("Successfully subscribed to the topic.");
+    }
+    else
+    {
+        // connection failed
+        log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
+    }
+    // Local Mosquitto Connection -- End
 }
 
 void BASEMQTT::loadMQTTConfig()

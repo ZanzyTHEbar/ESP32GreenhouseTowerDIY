@@ -14,10 +14,12 @@ public:
     // Constructor
     BASEMQTT();
     virtual ~BASEMQTT();
-
+    
+    void begin();
     void loadMQTTConfig();
     void mqttLoop();
     void mqttReconnect();
+
 
     // Friends
     friend class LDR;
