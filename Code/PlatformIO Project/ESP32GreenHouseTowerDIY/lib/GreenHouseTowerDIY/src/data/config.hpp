@@ -51,8 +51,23 @@ public:
 
     Config_t *getDeviceConfig() { return &this->config; }
 
+    struct OTA_t
+    {
+        char name[32];
+        char OTAPassword[64];
+        int OTAPort = 0;
+    };
+
+    OTA_t ota_config;
+
+    OTA_t *getOTAConfig() { return &this->ota_config; }
+
     /* Erase all data in SPIFFS - VERY DESTRUCTIVE */
-    void reset() { SPIFFS.format(); }
+    void
+    reset()
+    {
+        SPIFFS.format();
+    }
 
     bool loadConfig();
 
@@ -63,7 +78,7 @@ public:
     // overwrite all config settings with "0"
     void resetConfig();
     bool saveConfig();
-    
+
     bool isValidHostname(char *hostname_to_check, long size);
     // parse and set a new hostname to config
     void setHostname(String new_hostname);
