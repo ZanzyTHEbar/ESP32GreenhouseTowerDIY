@@ -9,21 +9,16 @@ void LEDManager::setupLED() const
     pinMode(_ledPin, OUTPUT);
 }
 
-void LEDManager::on() const
+void LEDManager::onOff(bool state) const
 {
-    digitalWrite(_ledPin, LOW);
-}
-
-void LEDManager::off() const
-{
-    digitalWrite(_ledPin, HIGH);
+    digitalWrite(_ledPin, state);
 }
 
 void LEDManager::blink(unsigned long time)
 {
-    on();
+    onOff(true);
     my_delay(time);
-    off();
+    onOff(false);
 }
 
 void LEDManager::displayStatus()

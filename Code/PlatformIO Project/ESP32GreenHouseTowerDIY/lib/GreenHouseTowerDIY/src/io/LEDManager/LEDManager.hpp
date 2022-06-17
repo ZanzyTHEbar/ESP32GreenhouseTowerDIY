@@ -9,8 +9,7 @@ public:
     virtual ~LEDManager();
 
     void setupLED() const;
-    void on() const;
-    void off() const;
+    void onOff(bool state) const;
     void blink(unsigned long time);
     void displayStatus();
 
