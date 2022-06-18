@@ -5,7 +5,7 @@
 class LEDManager
 {
 public:
-    explicit LEDManager(uint8_t pin);
+    LEDManager(byte pin);
     virtual ~LEDManager();
 
     void setupLED() const;
@@ -14,7 +14,9 @@ public:
     void displayStatus();
 
 private:
-    uint8_t _ledPin;
+    byte _ledPin;
+    unsigned long _previousMillis;
+    bool _ledState;
 };
 
 extern LEDManager ledManager;
