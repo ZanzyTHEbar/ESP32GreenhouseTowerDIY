@@ -21,7 +21,7 @@
 #include <SPIFFS.h>
 
 // data Struct
-#include "data/config.hpp"
+#include "data/Config/config.hpp"
 
 #include <data/StateManager/StateManager.hpp>
 #include <network/mDNSManager/mDNSManager.hpp>
@@ -58,10 +58,10 @@
 #include "network/OTA/OTA.hpp"
 
 // Accumulate Data
-#include "data/accumulatedata.hpp"
+#include "data/AccumulateData/accumulatedata.hpp"
 
 // Timed tasks
-#include "data/timedtasks.hpp"
+#include "data/BackgroundTasks/timedtasks.hpp"
 
 /*######################## MQTT Configuration ########################*/
 // MQTT includes

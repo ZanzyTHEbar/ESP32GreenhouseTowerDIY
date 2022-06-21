@@ -31,12 +31,15 @@ void setup()
 
   Serial.println(F("Setting up the program, standby..."));
   // Setup the main loop
-  // Initialize the relay pins
-  int temp[5] = {45, 38, 36, 35, 48};
-  // initialize the Relay pins and set them to off state
-  std::copy(temp, temp + sizeof(temp) / sizeof(temp[0]), cfg.config.relays_pin);
 
-  Wire.begin();
+  if (Wire.begin())
+  {
+    Serial.println(F("I2C initialized"));
+  }
+  else
+  {
+    Serial.println(F("I2C failed"));
+  }
 
   Serial.println(F("Green House Tower booting - please wait"));
   Serial.println(F("Starting..."));
@@ -64,16 +67,16 @@ void setup()
   Serial.println("");
   // Relay.SetupPID();
   // Setup the network stack
-#if ENABLE_HASS
-  hassmqtt.loadMQTTConfig();
-#else
-  basemqtt.loadMQTTConfig();
-#endif // ENABLE_HASS
   Serial.println(F("Setting up WiFi"));
   Serial.println(F("Starting Webserver"));
   network.SetupWebServer();
   cfg.attach(&mdnsHandler);
   network.SetupServer();
+#if ENABLE_HASS
+  hassmqtt.loadMQTTConfig();
+#else
+  basemqtt.loadMQTTConfig();
+#endif // ENABLE_HASS
   Serial.println(F("Setting up MQTT"));
 
 #if ENABLE_MDNS_SUPPORT
@@ -87,7 +90,11 @@ void setup()
     Serial.println(F("[mDNS responder failed]"));
   }
 #endif // ENABLE_MDNS_SUPPORT
-
+#if ENABLE_HASS
+  hassmqtt.begin();
+#else
+  basemqtt.begin();
+#endif // ENABLE_HASS
   if (network.SetupNetworkStack())
   {
     Serial.println(F("Network Stack Setup Successful"));
@@ -98,7 +105,7 @@ void setup()
     Serial.println(F("Network Stack Setup Failed - Activating Access-Point Mode"));
   }
 
-  ledManager.on();
+  ledManager.onOff(true);
   ota.SetupOTA(cfg);
 
   Serial.print(F("\n===================================\n"));
@@ -108,6 +115,7 @@ void setup()
 
 void loop()
 {
+  timedTasks.checkNetwork();
   ota.HandleOTAUpdate();
   ledManager.displayStatus();
 
@@ -116,7 +124,6 @@ void loop()
 #endif // ENABLE_I2C_SCANNER
   timedTasks.accumulateSensorData();
   timedTasks.updateCurrentData();
-  timedTasks.checkNetwork();
 
   if (cfg.config.data_json)
   {

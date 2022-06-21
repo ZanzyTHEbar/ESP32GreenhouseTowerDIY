@@ -35,7 +35,7 @@ Humidity::~Humidity()
  * Parameters: None
  * Return: int - 0 for no sensors found, 1 for  1 sensor found, 2 for 1 sensors found, 3 for 2 sensors found
  ******************************************************************************/
-int Humidity::setupSensor()
+byte Humidity::setupSensor()
 {
 #if USE_DHT_SENSOR
   // Initialize the DHT sensor.

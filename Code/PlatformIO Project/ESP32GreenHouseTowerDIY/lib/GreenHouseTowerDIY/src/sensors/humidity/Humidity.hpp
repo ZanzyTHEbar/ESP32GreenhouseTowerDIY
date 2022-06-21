@@ -38,7 +38,8 @@ public:
   Humidity();
   virtual ~Humidity();
   // Initialize the library
-  int setupSensor();
+  byte setupSensor();
+  
   struct Hum
   {
     float temp;

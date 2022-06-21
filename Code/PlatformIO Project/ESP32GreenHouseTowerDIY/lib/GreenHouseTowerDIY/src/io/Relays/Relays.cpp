@@ -45,8 +45,8 @@ bool Relays::begin()
  ******************************************************************************/
 void Relays::RelayOnOff(int relay, bool state, long double delay)
 {
-    digitalWrite(relay, state);
     my_delay(delay);
+    digitalWrite(relay, state);
 }
 
 /******************************************************************************

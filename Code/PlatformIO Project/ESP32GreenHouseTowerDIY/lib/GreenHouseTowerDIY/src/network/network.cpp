@@ -258,11 +258,11 @@ void Network::SetupWebServer()
 
         if (!PRODUCTION)
         {
-            WiFi.softAP(DEFAULT_HOSTNAME, NULL, 10, 1, 2); // AP mode without password
+            WiFi.softAP(DEFAULT_HOSTNAME, NULL, 10, 0, 2); // AP mode without password
         }
         else
         {
-            WiFi.softAP(WIFI_SSID, WIFI_PASS, 10, 0, 3); // AP mode with password
+            WiFi.softAP(WIFI_SSID, WIFI_PASS, 10, 0 , 3); // AP mode with password
         }
 
         networkRoutes(); // call the network routes function to setup the routes
