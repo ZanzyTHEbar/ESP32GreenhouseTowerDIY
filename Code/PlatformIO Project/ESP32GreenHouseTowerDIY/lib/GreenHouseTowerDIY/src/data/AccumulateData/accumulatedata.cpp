@@ -92,10 +92,63 @@ void AccumulateData::InitAccumulateData()
 
 bool AccumulateData::SendData()
 {
-    // Send the data to the server - Use ArduinoJson library
-    return false;
-    TODO("Implement FEATURE");
-    Message("Make sure to implement this feature before building in release mode");
+    ProgramStates::BatteryChargeState::ChargeState chargeState = ChargeStatus();
+    String json = "";
+    json += R"====({)====";
+
+    json += R"====("stack_humidity":)====";
+    json += (String)cfg.config.stack_humidity + ",\n";
+
+    json += R"====("stack_temp":)====";
+    json += (String)cfg.config.stack_temp + ",\n";
+
+    json += R"====("relays":[)====";
+    json += (String)cfg.config.relays[0] + "," + (String)cfg.config.relays[1] + "," + (String)cfg.config.relays[2] + "," + (String)cfg.config.relays[3] + "," + (String)cfg.config.relays[4] + "],\n";
+
+    json += R"====("stack_voltage":)====";
+    json += (String)cfg.config.stack_voltage + ",\n";
+
+    json += R"====("mqtt_enable":)====";
+    json += (String)cfg.config.MQTTEnabled + ",\n";
+
+    json += R"====("charge_status":)====";
+    json += (String)chargeState + ",\n";
+
+    json += R"====("GraphData":[)====";
+    json += "\n";
+    for (int i = 0; i < 10; i++)
+    {
+        delay(0);
+        json += R"====({"label": "🌡 )====" + (String)i + "\",\n";
+        json += R"====("type": "temp",)====" + (String) "\n";
+        json += R"====("value": )====" + (String)cfg.config.cell_temp[i] + (String) ",\n";
+        json += R"====("maxValue": )====" + (String)_maxTemp;
+        json += R"====(})====" + (String) "\n";
+        json += R"====(,)====";
+
+        json += R"====({"label": "⚡ )====" + (String)i + "\",\n";
+        json += R"====("type": "volt",)====" + (String) "\n";
+        json += R"====("value": )====" + (String)cfg.config.cell_voltage[i] + (String) ",\n";
+        json += R"====("maxValue": )====" + (String)_maxVoltage;
+        json += R"====(})====" + (String) "\n";
+
+        if (i < 9)
+        {
+            json += R"====(,)====";
+        };
+    }
+    json += R"====(])====";
+    json += R"====(})====";
+
+    if (json.length() > 0)
+    {
+        cfg.config.data_json_string = json;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 AccumulateData accumulatedata;
