@@ -3,7 +3,7 @@
 IPAddress broker_ip;
 
 void callback(char *topic, byte *payload, unsigned int length);
-String getBroker();
+char *getBroker();
 
 #if MQTT_SECURE
 PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
@@ -16,36 +16,36 @@ PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_PORT, callback, 
 // * Please only make changes to the following class variables within the ini file. Do not change them here.
 //************************************************************************************************************************
 
-BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}, _previousMillis(0), _user_bytes_received(0)
-{
-    // Constructor
-}
+BASEMQTT::BASEMQTT() : _interval(60000),
+                       _interval_reconnect(5000),
+                       _user_data{0},
+                       _previousMillis(0),
+                       _user_bytes_received(0),
+                       _menuTopic("menuControl/menu"),
+                       _infoTopic("user/info") {}
 
-BASEMQTT::~BASEMQTT()
-{
-    // Destructor
-}
+BASEMQTT::~BASEMQTT() {}
 
-String getBroker()
+char *getBroker()
 {
 #if ENABLE_MDNS_SUPPORT
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
     if (mDNSDiscovery::DiscovermDNSBroker())
     {
         Serial.println(F("[mDNS responder started] Setting up Broker..."));
-        String BROKER_ADDR = cfg.config.MQTTBroker; // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
+        char *BROKER_ADDR = cfg.config.MQTTBroker; // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
         return BROKER_ADDR;
     }
     else
     {
         Serial.println(F("[mDNS responder failed]"));
-        String BROKER_ADDR = MQTT_BROKER;
+        char *BROKER_ADDR = MQTT_BROKER;
         return BROKER_ADDR;
     }
-    return String(MQTT_BROKER);
+    return MQTT_BROKER;
 #else
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
-    return String(MQTT_BROKER);
+    return MQTT_BROKER;
 #endif // ENABLE_MDNS_SUPPORT
 }
 
@@ -93,11 +93,13 @@ bool BASEMQTT::begin()
     {
         // connection failed
         log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
+        stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Error);
         cfg.config.MQTTConnectedState = mqttClient.state();
         return false;
     }
 
     cfg.config.MQTTConnectedState = mqttClient.state();
+    stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected);
 #if ENABLE_PH_SUPPORT
     // connection succeeded
     log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
@@ -107,9 +109,6 @@ bool BASEMQTT::begin()
     mqttClient.subscribe(pump._pumpTopic);
 
     log_i("Successfully subscribed to the topic.");
-
-    _menuTopic = "menuControl/menu";
-    _infoTopic = "user/info";
     /* _speakerTopic = SPEAKER_TOPIC;
     _waterlevelTopic = WATER_LEVEL_TOPIC; */
     return true;
@@ -147,10 +146,25 @@ void BASEMQTT::loadMQTTConfig()
     log_i("Loaded config: hostname %s", cfg.config.hostname);
 }
 
+void BASEMQTT::checkState()
+{
+    cfg.config.MQTTConnectedState = mqttClient.state();
+
+    if (!cfg.config.MQTTConnectedState)
+    {
+        stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected);
+    }
+    else
+    {
+        stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected);
+    }
+    log_i("MQTT client state is: %d", mqttClient.state());
+}
+
 void BASEMQTT::mqttReconnect()
 {
     // Loop until we're reconnected
-    while (!mqttClient.connected())
+    if (!mqttClient.connected())
     {
         log_i("Attempting MQTT connection...");
         // Attempt to connect
@@ -166,8 +180,8 @@ void BASEMQTT::mqttReconnect()
         {
             log_i("failed, rc= %d", mqttClient.state());
             log_i(" try again in 5 seconds");
-            // Wait 15 seconds before retrying
-            my_delay(15L);
+            // Wait 5 seconds before retrying
+            my_delay(5L);
         }
     }
 }
@@ -176,9 +190,14 @@ void BASEMQTT::mqttLoop()
 {
     my_delay(1L);
 
-    if (!mqttClient.connected())
+    if (stateManager.getCurrentMQTTState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected || stateManager.getCurrentMQTTState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Error)
     {
-        mqttReconnect();
+        unsigned long currentMillis = millis();
+        if (currentMillis - _previousMillis >= _interval_reconnect)
+        {
+            _previousMillis = currentMillis;
+            mqttReconnect();
+        }
     }
     else
     {
@@ -188,8 +207,8 @@ void BASEMQTT::mqttLoop()
         unsigned long currentMillis = millis();
         if (currentMillis - _previousMillis >= _interval)
         {
-            _previousMillis = currentMillis;
 
+            _previousMillis = currentMillis;
             if (Serial.available() > 0)
             {
                 _user_bytes_received = Serial.readBytesUntil(13, _user_data, sizeof(_user_data));

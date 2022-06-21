@@ -78,7 +78,18 @@ void TimedTasks::updateCurrentData(void) // check to see if the data has changed
   }
 }
 
-
+void TimedTasks::checkMQTTState(void) // check to see if the data has changed
+{
+  if (_Timer_10s_2.ding())
+  {
+#if ENABLE_HASS
+    hassmqtt.checkState();
+#else
+    basemqtt.checkState();
+#endif // ENABLE_HASS
+    _Timer_10s_2.start();
+  }
+}
 
 // Run down the list and call the idle() method on each one.
 //! TODO: Turn this into a template that can accept any class type.

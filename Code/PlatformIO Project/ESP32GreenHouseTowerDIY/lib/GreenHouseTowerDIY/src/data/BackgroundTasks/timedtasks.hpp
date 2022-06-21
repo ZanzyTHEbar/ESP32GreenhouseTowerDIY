@@ -15,6 +15,7 @@ public:
   void execute(void);
 
   void updateCurrentData(void);
+  void checkMQTTState(void);
 #if ENABLE_I2C_SCANNER
   void ScanI2CBus(void);
 #endif // ENABLE_I2C_SCANNER
