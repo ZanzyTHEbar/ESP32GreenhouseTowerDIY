@@ -19,6 +19,7 @@
 
 // File System
 #include <SPIFFS.h>
+#include "observer.hpp"
 
 // data Struct
 #include "data/Config/config.hpp"
