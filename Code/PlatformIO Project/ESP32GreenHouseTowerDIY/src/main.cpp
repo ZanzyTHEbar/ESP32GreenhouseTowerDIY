@@ -138,7 +138,7 @@ void loop()
     }
   }
 
-  if (stateManager.getCurrentState() == ConnectingToWifiSuccess)
+  if (stateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected)
   {
     timedTasks.NTPService();
 #if ENABLE_HASS
@@ -146,5 +146,9 @@ void loop()
 #else
     basemqtt.mqttLoop();
 #endif // ENABLE_HASS
+  }
+  else
+  {
+    Serial.println("MQTT is disabled until a wifi connection has been established.");
   }
 }
