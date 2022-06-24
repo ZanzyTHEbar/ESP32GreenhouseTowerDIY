@@ -12,8 +12,8 @@ PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_PORT, callback, 
 #endif // MQTT_SECURE
 
 //***********************************************************************************************************************
-// * Class Global Variables
-// * Please only make changes to the following class variables within the ini file. Do not change them here.
+// * Basic MQTT Class
+// * This class is used to connect to a MQTT broker and publish and subscribe to topics.
 //************************************************************************************************************************
 
 BASEMQTT::BASEMQTT() : _interval(60000),
@@ -148,23 +148,16 @@ void BASEMQTT::loadMQTTConfig()
 
 void BASEMQTT::checkState()
 {
-    cfg.config.MQTTConnectedState = mqttClient.state();
+    cfg.config.MQTTConnectedState = mqttClient.connected();
 
-    if (!cfg.config.MQTTConnectedState)
-    {
-        stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected);
-    }
-    else
-    {
-        stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected);
-    }
+    cfg.config.MQTTConnectedState ? stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected) : stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected);
     log_i("MQTT client state is: %d", mqttClient.state());
 }
 
 void BASEMQTT::mqttReconnect()
 {
     // Loop until we're reconnected
-    if (!mqttClient.connected())
+    if (stateManager.getCurrentMQTTState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected)
     {
         log_i("Attempting MQTT connection...");
         // Attempt to connect
