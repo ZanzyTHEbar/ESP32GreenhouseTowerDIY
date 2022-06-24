@@ -220,7 +220,6 @@ void BASEMQTT::mqttLoop()
                 _user_bytes_received = 0;
                 memset(_user_data, 0, sizeof(_user_data));
             }
-            Serial.println("");
 #if ENABLE_PH_SUPPORT
             log_i("Sending message to topic: %s", phsensor._pHOutTopic);
 #endif // ENABLE_PH_SUPPORT
