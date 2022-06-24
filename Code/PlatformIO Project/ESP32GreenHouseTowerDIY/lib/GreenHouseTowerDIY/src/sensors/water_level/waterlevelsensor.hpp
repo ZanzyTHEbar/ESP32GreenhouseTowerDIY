@@ -7,6 +7,9 @@
 #define WATERLEVELSENSOR_HPP
 #include <defines.hpp>
 #include <HCSR04.h>
+#if USE_CAP
+#include "calibrationbutton.hpp"
+#endif // USE_CAP
 
 class WaterLevelSensor
 {
@@ -17,15 +20,28 @@ public:
     void begin();
     double readSensor();
     // Read the water level
-    int readWaterLevelUltraSonic();
-    int readWaterLevelCapacitive();
 
     int getWaterLevel();
 
 private:
+    // Private variables
+    friend void holdCallback(void);
+    friend void quickCallback(void);
     double _radius;
     double _height;
-    // Private variables
+    bool _activateCalibration;
+    byte _depth;
+    struct Calibration
+    {
+        int _min;
+        int _max;
+    };
+    Calibration _calibration;
+
+    // Private functions
+    int readWaterLevelUltraSonic();
+    int readWaterLevelCapacitive();
+    void calibrateSensor();
 };
 
 extern WaterLevelSensor waterlevelSensor;

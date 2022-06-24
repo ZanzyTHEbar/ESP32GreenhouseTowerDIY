@@ -11,7 +11,30 @@ TODO("Add manual calibration");
 
 UltraSonicDistanceSensor _distanceSensor(ECHO_PIN, TRIG_PIN); // Initialize sensor that uses digital pins 13 and 12.
 
-WaterLevelSensor::WaterLevelSensor() {}
+// This is the function that is called on a quick click.
+void quickCallback(void)
+{
+    if (waterlevelSensor._activateCalibration)
+    {
+        if (calibrationButton.trueFalse())
+        {
+            // the button is not being pressed..
+            return;
+        }
+
+        // the button is being pressed..
+        waterlevelSensor.calibrateSensor();
+    }
+}
+
+// This is the function that is called on a long click.
+void holdCallback(void)
+{
+    // Long press has happened.
+    waterlevelSensor._activateCalibration = !waterlevelSensor._activateCalibration;
+}
+
+WaterLevelSensor::WaterLevelSensor() : _activateCalibration(false), _depth(0) {}
 
 WaterLevelSensor::~WaterLevelSensor() {}
 
@@ -29,6 +52,38 @@ void WaterLevelSensor::begin()
 {
     _radius = RES_RADIUS_1;
     _height = RES_HEIGHT;
+#if USE_CAP
+    calibrationButton.setCallback(quickCallback);    // When the button gets clicked. Call this function.
+    calibrationButton.setLongCallback(holdCallback); // If it's been held down for a "long" time call this.
+#endif                                               // USE_CAP
+}
+
+//***********************************************************************************************************************
+//*
+//* 1. Place ruler or tape measure in the water next to the sensor.
+//* 2a. Plug the sensor into the PCB and the PCB into the computer.
+//* 2b. Press and hold the sensor calibrate button on the PCB for 5 seconds.
+//* 3. Press the calibrate sensor button (do not hold), wait for the sensor to read a value, and then lower the sensor by 1cm.
+//* 4. Repeat step #3 for each depth (this is to mitigate error) until you get the min and max values of the sensor, the sensor being fully submerged.
+//* 5. Press and hold the sensor calibrate button for 5 seconds to exit calibration.
+//************************************************************************************************************************
+void WaterLevelSensor::calibrateSensor()
+{
+    byte numtoaverage = 5;
+
+    int _readings[] = {0};
+    for (byte i = 0; i < numtoaverage; i++)
+    {
+        _readings[i] += getWaterLevel();
+        my_delay(0.1L);
+    }
+
+    for (byte i = 0; i < numtoaverage; i++)
+    {
+        _readings[i] = _readings[i] / numtoaverage;
+    }
+    _calibration = {,};
+    _depth++;
 }
 
 double WaterLevelSensor::readSensor()
@@ -72,11 +127,11 @@ int WaterLevelSensor::readWaterLevelUltraSonic()
 
 int WaterLevelSensor::getWaterLevel()
 {
-    #if USE_CAP
+#if USE_CAP
     return readWaterLevelCapacitive();
-    #else if USE_UC
+#else if USE_UC
     return readWaterLevelUltraSonic();
-    #endif // USE_CAP
+#endif // USE_CAP
 }
 
 WaterLevelSensor waterlevelSensor;

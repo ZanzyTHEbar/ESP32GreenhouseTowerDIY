@@ -118,6 +118,7 @@ void setup()
 
 void loop()
 {
+  idle(); // Run the magic that happens in the background. (Buttons & blinking).
   timedTasks.checkNetwork();
   ota.HandleOTAUpdate();
   ledManager.displayStatus();
