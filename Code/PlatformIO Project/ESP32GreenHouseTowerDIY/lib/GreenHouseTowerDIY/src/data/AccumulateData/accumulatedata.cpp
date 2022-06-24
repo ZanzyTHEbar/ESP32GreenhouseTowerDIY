@@ -37,12 +37,12 @@ void AccumulateData::begin()
         .water_level = 0};
 }
 
-/******************************************************************************
- * Function: Accumulate Data to send from sensors and store in json
- * Description: This function accumulates all sensor data and stores it in the main data structure.
- * Parameters: None
- * Return: None
- ******************************************************************************/
+//******************************************************************************
+// * Function: Accumulate Data to send from sensors and store in json
+// * Description: This function accumulates all sensor data and stores it in the main data structure.
+// * Parameters: None
+// * Return: None
+//******************************************************************************/
 void AccumulateData::InitAccumulateData()
 {
     _numTempSensors = tower_temp.getSensorCount();
