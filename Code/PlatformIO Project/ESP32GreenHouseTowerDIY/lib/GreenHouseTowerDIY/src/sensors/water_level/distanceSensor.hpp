@@ -3,8 +3,8 @@
  Copyright (c) 2021 ZanzyTHEbar
  */
 #pragma once
-#ifndef HCSR04_HPP
-#define HCSR04_HPP
+#ifndef DISTANCESENSOR_HPP
+#define DISTANCESENSOR_HPP
 #include <defines.hpp>
 #include <HCSR04.h>
 
@@ -14,13 +14,17 @@ public:
   // Constructor
   DistanceSensor();
   virtual ~DistanceSensor();
-
   // Initialize the library
+  void begin();
+  // Read the sensor
   double readSensor();
-  double readWaterLevel();
+  int readWaterLevel();
   void indicateWaterLevel();
 
 private:
+  double _radius;
+  double _height;
+  byte _leds[3];
   // Private variables
 };
 

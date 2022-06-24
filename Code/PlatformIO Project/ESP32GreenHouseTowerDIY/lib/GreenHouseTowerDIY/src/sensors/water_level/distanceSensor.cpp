@@ -3,13 +3,26 @@
 UltraSonicDistanceSensor _distanceSensor(ECHO_PIN, TRIG_PIN); // Initialize sensor that uses digital pins 13 and 12.
 
 // Constructor
-DistanceSensor::DistanceSensor()
-{
-}
+DistanceSensor::DistanceSensor() {}
 
 // Destructor
-DistanceSensor::~DistanceSensor()
+DistanceSensor::~DistanceSensor() {}
+
+void DistanceSensor::begin()
 {
+    _radius = RES_RADIUS_1;
+    _height = RES_HEIGHT;
+    _leds[0] = RED_LED_PIN;
+    _leds[1] = GREEN_LED_PIN;
+    _leds[2] = BLUE_LED_PIN;
+
+    for (auto &led : _leds)
+    {
+        if (led > 0)
+        {
+            pinMode(led, OUTPUT);
+        }
+    }
 }
 
 double DistanceSensor::readSensor()
@@ -21,65 +34,63 @@ double DistanceSensor::readSensor()
     return distance;
 }
 
-double DistanceSensor::readWaterLevel()
+int DistanceSensor::readWaterLevel()
 {
-    try
+    if (readSensor() <= 0.0)
     {
-        // tank diameter and height, in centimeters
-        double radius = pow(100.0, 2.0);
-        double height = 200.0;
-        double v = ((radius * PI) * (height) / 1000.0);
-        double stock = ((radius * PI) * (height - readSensor()) / 1000.0);
-        log_i("Stock is: %.3f liters", stock, DEC);
-        double p = (stock / v) * 100.0;
-
-        log_i("Percent Full: %.3f", p, DEC);
-        log_i("True Distance: %.3f cm", readSensor(), DEC);
-
-        if (!isnan(p))
-        {
-            return p;
-        }
-
-        log_e("Error: %s", "p is NaN");
+        log_i("Failed to read ultrasonic sensor.");
         return 0.0;
     }
-    catch (const std::exception &e)
+
+    // tank diameter and height, in centimeters
+    double diameter = pow(_radius, 2.0);
+    double height = _height;
+    double v = ((diameter * PI) * (height) / 1000.0);
+    double stock = ((diameter * PI) * (height - readSensor()) / 1000.0);
+    log_i("Stock is: %.3f liters", stock, DEC);
+    double p = (stock / v) * 100.0;
+
+    log_i("Percent Full: %.3f", p, DEC);
+    log_i("True Distance: %.3f cm", readSensor(), DEC);
+
+    if (isnan(p))
     {
-        log_i("%c \n", e.what());
-        log_i("Failed to read ultrasonic sensor.");
+        log_e("Error: %s", "Sensor Value is NaN");
+        return 0.0;
     }
 
-    log_i("Invalid sensor readings.");
-    return 0.0;
+    // pause between readings, in seconds:
+    my_delay(30L);
+    return (int)p;
 }
 
 void DistanceSensor::indicateWaterLevel()
 {
-    // pause between readings, in seconds:
-    long readings = 30L;
-    double p = readWaterLevel();
-    try
+    int p = readWaterLevel();
+    if (p <= 25)
     {
-        if ((int)p <= 25)
-        {
-        }
-        else if ((int)p > 25 && (int)p < 50)
-        {
-        }
-        else if ((int)p > 75)
-        {
-        }
-        else
-        {
-        }
-
-        my_delay(readings);
+        digitalWrite(_leds[1], LOW);
+        digitalWrite(_leds[2], LOW);
+        digitalWrite(_leds[0], HIGH);
     }
-    catch (const std::exception &e)
+    else if (p > 25 && p < 50)
     {
-        log_i("%c \n", e.what());
-        log_i("Failed to read ultrasonic sensor.");
+        digitalWrite(_leds[0], LOW);
+        digitalWrite(_leds[2], LOW);
+        digitalWrite(_leds[1], HIGH);
+    }
+    else if (p > 75)
+    {
+        digitalWrite(_leds[0], LOW);
+        digitalWrite(_leds[1], LOW);
+        digitalWrite(_leds[2], HIGH);
+    }
+    else
+    {
+        for (auto &led : _leds)
+        {
+            digitalWrite(led, LOW);
+        }
     }
 }
 
