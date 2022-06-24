@@ -9,6 +9,8 @@ public:
     AccumulateData();
     virtual ~AccumulateData();
 
+    void begin();
+
     void addSelf(void);
     virtual void execute(void);
 
@@ -30,6 +32,7 @@ public:
         float temp_sensors[10];
         int flow_rate;
         int flow_rate_sensor_temp;
+        int water_level;
     };
     Data config;
     bool inList;

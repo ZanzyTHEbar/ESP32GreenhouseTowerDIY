@@ -19,6 +19,24 @@ void AccumulateData::addSelf(void)
     }
 }
 
+void AccumulateData::begin()
+{
+    addSelf();
+    config = {
+        .humidity = 0.0,
+        .humidity_temp = 0.0,
+        .humidity_sht31 = 0.0,
+        .humidity_sht31_2 = 0.0,
+        .humidity_temp_sht31 = 0.0,
+        .humidity_temp_sht31_2 = 0.0,
+        .humidity_sht31_average = 0.0,
+        .humidity_temp_sht31_average = 0.0,
+        .temp_sensors = {0.0},
+        .flow_rate = 0,
+        .flow_rate_sensor_temp = 0,
+        .water_level = 0};
+}
+
 /******************************************************************************
  * Function: Accumulate Data to send from sensors and store in json
  * Description: This function accumulates all sensor data and stores it in the main data structure.
@@ -82,6 +100,8 @@ void AccumulateData::InitAccumulateData()
         config.temp_sensors[i] = tower_temp.temp_sensor_results.temp[i];
     }
 
+    config.water_level = waterlevelSensor.getWaterLevel();
+
     // Relays
     for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
     {
@@ -92,7 +112,6 @@ void AccumulateData::InitAccumulateData()
 
 bool AccumulateData::SendData()
 {
-    ProgramStates::BatteryChargeState::ChargeState chargeState = ChargeStatus();
     String json = "";
     json += R"====({)====";
 

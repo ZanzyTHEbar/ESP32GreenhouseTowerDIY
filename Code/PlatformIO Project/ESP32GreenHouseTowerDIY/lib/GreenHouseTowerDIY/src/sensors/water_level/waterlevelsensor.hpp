@@ -20,6 +20,8 @@ public:
     int readWaterLevelUltraSonic();
     int readWaterLevelCapacitive();
 
+    int getWaterLevel();
+
 private:
     double _radius;
     double _height;

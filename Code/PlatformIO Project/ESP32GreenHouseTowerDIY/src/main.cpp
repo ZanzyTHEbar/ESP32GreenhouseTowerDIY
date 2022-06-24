@@ -44,6 +44,9 @@ void setup()
   Serial.println(F("Green House Tower booting - please wait"));
   Serial.println(F("Starting..."));
   tower_temp.SetupSensors();
+#if USE_UC
+  waterlevel.begin();
+#endif // USE_UC
 
   switch (humidity.setupSensor())
   {
@@ -118,6 +121,7 @@ void loop()
   timedTasks.checkNetwork();
   ota.HandleOTAUpdate();
   ledManager.displayStatus();
+  ledManager.indicateWaterLevel(accumulatedata.config.water_level);
 
 #if ENABLE_I2C_SCANNER
   timedTasks.ScanI2CBus();

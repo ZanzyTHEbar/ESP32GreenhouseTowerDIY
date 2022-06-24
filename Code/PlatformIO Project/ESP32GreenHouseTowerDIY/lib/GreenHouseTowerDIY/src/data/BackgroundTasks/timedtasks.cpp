@@ -92,7 +92,6 @@ void TimedTasks::checkMQTTState(void) // check to see if the data has changed
 }
 
 // Run down the list and call the idle() method on each one.
-//! TODO: Turn this into a template that can accept any class type.
 void TimedTasks::execute(void)
 {
   AccumulateData *trace;

@@ -70,4 +70,13 @@ int WaterLevelSensor::readWaterLevelUltraSonic()
     return (int)p;
 }
 
+int WaterLevelSensor::getWaterLevel()
+{
+    #if USE_CAP
+    return readWaterLevelCapacitive();
+    #else if USE_UC
+    return readWaterLevelUltraSonic();
+    #endif // USE_CAP
+}
+
 WaterLevelSensor waterlevelSensor;
