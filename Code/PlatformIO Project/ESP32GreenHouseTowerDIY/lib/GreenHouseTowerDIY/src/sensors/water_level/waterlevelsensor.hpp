@@ -31,12 +31,12 @@ private:
     double _height;
     bool _activateCalibration;
     byte _depth;
-    struct Calibration
+    struct Calibration_t
     {
         int _min;
         int _max;
     };
-    Calibration _calibration;
+    Calibration_t _calibration;
 
     // Private functions
     int readWaterLevelUltraSonic();
