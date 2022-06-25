@@ -24,13 +24,13 @@ public:
     int getWaterLevel();
 
 private:
+
     // Private variables
-    friend void holdCallback(void);
-    friend void quickCallback(void);
     double _radius;
     double _height;
     bool _activateCalibration;
     byte _depth;
+    byte _depthRange;
     struct Calibration_t
     {
         int _min;
@@ -42,6 +42,11 @@ private:
     int readWaterLevelUltraSonic();
     int readWaterLevelCapacitive();
     void calibrateSensor();
+    void setCapSensorRange();
+    // Private Friends
+    friend void holdCallback(void);
+    friend void quickCallback(void);
+    friend void longholdCallback(void);
 };
 
 extern WaterLevelSensor waterlevelSensor;

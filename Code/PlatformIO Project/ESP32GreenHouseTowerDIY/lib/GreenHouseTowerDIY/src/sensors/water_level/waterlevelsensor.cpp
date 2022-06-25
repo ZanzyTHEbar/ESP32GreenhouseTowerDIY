@@ -27,51 +27,82 @@ void quickCallback(void)
     }
 }
 
-// This is the function that is called on a long click.
+// This is the function that is called on a 10 second long click.
 void holdCallback(void)
 {
     // Long press has happened.
+    my_delay(1L);
     waterlevelSensor._activateCalibration = !waterlevelSensor._activateCalibration;
 }
 
-WaterLevelSensor::WaterLevelSensor() : _activateCalibration(false), _depth(0) {}
+// This is the function that is called on a 5 second long click.
+void longholdCallback(void)
+{
+    // Long press has happened.
+    if (waterlevelSensor._activateCalibration)
+    {
+        if (calibrationButton.trueFalse())
+        {
+            // the button is not being pressed..
+            return;
+        }
+
+        // the button is being pressed..
+        waterlevelSensor.setCapSensorRange();
+    }
+}
+
+WaterLevelSensor::WaterLevelSensor() : _activateCalibration(false), _depth(0), _depthRange(0) {}
 
 WaterLevelSensor::~WaterLevelSensor() {}
-
-int WaterLevelSensor::readWaterLevelCapacitive()
-{
-    const byte touchPin = CAP_WATER_LEVEL_SENSOR_PIN;
-    int touchValue = touchRead(touchPin);
-    int percentage = map(touchValue, 0, 4095, 0, 100);
-    log_d("Water Level Sensor Raw Readings: %d", touchValue);
-    log_i("Water Level Sensor Percentage: %d", percentage);
-    return percentage;
-}
 
 void WaterLevelSensor::begin()
 {
     _radius = RES_RADIUS_1;
     _height = RES_HEIGHT;
 #if USE_CAP
-    calibrationButton.setCallback(quickCallback);    // When the button gets clicked. Call this function.
-    calibrationButton.setLongCallback(holdCallback); // If it's been held down for a "long" time call this.
-#endif                                               // USE_CAP
+    _calibration = {CAP_MAX, CAP_MIN};
+    calibrationButton.setCallback(quickCallback);               // When the button gets clicked. Call this function.
+    calibrationButton.setLongCallback(holdCallback);            // If it's been held down for a "long" time call this.
+    calibrationButton.setCalibrationCallback(longholdCallback); // If it's been held down for a "long" time call this.
+#endif                                                          // USE_CAP
+}
+
+int WaterLevelSensor::readWaterLevelCapacitive()
+{
+    if ((_calibration._min && _calibration._max) == 0)
+    {
+        log_e("The capacitive sensor is not calibrated, please calibrate by pressing the calibrate button. Exiting...");
+        return 0;
+    }
+
+    const byte touchPin = CAP_WATER_LEVEL_SENSOR_PIN;
+    int touchValue = touchRead(touchPin);
+    int percentage = map(touchValue, _calibration._min, _calibration._max, 0, 100);
+    log_d("Water Level Sensor Raw Readings: %d", touchValue);
+    log_i("Water Level Sensor Percentage: %d", percentage);
+    return percentage;
 }
 
 //***********************************************************************************************************************
-//*
+//* Firstly, we need to input the max and min values of the capacitive sensor.
+//* Please test your sensor and input these values in the  platformio.ini file under the section [io].
+//* Only after this step is completed, can you move on.
 //* 1. Place ruler or tape measure in the water next to the sensor.
-//* 2a. Plug the sensor into the PCB and the PCB into the computer.
-//* 2b. Press and hold the sensor calibrate button on the PCB for 5 seconds.
+//* 2a. Plug the sensor into the PCB and the PCB into the computer. Press and hold the calibration button for 10 seconds.
+//* 2b. Please insert your sensor into the water and submerge according to getting the min and max values.
+//* 2c. After each measurement, please press the calibration button and hold for 5 seconds.
+//* 2d. When the above step is completed, please press the calibration button and hold for 10 second to enter the next step.
 //* 3. Press the calibrate sensor button (do not hold), wait for the sensor to read a value, and then lower the sensor by 1cm.
-//* 4. Repeat step #3 for each depth (this is to mitigate error) until you get the min and max values of the sensor, the sensor being fully submerged.
-//* 5. Press and hold the sensor calibrate button for 5 seconds to exit calibration.
+//* 4. Repeat step #3 for each depth (this is to mitigate error) until the sensor is fully submerged.
+//* 5. Press and hold the sensor calibrate button for 1 second to exit calibration.
 //************************************************************************************************************************
 void WaterLevelSensor::calibrateSensor()
 {
+    _depth++;
     byte numtoaverage = 5;
-
     int _readings[] = {0};
+
     for (byte i = 0; i < numtoaverage; i++)
     {
         _readings[i] += getWaterLevel();
@@ -82,8 +113,39 @@ void WaterLevelSensor::calibrateSensor()
     {
         _readings[i] = _readings[i] / numtoaverage;
     }
-    _calibration = {,};
-    _depth++;
+}
+
+void WaterLevelSensor::setCapSensorRange()
+{
+    byte numtoaverage = 5;
+    int _readings = 0;
+
+    for (byte i = 0; i < numtoaverage; i++)
+    {
+        _readings += getWaterLevel();
+        my_delay(0.1L);
+    }
+
+    for (byte i = 0; i < numtoaverage; i++)
+    {
+        _readings = _readings / numtoaverage;
+    }
+
+    if (_depthRange == 0)
+    {
+
+        _calibration._min = _readings;
+    }
+    else if (_depthRange == 1)
+    {
+        _calibration._max = _readings;
+    }
+    else
+    {
+        _depthRange = 0;
+        return;
+    }
+    _depthRange++;
 }
 
 double WaterLevelSensor::readSensor()
