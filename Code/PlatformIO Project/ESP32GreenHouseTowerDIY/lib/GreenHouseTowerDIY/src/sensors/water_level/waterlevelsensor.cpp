@@ -122,7 +122,8 @@ void WaterLevelSensor::setCapSensorRange()
 
     if ((_depthRange >= 1) && (exeCount >= 2))
     {
-        goto err;
+        log_w("[Warning]: This function should only be called once.");
+        return;
     }
 
     for (byte i = 0; i < numtoaverage; i++)
@@ -147,9 +148,7 @@ void WaterLevelSensor::setCapSensorRange()
     }
     else
     {
-        log_e("Error: The depth range is out of bounds.");
-    err:
-        log_e("This function should only be called once.");
+        log_e("[Error]: The depth range is out of bounds.");
         return;
     }
     _depthRange++;
