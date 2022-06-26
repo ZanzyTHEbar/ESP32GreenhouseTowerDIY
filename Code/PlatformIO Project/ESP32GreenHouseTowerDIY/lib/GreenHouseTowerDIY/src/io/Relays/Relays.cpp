@@ -20,7 +20,7 @@ bool Relays::begin()
 {
     log_i("Setting up Relays...");
     // use a c++ ranged for loop to iterate through the relay pins
-    for (int pin : cfg.config.relays_pin)
+    for (int &pin : cfg.config.relays_pin)
     {
         pinMode(pin, OUTPUT);
         digitalWrite(pin, LOW);

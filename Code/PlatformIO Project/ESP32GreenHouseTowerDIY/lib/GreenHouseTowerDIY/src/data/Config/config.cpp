@@ -170,7 +170,7 @@ bool Config::loadConfig()
     heapStr(&config.MDNS, jsonBuffer["MDNS"]);
     config.numTempSensors = jsonBuffer["Number_of_Temp_Sensors"];
 
-    for (int i = 0; i < sizeof(config.relays); i++)
+    for (int i = 0; i < sizeof(config.relays) / sizeof(config.relays[0]); i++)
     {
         config.relays[i] = jsonBuffer["relays"][i];
     }
