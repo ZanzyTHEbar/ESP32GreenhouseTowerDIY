@@ -22,15 +22,18 @@ public:
     // Read the water level
 
     int getWaterLevel();
+    int getPercentage();
 
 private:
-
     // Private variables
     double _radius;
     double _height;
     bool _activateCalibration;
     byte _depth;
     byte _depthRange;
+    int _depthArray[100];
+    int _qNumberReadings[100];
+    int _qNumberDepth[100];
     struct Calibration_t
     {
         int _min;
@@ -43,6 +46,8 @@ private:
     int readWaterLevelCapacitive();
     void calibrateSensor();
     void setCapSensorRange();
+    int convertToQNumber(int readings);
+    void convertToQNumber(int *readings, int *depth);
     // Private Friends
     friend void holdCallback(void);
     friend void quickCallback(void);

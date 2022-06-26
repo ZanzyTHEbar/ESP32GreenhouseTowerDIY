@@ -50,7 +50,12 @@ void longholdCallback(void)
     }
 }
 
-WaterLevelSensor::WaterLevelSensor() : _activateCalibration(false), _depth(0), _depthRange(0) {}
+WaterLevelSensor::WaterLevelSensor() : _activateCalibration(false),
+                                       _depth(0),
+                                       _depthRange(0),
+                                       _qNumberReadings{0},
+                                       _depthArray{0},
+                                       _qNumberDepth{0} {}
 
 WaterLevelSensor::~WaterLevelSensor() {}
 
@@ -76,8 +81,14 @@ int WaterLevelSensor::readWaterLevelCapacitive()
 
     const byte touchPin = CAP_WATER_LEVEL_SENSOR_PIN;
     int touchValue = touchRead(touchPin);
-    int percentage = map(touchValue, _calibration._min, _calibration._max, 0, 100);
     log_d("Water Level Sensor Raw Readings: %d", touchValue);
+    return touchValue;
+}
+
+int WaterLevelSensor::getPercentage()
+{
+    //! TODO: Replace with MultiMap as map is linear and touch read is not.
+    int percentage = map(getWaterLevel(), _calibration._min, _calibration._max, 0, 100);
     log_i("Water Level Sensor Percentage: %d", percentage);
     return percentage;
 }
@@ -98,6 +109,7 @@ int WaterLevelSensor::readWaterLevelCapacitive()
 void WaterLevelSensor::calibrateSensor()
 {
     _depth++;
+    _depthArray[_depth] = _depth;
     byte numtoaverage = 5;
     int _readings[] = {0};
 
@@ -107,9 +119,16 @@ void WaterLevelSensor::calibrateSensor()
         my_delay(0.1L);
     }
 
-    for (byte i = 0; i < numtoaverage; i++)
+    for (byte i = 0; i < sizeof(_readings) / _readings[0]; i++)
     {
         _readings[i] = _readings[i] / numtoaverage;
+    }
+
+    //! FIX THIS - ADD SUPPORT FOR SMALLER BUCKETS
+    //* 34 is the height in cm of an average 5gallon (25L) bucket.
+    if (_depth > 34)
+    {
+        convertToQNumber(_readings, _depthArray);
     }
 }
 
@@ -118,6 +137,9 @@ void WaterLevelSensor::setCapSensorRange()
     byte numtoaverage = 5;
     int _readings = 0;
     byte exeCount = 0;
+    const byte touchPin = CAP_WATER_LEVEL_SENSOR_PIN;
+    int touchValue = touchRead(touchPin);
+
     exeCount++;
 
     if ((_depthRange >= 1) && (exeCount >= 2))
@@ -128,7 +150,7 @@ void WaterLevelSensor::setCapSensorRange()
 
     for (byte i = 0; i < numtoaverage; i++)
     {
-        _readings += getWaterLevel();
+        _readings += touchValue;
         my_delay(0.1L);
     }
 
@@ -154,10 +176,26 @@ void WaterLevelSensor::setCapSensorRange()
     _depthRange++;
 }
 
+void WaterLevelSensor::convertToQNumber(int *readings, int *depth)
+{
+    for (byte i = 0; i < sizeof(readings) / readings[0]; i++)
+    {
+        _qNumberReadings[i] = round(readings[i] * pow(2, 8));
+        _qNumberDepth[i] = round(depth[i] * pow(2, 8));
+    }
+}
+
+int WaterLevelSensor::convertToQNumber(int readings)
+{
+    int qNumber = 0;
+    qNumber = round(readings * pow(2, 8));
+    return qNumber;
+}
+
 double WaterLevelSensor::readSensor()
 {
     double distance = _distanceSensor.measureDistanceCm(tower_temp.temp_sensor_results.temp[0]);
-    log_i("°C - Distance: %.3f cm", distance, DEC);
+    log_d("Distance: %.3f cm", distance, DEC);
     // Every 1 second, do a measurement using the sensor and print the distance in centimeters.
     my_delay(1L);
     return distance;
@@ -196,7 +234,7 @@ int WaterLevelSensor::readWaterLevelUltraSonic()
 int WaterLevelSensor::getWaterLevel()
 {
 #if USE_CAP
-    return readWaterLevelCapacitive();
+    return getPercentage();
 #else if USE_UC
     return readWaterLevelUltraSonic();
 #endif // USE_CAP
