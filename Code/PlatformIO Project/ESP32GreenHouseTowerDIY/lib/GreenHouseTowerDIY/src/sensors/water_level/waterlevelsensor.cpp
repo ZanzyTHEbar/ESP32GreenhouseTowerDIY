@@ -7,8 +7,6 @@
 //! * Manual calibration is needed!!!
 //************************************************************************************************************************
 
-TODO("Add manual calibration");
-
 UltraSonicDistanceSensor _distanceSensor(ECHO_PIN, TRIG_PIN); // Initialize sensor that uses digital pins 13 and 12.
 
 // This is the function that is called on a quick click.
@@ -119,6 +117,13 @@ void WaterLevelSensor::setCapSensorRange()
 {
     byte numtoaverage = 5;
     int _readings = 0;
+    byte exeCount = 0;
+    exeCount++;
+
+    if ((_depthRange >= 1) && (exeCount >= 2))
+    {
+        goto err;
+    }
 
     for (byte i = 0; i < numtoaverage; i++)
     {
@@ -142,7 +147,9 @@ void WaterLevelSensor::setCapSensorRange()
     }
     else
     {
-        _depthRange = 0;
+        log_e("Error: The depth range is out of bounds.");
+    err:
+        log_e("This function should only be called once.");
         return;
     }
     _depthRange++;
