@@ -85,6 +85,14 @@ int WaterLevelSensor::readWaterLevelCapacitive()
     return touchValue;
 }
 
+/*
+multiMap myMultiMap;          // These start out empty..
+myMultiMap.addPoint(X1,Y1);   // Then you take your x,y data table..
+myMultiMap.addPoint(X2,Y2);   // And add all the points for your curve.
+myMultiMap.addPoint(X3,Y3);
+myMultiMap.addPoint(X4,Y4);
+float mappedValue = myMultiMap.map(inputValue);  // Once loaded, use it the same way.
+ */
 int WaterLevelSensor::getPercentage()
 {
     //! TODO: Replace with MultiMap as map is linear and touch read is not.
