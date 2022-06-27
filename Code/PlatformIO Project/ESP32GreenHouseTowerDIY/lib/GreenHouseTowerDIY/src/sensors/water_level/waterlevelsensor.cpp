@@ -102,7 +102,6 @@ int WaterLevelSensor::getPercentage()
 
 //***********************************************************************************************************************
 //* Firstly, we need to input the max and min values of the capacitive sensor.
-//* Please test your sensor and input these values in the  platformio.ini file under the section [io].
 //* Only after this step is completed, can you move on.
 //* 1. Place ruler or tape measure in the water next to the sensor.
 //* 2a. Plug the sensor into the PCB and the PCB into the computer. Press and hold the calibration button for 10 seconds.
