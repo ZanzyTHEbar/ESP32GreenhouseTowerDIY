@@ -79,8 +79,7 @@ int WaterLevelSensor::readWaterLevelCapacitive()
         return 0;
     }
 
-    const byte touchPin = CAP_WATER_LEVEL_SENSOR_PIN;
-    int touchValue = touchRead(touchPin);
+    int touchValue = touchRead(CAP_WATER_LEVEL_SENSOR_PIN);
     log_d("Water Level Sensor Raw Readings: %d", touchValue);
     return touchValue;
 }
