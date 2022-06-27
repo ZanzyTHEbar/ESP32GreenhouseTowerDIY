@@ -143,8 +143,7 @@ void WaterLevelSensor::setCapSensorRange()
     byte numtoaverage = 5;
     int _readings = 0;
     byte exeCount = 0;
-    const byte touchPin = CAP_WATER_LEVEL_SENSOR_PIN;
-    int touchValue = touchRead(touchPin);
+    int touchValue = touchRead(CAP_WATER_LEVEL_SENSOR_PIN);
 
     exeCount++;
 
