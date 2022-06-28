@@ -9,7 +9,9 @@ export default function Flashing() {
         <Grid item sm={12}></Grid>
       </Grid>
       <esp-web-install-button manifest="assets/manifest.json">
-        <button slot="activate">Upload Code</button>
+        <button class="btn btn-mode fs-2 mb-1 mb-md-0 mr-0" slot="activate">
+          Upload Code
+        </button>
         <span slot="unsupported">
           Your current browser is not supported. Please use Chrome for the best
           experience.
