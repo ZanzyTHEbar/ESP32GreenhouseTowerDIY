@@ -1,34 +1,24 @@
 import * as React from "react";
-import {
-  Button,
-  Grid,
-} from "@mui/material/";
+import * as espWebTools from "esp-web-tools";
+import { Button, Grid } from "@mui/material/";
 
-function DownloadButton() {
-  return (
-    <Grid container spacing={3}>
-      <Grid item sm={12}>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={() => {
-            console.log(
-              `${value_boardNames} and firmware version ${value_firmwareVersion}`
-            );
-          }}
-        >
-          Download
-        </Button>
-      </Grid>
-    </Grid>
-  );
-}
-
-export default function Downloading() {
+export default function Flashing() {
   return (
     <div>
-      <DownloadButton />
+      <Grid container spacing={3}>
+        <Grid item sm={12}></Grid>
+      </Grid>
+      <esp-web-install-button manifest="assets/manifest.json">
+        <button slot="activate">Upload Code</button>
+        <span slot="unsupported">
+          Your current browser is not supported. Please use Chrome for the best
+          experience.
+        </span>
+        <span slot="not-allowed">
+          HTTPS is required for this feature. Please use a browser that supports
+          HTTPS.
+        </span>
+      </esp-web-install-button>
     </div>
   );
 }
