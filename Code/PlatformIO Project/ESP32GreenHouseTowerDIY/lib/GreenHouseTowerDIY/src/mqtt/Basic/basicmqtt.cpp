@@ -195,7 +195,7 @@ void BASEMQTT::mqttLoop()
     else
     {
         mqttClient.loop();
-        callback;
+        //callback;
 
         unsigned long currentMillis = millis();
         if (currentMillis - _previousMillis >= _interval)
@@ -215,11 +215,11 @@ void BASEMQTT::mqttLoop()
             }
 #if ENABLE_PH_SUPPORT
             log_i("Sending message to topic: %s", phsensor._pHOutTopic);
-#endif // ENABLE_PH_SUPPORT
+
             float newpH = cfg.config.pH;
             String timeStamp = networkntp.getTimeStamp();
             log_i("pH: %s", String(newpH).c_str());
-#if ENABLE_PH_SUPPORT
+
             mqttClient.publish(phsensor._pHOutTopic, String(newpH).c_str(), true);
             mqttClient.publish(phsensor._pHOutTopic, timeStamp.c_str(), true);
 #endif // ENABLE_PH_SUPPORT
