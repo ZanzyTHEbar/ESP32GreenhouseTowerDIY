@@ -1,6 +1,6 @@
 {
-    "name": "ESPHome",
-    "version": "2021.10.3",
+    "name": "ESPGreenhouseDIY",
+    "version": "",
     "home_assistant_domain": "esphome",
     "funding_url": "https://esphome.io/guides/supporters.html",
     "builds": [

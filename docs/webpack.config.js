@@ -1,5 +1,6 @@
 const path = require("path");
 module.exports = {
+  mode: "production",
   entry: "./webpack/entry.js",
   output: {
     path: path.resolve("assets/javascripts"),
