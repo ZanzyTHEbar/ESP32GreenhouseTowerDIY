@@ -331,6 +331,183 @@ blockquote p {
   color: $color-accent-fg-warning;
 }
 
+/* Alert Styles */
+
+.alert-warning {
+  color: #444;
+}
+
+div.alert code,
+h2 code {
+  background-color: transparent !important;
+}
+
+/* without this, the links in these notes aren't visible.*/
+.alert a {
+  text-decoration: underline;
+}
+
+.octicon-note {
+  fill: $color-accent-fg-note-light;
+  vertical-align: middle;
+}
+
+.octicon-alert {
+  fill: $color-accent-fg-warning;
+  vertical-align: middle;
+}
+
+.octicon-danger {
+  fill: $color-accent-fg-danger;
+  vertical-align: middle;
+}
+
+.octicon-success {
+  fill: $color-accent-fg-success;
+  vertical-align: middle;
+}
+
+.octicon-tip {
+  fill: $color-accent-fg-tip;
+  vertical-align: middle;
+}
+
+.icon-span-note {
+  color: $color-accent-fg-note-light;
+}
+
+.icon-span-warning {
+  color: $color-accent-fg-warning;
+}
+
+.icon-span-success {
+  color: $color-accent-fg-success;
+}
+
+.icon-span-tip {
+  color: $color-accent-fg-tip;
+}
+
+.icon-span-danger {
+  color: $color-accent-fg-tip;
+}
+
+
+.bs-example {
+  margin: 20px;
+}
+
+.bs-callout {
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #eee;
+  border-left-width: 5px;
+  border-radius: 3px;
+}
+
+.bs-callout h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.bs-callout p:last-child {
+  margin-bottom: 0;
+}
+
+.bs-callout code {
+  border-radius: 3px;
+}
+
+.bs-callout+.bs-callout {
+  margin-top: -5px;
+}
+
+.bs-callout-default {
+  border-left-color: #777;
+}
+
+.bs-callout-default h4 {
+  color: #777;
+}
+
+.bs-callout-primary {
+  border-left-color: #428bca;
+}
+
+.bs-callout-primary h4 {
+  color: #428bca;
+}
+
+.bs-callout-success {
+  border-left-color: #5cb85c;
+}
+
+.bs-callout-success h4 {
+  color: #5cb85c;
+}
+
+.bs-callout-danger {
+  border-left-color: #d9534f;
+}
+
+.bs-callout-danger h4 {
+  color: #d9534f;
+}
+
+.bs-callout-warning {
+  border-left-color: #f0ad4e;
+}
+
+.bs-callout-warning h4 {
+  color: #f0ad4e;
+}
+
+.bs-callout-info {
+  border-left-color: #5bc0de;
+}
+
+.bs-callout-info h4 {
+  color: #5bc0de;
+}
+
+/* FAQ page */
+#accordion .panel-heading {
+  font-size: 12px;
+}
+
+a.accordion-toggle,
+a.accordion-collapsed {
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/*
+ * Let's target IE to respect aspect ratios and sizes for img tags containing SVG files
+ *
+ * [1] IE9
+ * [2] IE10+
+ */
+/* 1 */
+.ie9 img[src$=".svg"] {
+  width: 100%;
+}
+
+/* 2 */
+@media screen and (-ms-high-contrast: active),
+(-ms-high-contrast: none) {
+  img[src$=".svg"] {
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 900px),
+only screen and (min-device-width: 900px) {
+  .col-md-9 img {
+    max-width: 700px;
+    max-height: 700px;
+  }
+}
+
 /* Custom Checkboxes */
 input[type=checkbox] {
   cursor: pointer;
