@@ -1,0 +1,249 @@
+{"0": {
+    "doc": "FAQ",
+    "title": "ESP32GreenhouseDIY FAQ",
+    "content": " ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/FAQ/#esp32greenhousediy-faq",
+    "relUrl": "/FAQ/#esp32greenhousediy-faq"
+  },"1": {
+    "doc": "FAQ",
+    "title": "General",
+    "content": "Q1. A1. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/FAQ/#general",
+    "relUrl": "/FAQ/#general"
+  },"2": {
+    "doc": "FAQ",
+    "title": "FAQ",
+    "content": " ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/FAQ/",
+    "relUrl": "/FAQ/"
+  },"3": {
+    "doc": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "title": "Welcome to ESP32 Greenhouse Tower DIY",
+    "content": " ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/index.html#welcome-to-esp32-greenhouse-tower-diy",
+    "relUrl": "/index.html#welcome-to-esp32-greenhouse-tower-diy"
+  },"4": {
+    "doc": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "title": "Table of contents",
+    "content": ". | :seedling: ESP32GreenhouseTowerDIY :seedling: | What is this project? | How To Order PCBs . | Important Notes | Licenses | . | . Welcome to the documentation for the ESP32 based Greenhouse Tower DIY :seedling:, version 1. A DIY vertical tower garden for indoor or outdoor use :cactus:. Full Tower Build . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/index.html#table-of-contents",
+    "relUrl": "/index.html#table-of-contents"
+  },"5": {
+    "doc": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "title": ":seedling: ESP32GreenhouseTowerDIY :seedling:",
+    "content": "This repo is dedicated to the DIY ESP32 based automated Aeroponic or Hydroponic Modular Tower Garden :cactus: . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/index.html#seedling-esp32greenhousetowerdiy-seedling",
+    "relUrl": "/index.html#seedling-esp32greenhousetowerdiy-seedling"
+  },"6": {
+    "doc": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "title": "What is this project?",
+    "content": "In the height of COVID my wife and i wanted to grow our own food indoors. This open source project is a culmination of my own work and many inspirations from the internet to develop an easy, approachable and beginner friendly project for hobbyists. This project is designed to be modular and affordable. Featuring a vertical tower system with interlocking parts and an adapter to a common 20L/5gallon bucket. The design also features an optional 3D printable Aeroponics Nozzle for converting the system from hydroponic to aeroponics. This is a great way to grow food indoors without having to worry about the water. Note: I have added Arduino Core support for the ESP32. This is still a work in progress and will be the main code-base in the future going forward. It simply has more sensor support and a few more features, plus it runs faster and consumes less energy. picture of roots growing . this is the 5 gallon lid mount . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/index.html#what-is-this-project",
+    "relUrl": "/index.html#what-is-this-project"
+  },"7": {
+    "doc": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "title": "How To Order PCBs",
+    "content": "PCBS can be ordered from JLCPCB or PCBWay, or made yourself. The PCB files are still in prototype phase and I welcome any development ideas. The old PCB is designed to be used with a GPIO extension board - however this was for my personal use-case. This can be changed, or i can make this adaptation upon request. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/index.html#how-to-order-pcbs",
+    "relUrl": "/index.html#how-to-order-pcbs"
+  },"8": {
+    "doc": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "title": "Important Notes",
+    "content": ". Note: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER. Warning: If you receive the error: . WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts Please remove the code within the ifdef ESP32 block on line 72. and paste the following: . mbedtls_md5_init(&amp;_ctx); mbedtls_md5_update_ret (&amp;_ctx,data,len); mbedtls_md5_finish_ret(&amp;_ctx,data); mbedtls_internal_md5_process( &amp;_ctx ,data); // mbedtls_md5_starts(&amp;_ctx); // mbedtls_md5_update(&amp;_ctx, data, len); // mbedtls_md5_finish(&amp;_ctx, _buf); . the comments are the old-lines. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/index.html#important-notes",
+    "relUrl": "/index.html#important-notes"
+  },"9": {
+    "doc": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "title": "Licenses",
+    "content": ". All hardware materials and designs provided here are licensed under the CERN-OHL-P hardware license. All software is under the MIT License. All documentation, including the Wiki, is under the Creative Commons CC-BY-SA-4.0 license. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/index.html#licenses",
+    "relUrl": "/index.html#licenses"
+  },"10": {
+    "doc": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "title": "Welcome to ESP33GreenHouseTowerDIY Documentation",
+    "content": ". ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/index.html",
+    "relUrl": "/index.html"
+  },"11": {
+    "doc": "Upload",
+    "title": "Serial Monitor",
+    "content": "Connect Baud: 110 300 600 1200 2400 4800 9600 14400 19200 38400 57600 115200 128000 256000 Clear Download firmware send with /r send with /n echo Send Send Char Dedicated Serial Monitor Docs Listed here are most 😉 of the commands you can send to the terminal. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/webserial/",
+    "relUrl": "/webserial/"
+  },"12": {
+    "doc": "Upload",
+    "title": "Serial Monitor Commands",
+    "content": ". | clear - This will clear the terminal | connect - This will attempt a connect to your ESP device | begin - This will attempt to write firmware to your board | set &lt;param&gt; &lt;value&gt; - This will set a config key with the desired value | Possible config keys: . | ssid - This is the ssid for your wifi | password - This is the password for your wifi | ota_password - This is the password for Over the Air Updates to occur | . Note: Your Wifi credentials never leave your machine and are directly written to the device. We do not, and never will, store these values. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/webserial/",
+    "relUrl": "/webserial/"
+  },"13": {
+    "doc": "Upload",
+    "title": "Upload",
+    "content": "Javascript must be enabled to run this section of the website. If you are seeing this, please update your browser settings How to flash the firmware In this section of the documentation you can flash your devices right from the browser! Through the magic of WebSerial you can flash and configure your devices without ever having to download or use VSCode. Dedicated Serial Monitor The dedicated Serial Monitor is a web-based serial terminal for your devices. Using this terminal you can send commands to your devices and see the output. You can also use this to test your devices functionality and modify config settings. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/webserial/",
+    "relUrl": "/webserial/"
+  },"14": {
+    "doc": "About",
+    "title": "About Us",
+    "content": " ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/about/#about-us",
+    "relUrl": "/about/#about-us"
+  },"15": {
+    "doc": "About",
+    "title": "Key Members",
+    "content": "Meet the Team! . | ZanzyTHEbar - Initiator / Researcher / Lead Developer | . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/about/#key-members",
+    "relUrl": "/about/#key-members"
+  },"16": {
+    "doc": "About",
+    "title": "Tower Constructors",
+    "content": "This is not an exhaustive list; it is just an example of where Towers have been built. If you feel that you should be on this list, please contact us. Individuals . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/about/#tower-constructors",
+    "relUrl": "/about/#tower-constructors"
+  },"17": {
+    "doc": "About",
+    "title": "Philosophy",
+    "content": "The Technical Details section of this website includes some of our teams own notes (not all of them are polished) that we disclose for other people to use. There, we hope you may find something useful to you. We advocate the Open Source model. This is why we strive to make our work open to other people for consultation, replication and reuse. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/about/#philosophy",
+    "relUrl": "/about/#philosophy"
+  },"18": {
+    "doc": "About",
+    "title": "About",
+    "content": " ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/about/",
+    "relUrl": "/about/"
+  },"19": {
+    "doc": "Comments and Suggestions",
+    "title": "Comments and Suggestions",
+    "content": "Comments . Load Comments . Load Older Comments There are currently no comments on this article, be the first to add one below . Add a Comment . Note that we may remove comments for any reason, so try to be civil. If you are looking for a response to your comment, either leave your email address or check back on this page periodically. | . | | Post | . This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/comments_suggetions/",
+    "relUrl": "/comments_suggetions/"
+  },"20": {
+    "doc": "Contact Us",
+    "title": "Contact Us",
+    "content": "Please join our discord for updates and any questions. | Discord | . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/contact/",
+    "relUrl": "/contact/"
+  },"21": {
+    "doc": "HELP! Ideas Needed",
+    "title": "HELP! Ideas Needed",
+    "content": "Loading… ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/help_us/",
+    "relUrl": "/help_us/"
+  },"22": {
+    "doc": "Introduction",
+    "title": "Introduction",
+    "content": "Purpose: These are instructions to build an open hardware, DIY Vertical Greenhouse Garden. Expected results: A fully functional and (reasonably) automated vertical tower system. Minimal parts cost: &lt;$20 for the basic system which consists of a 20L/5gallon (can be smaller - minimum size is 4L/1gallon) humidifier box/water reservoir and submersible pump - about $100. You will also need to purchase the PCB’s ~$40, power supply and sensors ~$30. The cost of the parts will vary depending on the size of the tower, and the number of sensors. The cost of 3D printing the tower will be ~$25 or less. The full 1m tower consumes ~2kg of PETG - which is the recommended printing material for outdoor use. The tower can be printed in ABS and/or PETG materials. Note: The cost of plant nutrients is not taken into account, and is up to you to control. Goal: The goal of this project was to build a high-efficiency, very low cost direct DIY vertical tower garden for growing small fruits and vegetables. full constructed tower prototype . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/introduction/",
+    "relUrl": "/introduction/"
+  },"23": {
+    "doc": "Introduction",
+    "title": "How to Setup  - Hardware",
+    "content": "Setup is very straight forward, thankfully. You will need to purchase a few components before you begin: . Materials for purchase . | Raspberrypi - any model . | Install the MQTT client included with Home Assistant (install Home Assistant), as this project has full support for Home Assistant (Arduino Core version only currently). | Alternatively, you can install Mosquitto broker to the pi and connect it to your network | . | . | 12V submersible water pump | 3m or more of Vinyl tubing with 10mm ID and 13mm OD | . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/introduction/#how-to-setup----hardware",
+    "relUrl": "/introduction/#how-to-setup----hardware"
+  },"24": {
+    "doc": "Introduction",
+    "title": "How to Setup - Software",
+    "content": ". | Acquire all parts and ESP32 (WROVER and WROOM has both been tested). | Acquire The remaining sensors and components - assemble | . SETUP . Micrpython . | Plug ESP32 into computer - open your IDE (i used Thonny for this project) Flash the micropython firmware to the esp32 . | Upload ESP32MicropytyhonLibraries —&gt; rename to ESP32Micro | Upload boot.py and greenhouse.py to root directory | . | . Arduino Core . | Plug ESP32 into computer - navigate to WebSerial . | Configure your chosen sensors and features | Press build and upload, and wait for the green light to turn on - it is safe to unplug the ESP32 at that point. | . | . MQTT Broker Configuration and Connection . If you have chosen the mDNS option, you will need to setup mDNS on your network for MQTT Discovery. The mDNS service on the ESP is already configure, if you chose that feature, and should appear on your network as at the &lt;name&gt;.tower.local address. The MQTT Broker is a free service that allows you to publish and subscribe to MQTT messages. To automate the connection process, this project offers Multi-Cast DNS (mDNS/Zeroconf) to find the broker. For this to work, you must have a broker on your local network, and you must have only 1 MQTT broker within the range of the client, otherwise the client will simply connect to the images broker it finds. Using a Zeroconf approach we can avoid having to hard code the broker’s IP address or hostname into the client device’s firmware. Instead we can use DNS-SD and Avahi/Bonjour to discover the server hosting the MQTT broker. To enable MQTT discovery on the broker, simply install avahi-daemon. Option One: . If you are using Home Assistant, you can use the MQTT Discovery feature within the firmware, and the MQTT broker will be discovered automatically. Nothing is needed from you for this to work. Simply turn on the ESP32 and have the mDNS feature enabled in the firmware. You can refer to the ZeroConf Documentation here and here for home assistance for more information and troubleshooting. If for some reason you are unable to use the MQTT Discovery feature, you can still use the mDNS feature to discover the broker, see Option Two below. Option Two: . You will need to install the avahi package. For a Raspberry Pi, use the following command: . sudo apt-get install avahi-daemon . For this to work, the MQTT service needs to be advertised. On a Linux host system, Avahi can be configured to do this by including the following in /etc/avahi/services/mqtt.service: . &lt;!DOCTYPE service-group SYSTEM \"avahi-service.dtd\"&gt; &lt;service-group&gt; &lt;name replace-wildcards=\"yes\"&gt;MQTT on %h&lt;/name&gt; &lt;service&gt; &lt;type&gt;_mqtt._tcp&lt;/type&gt; &lt;port&gt;1883&lt;/port&gt; &lt;/service&gt; &lt;/service-group&gt; . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/introduction/#how-to-setup---software",
+    "relUrl": "/introduction/#how-to-setup---software"
+  },"25": {
+    "doc": "Introduction",
+    "title": "Benefits",
+    "content": ". ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/introduction/#benefits",
+    "relUrl": "/introduction/#benefits"
+  },"26": {
+    "doc": "Introduction",
+    "title": "Challenges and Limitations",
+    "content": ". ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/introduction/#challenges-and-limitations",
+    "relUrl": "/introduction/#challenges-and-limitations"
+  },"27": {
+    "doc": "Introduction",
+    "title": "Safety Considerations",
+    "content": " ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/introduction/#safety-considerations",
+    "relUrl": "/introduction/#safety-considerations"
+  },"28": {
+    "doc": "Materials and Tools Required",
+    "title": "Materials and Tools Required",
+    "content": " ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/construction/materials_and_tools/",
+    "relUrl": "/construction/materials_and_tools/"
+  },"29": {
+    "doc": "Materials and Tools Required",
+    "title": "Materials",
+    "content": ". | Sterilite 2.5 Qt FlipTop (reaction chamber) | Tetra Whisper 10 Aquarium Air Pump (for enhancing airflow) | Air Tubing and Air Stone (for creating the humid air) | Empty Sabra Hummus Container, 10oz (or equivalent shape container - needed only for spacing the lid below in the right position above the water) | Lid from 1 quart yogurt container (or equivalent - needed only for holding a coffee filter that holds the calcium hydroxide) ​ You will also need a high purity source of calcium or magnesium hydroxide. Calcium hydroxide can be purchased as pickling lime or as kalkwasser for saltwater aquariums. | . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/construction/materials_and_tools/#materials",
+    "relUrl": "/construction/materials_and_tools/#materials"
+  },"30": {
+    "doc": "Materials and Tools Required",
+    "title": "Tools Needed",
+    "content": ". | Scissors (useful for cutting air tubing) | If you do not already have a scale for weighing, you will need one that has a precision to the nearest 0.1g or less (0.01g is preferable). | . Tools for the optional Box and Fan setup . | Drill with 8/32” drill bit (for fan mounting holes) | Box cutter (for scoring and cutting the fan ventilation holes) | Sharpie or other permanent marker (optional but very useful) | Small reciprocating saw (optional - would be useful for cutting the round ventilation holes on the sides of the file box) | . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/construction/materials_and_tools/#tools-needed",
+    "relUrl": "/construction/materials_and_tools/#tools-needed"
+  },"31": {
+    "doc": "Materials and Tools Required",
+    "title": "Optional Materials for Testing",
+    "content": ". | 5% distilled white vinegar (for testing for $CaCO_3$) | Spoon (for dispensing $Ca(OH)_2$ without the need to pour it) | . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/construction/materials_and_tools/#optional-materials-for-testing",
+    "relUrl": "/construction/materials_and_tools/#optional-materials-for-testing"
+  },"32": {
+    "doc": "Materials and Tools Required",
+    "title": "Assembly Time Required",
+    "content": "Minimal unit assembly takes a few minutes, assuming you’ve already eaten the hummus from the hummus container. The file box + fan assembly can be done in 2 hours following the provided instructions. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/construction/materials_and_tools/#assembly-time-required",
+    "relUrl": "/construction/materials_and_tools/#assembly-time-required"
+  },"33": {
+    "doc": "Operation and Experimentation",
+    "title": "Operation and Experimentation",
+    "content": " ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/operation/",
+    "relUrl": "/operation/"
+  },"34": {
+    "doc": "Privacy Policy",
+    "title": "Privacy Policy",
+    "content": "The privacy of my visitors is extremely important. This Privacy Policy outlines the types of personal information that is received and collected and how it is used. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/privacy/",
+    "relUrl": "/privacy/"
+  },"35": {
+    "doc": "Privacy Policy",
+    "title": "Designation of the responsible authority",
+    "content": "The persons responsible for data processing on this website are: . ZanzyTHEbar - The owner of this website. The responsible body(s) decides alone or jointly with others on the purposes and means of processing personal data (e.g. names, contact details, etc.). ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/privacy/#designation-of-the-responsible-authority",
+    "relUrl": "/privacy/#designation-of-the-responsible-authority"
+  },"36": {
+    "doc": "Privacy Policy",
+    "title": "Log Files",
+    "content": "Like many other websites, this site uses log files to help learn about when, from where, and how often traffic flows to this site. The information in these log files include: . | Internet Protocol addresses (IP) | Types of browser | Internet Service Provider (ISP) | Date and time stamp | Referring and exit pages | Number of clicks | . All of this information is not linked to anything that is personally identifiable. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/privacy/#log-files",
+    "relUrl": "/privacy/#log-files"
+  },"37": {
+    "doc": "Privacy Policy",
+    "title": "Cookies and Web Beacons",
+    "content": "I use cookies on this site to store limited information about how you interact with the site. In line with EU legislation, I have identified several different types of cookies: . | Strictly necessary cookies. | I set a cookie to store your acceptance of my cookie policy. This expires after 31 days. | . | Preferences cookies to remember your preferences. These are not used on this website. | Statistics cookies that allow me to see how my audience uses the website. I use: . | Google Analytics | . | Marketing cookies to help advertisers deliver relevant content are not used on this website. | . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/privacy/#cookies-and-web-beacons",
+    "relUrl": "/privacy/#cookies-and-web-beacons"
+  },"38": {
+    "doc": "Privacy Policy",
+    "title": "Google Analytics",
+    "content": "Google Analytics is a web analytics tool I use to help understand how visitors engage with this website. It reports website trends using cookies and web beacons without identifying individual visitors. Individual IP addresses are anonymized. You can read Google Analytics Privacy Policy. Objection to data collection . You can prevent the collection of your data by Google Analytics by clicking on the following link https://tools.google.com/dlpage/gaoptout. An opt-out cookie is set to prevent the collection of your information on future visits to our site: Disable Google Analytics. Details on how Google Analytics handles user data can be found in the Google privacy policy: https://support.google.com/analytics/answer/6004245. Demographic characteristics at Google Analytics . This website uses the function “demographic characteristics” of Google Analytics. It can be used to generate reports that contain information about the age, gender and interests of visitors to the site. This data comes from interest-based advertising by Google as well as from visitor data from third parties. It is not possible to assign the data to a specific person. You can deactivate this function at any time. You can do this through the ad settings in your Google Account or by generally prohibiting the collection of your data by Google Analytics, as explained in the section “Opting out of data collection”. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/privacy/#google-analytics",
+    "relUrl": "/privacy/#google-analytics"
+  },"39": {
+    "doc": "Privacy Policy",
+    "title": "Google Web Fonts",
+    "content": "This website uses Web Fonts from Google. The provider is Google Inc, 1600 Amphitheater Parkway, Mountain View, CA 94043, USA. The use of Google Fonts allows me to present this website using my choice of fonts, regardless of the fonts that are installed locally. This is done by retrieving the Google Web Fonts from a Google server in the USA and the associated transfer of your data to Google. This data is your IP address and which page you have visited on this website. The use of Google Web Fonts is based on Art. 6 para. 1 lit. f DSGVO. As the operator of this website, I have a legitimate interest in the optimal display and transmission of my web presence. The company Google is certified for the US-European data protection convention “Privacy Shield”. This data protection agreement is intended to ensure compliance with the level of data protection applicable in the EU. Details about Google Web Fonts can be found here: https://www.google.com/fonts#AboutPlace:about and further information in the Google Privacy Policy: https://policies.google.com/privacy/partners. ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/privacy/#google-web-fonts",
+    "relUrl": "/privacy/#google-web-fonts"
+  },"40": {
+    "doc": "Construction: Tower",
+    "title": "Construction: Tower",
+    "content": "Important: Optional - for Experimentation Only . ",
+    "url": "https://zanzythebar.github.io/ESP32GreenhouseTowerDIY/construction/tower/",
+    "relUrl": "/construction/tower/"
+  }
+}
+

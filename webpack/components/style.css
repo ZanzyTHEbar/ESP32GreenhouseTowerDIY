@@ -1,0 +1,68 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  background: #000;
+  background-color: black;
+}
+
+.react-mui-ui ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.react-mui-ui ul > li {
+  height: fit-content;
+}
+
+.react-mui-ui ul > li::before {
+  position: absolute;
+  margin-left: -1.4em;
+  content: "" !important;
+}
+
+#switch-list-label-bluetooth span {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+#switch-list-label-bluetooth p {
+  display: inline-block;
+}
+
+#switch-list-label-bluetooth p > p {
+  display: inline-block;
+  color: #da0000;
+}
+
+#switch-list-label-bluetooth u {
+  margin-left: 5px;
+  display: inline-block;
+  color: #da0000;
+}
+
+#tooltip-top {
+  position: relative;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+#tooltip-top strong {
+  color: black;
+}
+
+.sensorOptions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* .wifiSection header {
+  background-image: radial-gradient(circle at top right, #00f260, #0575e6);
+  animation: gradientBackground 10s ease infinite;
+  color: white;
+}
+ */
