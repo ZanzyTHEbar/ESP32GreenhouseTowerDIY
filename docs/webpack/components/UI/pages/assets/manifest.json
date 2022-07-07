@@ -1,47 +1,27 @@
 {
     "name": "ESPGreenhouseDIY",
     "version": "",
-    "home_assistant_domain": "esphome",
-    "funding_url": "https://esphome.io/guides/supporters.html",
+    "home_assistant_domain": "espgreenhouse",
+    "new_install_prompt_erase": true,
+    "funding_url": "",
     "builds": [
         {
             "chipFamily": "ESP32",
             "parts": [
                 {
-                    "path": "bootloader_dout_40m.bin",
+                    "path": "firmware/bootloader_dout_40m.bin",
                     "offset": 4096
                 },
                 {
-                    "path": "partitions.bin",
+                    "path": "firmware/partitions.bin",
                     "offset": 32768
                 },
                 {
-                    "path": "boot_app0.bin",
+                    "path": "firmware/boot_app0.bin",
                     "offset": 57344
                 },
                 {
-                    "path": "esp32.bin",
-                    "offset": 65536
-                }
-            ]
-        },
-        {
-            "chipFamily": "ESP32-C3",
-            "parts": [
-                {
-                    "path": "bootloader_dout_40m.bin",
-                    "offset": 0
-                },
-                {
-                    "path": "partitions.bin",
-                    "offset": 32768
-                },
-                {
-                    "path": "boot_app0.bin",
-                    "offset": 57344
-                },
-                {
-                    "path": "esp32-c3.bin",
+                    "path": "firmware/esp32.bin",
                     "offset": 65536
                 }
             ]
@@ -50,19 +30,19 @@
             "chipFamily": "ESP32-S2",
             "parts": [
                 {
-                    "path": "bootloader_dout_40m.bin",
+                    "path": "firmware/esp32s2/bootloader_dout_40m.bin",
                     "offset": 4096
                 },
                 {
-                    "path": "partitions.bin",
+                    "path": "firmware/esp32s2/partitions.bin",
                     "offset": 32768
                 },
                 {
-                    "path": "boot_app0.bin",
+                    "path": "firmware/esp32s2/boot_app0.bin",
                     "offset": 57344
                 },
                 {
-                    "path": "esp32-s2.bin",
+                    "path": "firmware/esp32s2/esp32-s2.bin",
                     "offset": 65536
                 }
             ]
@@ -71,29 +51,20 @@
             "chipFamily": "ESP32-S3",
             "parts": [
                 {
-                    "path": "bootloader_dout_40m.bin",
+                    "path": "firmware/esp32s3/bootloader_dout_40m.bin",
                     "offset": 4096
                 },
                 {
-                    "path": "partitions.bin",
+                    "path": "firmware/esp32s3/partitions.bin",
                     "offset": 32768
                 },
                 {
-                    "path": "boot_app0.bin",
+                    "path": "firmware/esp32s3/boot_app0.bin",
                     "offset": 57344
                 },
                 {
-                    "path": "esp32-s3.bin",
+                    "path": "firmware/esp32s3/esp32-s3.bin",
                     "offset": 65536
-                }
-            ]
-        },
-        {
-            "chipFamily": "ESP8266",
-            "parts": [
-                {
-                    "path": "esp8266.bin",
-                    "offset": 0
                 }
             ]
         }

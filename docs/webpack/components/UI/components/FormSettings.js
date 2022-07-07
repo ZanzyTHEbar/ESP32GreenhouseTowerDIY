@@ -9,10 +9,9 @@ import {
   Icon,
   FormControlLabel,
   Switch,
-  Typography,
+  Typography
 } from "@mui/material";
 import HassIO from "../../icons/homeassistant.svg";
-import BluetoothIcon from "@mui/icons-material/Bluetooth";
 import WifiIcon from "@mui/icons-material/Wifi";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import SmartButtonTwoToneIcon from "@mui/icons-material/SmartButtonTwoTone";
@@ -21,19 +20,23 @@ const FormSettings = () => {
   const [state, setState] = React.useState({
     mqtt: false,
     wifi: true,
-    bluetooth: true,
     ota: false,
     mdns: false,
     hassio: false,
     light_sensor: false,
     ds18b20: false,
-    dht: false,
+    dht: false
   });
+
+  /* React.useEffect(() => {
+    // storing input name
+    localStorage.setItem("active_modules", JSON.stringify(state));
+  }, [state]); */
 
   const handleButtonChange = (event) => {
     setState({
       ...state,
-      [event.target.name]: event.target.checked,
+      [event.target.name]: event.target.checked
     });
   };
 
@@ -55,7 +58,7 @@ const FormSettings = () => {
             sx={{
               width: "100%",
               maxWidth: 800,
-              bgcolor: "background.paper",
+              bgcolor: "background.paper"
             }}
             subheader={<ListSubheader>Settings</ListSubheader>}
           >
@@ -67,11 +70,11 @@ const FormSettings = () => {
               <FormControlLabel
                 control={
                   <Switch
-                    checked={state.wifi ? true : false && !state.bluetooth}
+                    checked={state.wifi ? true : false}
                     onChange={handleButtonChange}
                     name="wifi"
                     inputProps={{
-                      "aria-label": "secondary checkbox",
+                      "aria-label": "secondary checkbox"
                     }}
                   />
                 }
@@ -89,7 +92,7 @@ const FormSettings = () => {
                     onChange={handleButtonChange}
                     name="mqtt"
                     inputProps={{
-                      "aria-label": "secondary checkbox",
+                      "aria-label": "secondary checkbox"
                     }}
                   />
                 }
@@ -107,7 +110,7 @@ const FormSettings = () => {
                     onChange={handleButtonChange}
                     name="ota"
                     inputProps={{
-                      "aria-label": "secondary checkbox",
+                      "aria-label": "secondary checkbox"
                     }}
                   />
                 }
@@ -128,40 +131,7 @@ const FormSettings = () => {
                     onChange={handleButtonChange}
                     name="hassio"
                     inputProps={{
-                      "aria-label": "secondary checkbox",
-                    }}
-                  />
-                }
-              />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <BluetoothIcon />
-              </ListItemIcon>
-              <ListItemText
-                id="switch-list-label-bluetooth"
-                primary={
-                  <React.Fragment>
-                    <Typography color="inherit">Bluetooth</Typography>
-                    <p>
-                      <u>
-                        {"("}
-                        {"OTA"}
-                        <b>{" only"}</b>{" "}
-                      </u>
-                      {")"}
-                    </p>
-                  </React.Fragment>
-                }
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={!state.wifi && state.bluetooth}
-                    onChange={handleButtonChange}
-                    name="bluetooth"
-                    inputProps={{
-                      "aria-label": "secondary checkbox",
+                      "aria-label": "secondary checkbox"
                     }}
                   />
                 }

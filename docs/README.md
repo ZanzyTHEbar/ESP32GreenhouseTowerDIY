@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Welcome to Cyan
-nav_exclude: true
+title: Welcome to ESP33GreenHouseTowerDIY Documentation
+nav_exclude:
 has_children: false
 permalink: index.html
 image_title: "Vertical Tower Logo"

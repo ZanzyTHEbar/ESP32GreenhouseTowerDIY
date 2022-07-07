@@ -184,9 +184,6 @@ const MUI = () => {
               <main>
                 <Container maxWidth="lg" className="react-mui-ui-container">
                   <Paper variant="elevation" elevation={0}>
-                    {/* <Alert severity="info" role="alert" variant="filled" color="info">
-                This is an info alert — check it out!
-              </Alert> */}
                   </Paper>
                   <Paper variant="elevation" elevation={0}>
                     <AppBar position="relative" color="primary">

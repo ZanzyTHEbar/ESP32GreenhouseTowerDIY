@@ -7,7 +7,7 @@ import {
   FormGroup,
   Stack,
   Typography,
-  Switch,
+  Switch
 } from "@mui/material";
 import AsyncAuto from "../components/AsynchronousAutoComplete";
 import { alpha, styled } from "@mui/material/styles";
@@ -26,7 +26,7 @@ const humiditySensorsType = [
   { title: "dht22" },
   { title: "dht21" },
   { title: "am2301" },
-  { title: "sht31" },
+  { title: "sht31" }
 ];
 
 const lightSensors = [{ title: "bh1750" }, { title: "ldr" }];
@@ -41,20 +41,20 @@ const ds18b20 = [
   { title: "7" },
   { title: "8" },
   { title: "9" },
-  { title: "10" },
+  { title: "10" }
 ];
 
 const waterLevelSensors = [
   { title: "infrared" },
   { title: "ultraSonic" },
-  { title: "capacitive" },
+  { title: "capacitive" }
 ];
 
 const humSensorsNum = [{ title: "1" }, { title: "2" }];
 
 const relayPin = [
   { title: "32" },
-  { title: "33" },
+  { title: "33" }
 ]; /* Possible relay combinations - need logic to remove item from list if another sensor takes up that pin */
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
@@ -64,11 +64,11 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
   display: "flex",
   "&:active": {
     "& .MuiSwitch-thumb": {
-      width: 15,
+      width: 15
     },
     "& .MuiSwitch-switchBase.Mui-checked": {
-      transform: "translateX(9px)",
-    },
+      transform: "translateX(9px)"
+    }
   },
   "& .MuiSwitch-switchBase": {
     padding: 2,
@@ -77,9 +77,9 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
       color: "#fff",
       "& + .MuiSwitch-track": {
         opacity: 1,
-        backgroundColor: theme.palette.mode === "dark" ? "#177ddc" : "#1890ff",
-      },
-    },
+        backgroundColor: theme.palette.mode === "dark" ? "#177ddc" : "#1890ff"
+      }
+    }
   },
   "& .MuiSwitch-thumb": {
     boxShadow: "0 2px 4px 0 rgb(0 35 11 / 20%)",
@@ -87,8 +87,8 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
     height: 12,
     borderRadius: 6,
     transition: theme.transitions.create(["width"], {
-      duration: 200,
-    }),
+      duration: 200
+    })
   },
   "& .MuiSwitch-track": {
     borderRadius: 16 / 2,
@@ -97,8 +97,8 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
       theme.palette.mode === "dark"
         ? "rgba(255,255,255,.35)"
         : "rgba(0,0,0,.25)",
-    boxSizing: "border-box",
-  },
+    boxSizing: "border-box"
+  }
 }));
 
 const SensorOptions = () => {
@@ -106,13 +106,13 @@ const SensorOptions = () => {
     autoComplete_hum: false,
     autoComplete_ds18b20: false,
     autoComplete_light_sensor: false,
-    autoComplete_water_level_sensor: false,
+    autoComplete_water_level_sensor: false
   });
 
   const handleChangeAntSwitch = (event, type) => {
     setState({
       ...state,
-      [type]: !state[type],
+      [type]: !state[type]
     });
   };
 
@@ -127,7 +127,7 @@ const SensorOptions = () => {
                 margin: "1rem",
                 width: "100%",
                 maxWidth: 800,
-                bgcolor: "background.paper",
+                bgcolor: "background.paper"
               }}
               variant="outlined"
               className="sensorOptions-paper-left"
@@ -184,7 +184,7 @@ const SensorOptions = () => {
                 margin: "1rem",
                 width: "100%",
                 maxWidth: 800,
-                bgcolor: "background.paper",
+                bgcolor: "background.paper"
               }}
               className="sensorOptions-paper-right"
             >
@@ -241,7 +241,7 @@ const SensorOptions = () => {
                 margin: "1rem",
                 width: "100%",
                 maxWidth: 800,
-                bgcolor: "background.paper",
+                bgcolor: "background.paper"
               }}
               className="sensorOptions-paper-right"
             >
@@ -298,7 +298,7 @@ const SensorOptions = () => {
                 margin: "1rem",
                 width: "100%",
                 maxWidth: 800,
-                bgcolor: "background.paper",
+                bgcolor: "background.paper"
               }}
               className="sensorOptions-paper-right"
             >
