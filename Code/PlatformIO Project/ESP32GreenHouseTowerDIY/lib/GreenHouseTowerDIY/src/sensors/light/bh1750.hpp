@@ -15,8 +15,9 @@ public:
     BH1750();
     virtual ~BH1750();
 
+
     // Initialize the library
-    void setupLightSensor();
+    void begin();
     float getLux();
 
 private:
