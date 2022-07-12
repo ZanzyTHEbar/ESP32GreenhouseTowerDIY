@@ -47,9 +47,9 @@ WiFiClient espClient;
  * @brief Construct a new Network:: Network object
  *
  */
-Network::Network() : previousMillis(0),
-                     interval(30000),
-                     wifiConnected(false) {}
+Network::Network() : _previousMillis(0),
+                     _interval(30000),
+                     _wifiConnected(false) {}
 
 /**
  * @brief Destroy the Network:: Network object
@@ -206,24 +206,23 @@ bool Network::SetupNetworkStack()
     WiFi.begin(cfg.config.WIFISSID, cfg.config.WIFIPASS);
 
     unsigned long currentMillis = millis();
-    previousMillis = currentMillis;
+    _previousMillis = currentMillis;
 
     while (WiFi.status() != WL_CONNECTED)
     {
-        stateManager.setState(_State::ConnectingToWifi);
+        stateManager.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
         currentMillis = millis();
-        if (currentMillis - previousMillis >= interval)
+        if (currentMillis - _previousMillis >= _interval)
         {
             log_i("[INFO]: WiFi connection timed out.\n");
-            stateManager.setState(_State::ConnectingToWifiError);
+            stateManager.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error);
             return false;
         }
     }
 
     log_i("[INFO]: Connected to WiFi.\n");
     log_i("IP address: %s\n", WiFi.localIP().toString().c_str());
-    stateManager.setState(_State::ConnectingToWifiSuccess);
-
+    stateManager.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected);
     return true;
 }
 
@@ -249,7 +248,6 @@ void Network::SetupWebServer()
 
         log_i("[INFO]: Configuring access point...\n");
         WiFi.mode(WIFI_AP);
-        WiFi.setTxPower(WIFI_POWER_11dBm);
 
         // You can remove the password parameter if you want the AP to be open.
         log_i("Wifi Connection Failed. \r\nStarting AP. \r\nAP IP address: ");
@@ -262,8 +260,9 @@ void Network::SetupWebServer()
         }
         else
         {
-            WiFi.softAP(WIFI_SSID, WIFI_PASS, 10, 0 , 3); // AP mode with password
+            WiFi.softAP(WIFI_SSID, WIFI_PASS, 10, 0, 3); // AP mode with password
         }
+        WiFi.setTxPower(WIFI_POWER_11dBm);
 
         networkRoutes(); // call the network routes function to setup the routes
     }
@@ -282,12 +281,12 @@ void Network::CheckNetworkLoop()
     // run current function every 5 seconds
     if (WiFi.status() != WL_CONNECTED)
     {
-        wifiConnected = false;
+        _wifiConnected = false;
         log_i("Wifi is not connected\n");
     }
     else
     {
-        wifiConnected = true;
+        _wifiConnected = true;
         log_i("Wifi is connected\n");
         log_i("[INFO]: WiFi Connected! Open http://%s in your browser\n", WiFi.localIP().toString().c_str());
     }
@@ -297,13 +296,13 @@ void Network::CheckConnectionLoop_Active()
 {
     unsigned long currentMillis = millis();
     // if WiFi is down, try reconnecting
-    if (!wifiConnected && (currentMillis - previousMillis >= interval))
+    if (!_wifiConnected && (currentMillis - _previousMillis >= _interval))
     {
         Serial.print(millis());
         Serial.println("Reconnecting to WiFi...");
         WiFi.disconnect(); // disconnect from previous Access Point's - if connected
         WiFi.reconnect();
-        previousMillis = currentMillis;
+        _previousMillis = currentMillis;
     }
 }
 

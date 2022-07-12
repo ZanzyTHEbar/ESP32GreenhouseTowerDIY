@@ -3,8 +3,8 @@
  Copyright (c) 2021 ZanzyTHEbar
 */
 #pragma once
-#ifndef Network_hpp
-#define Network_hpp
+#ifndef NETWORK_hpp
+#define NETWORK_hpp
 
 #include <defines.hpp>
 #include <WiFi.h>
@@ -32,9 +32,9 @@ public:
 private:
     int CheckWifiState();
     // Timer variables
-    unsigned long previousMillis;
-    const long interval; // interval to wait for Wi-Fi connection (milliseconds)
-    bool wifiConnected;
+    unsigned long _previousMillis;
+    const long _interval; // interval to wait for Wi-Fi connection (milliseconds)
+    bool _wifiConnected;
 };
 
 extern Network network;
