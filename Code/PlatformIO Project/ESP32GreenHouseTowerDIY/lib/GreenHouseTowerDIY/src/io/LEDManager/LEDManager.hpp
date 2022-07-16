@@ -1,26 +1,24 @@
 #ifndef LEDMANAGER_HPP
 #define LEDMANAGER_HPP
-#include <defines.hpp>
+#include <Arduino.h>
 
+template <class T>
 class LEDManager
 {
 public:
-    LEDManager(byte pin);
+    LEDManager(T pin);
     virtual ~LEDManager();
 
-    void setupLED();
+    void begin();
     void onOff(bool state) const;
     void blink(unsigned long time);
     void displayStatus();
-    void indicateWaterLevel(int waterLevel);
+    void indicateWaterLevel(int waterlevel);
 
 private:
-    byte _ledPin;
-    byte _leds[3];
+    T _ledPin;
     unsigned long _previousMillis;
     bool _ledState;
 };
-
-extern LEDManager ledManager;
 
 #endif // LEDMANAGER_HPP
