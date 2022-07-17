@@ -7,9 +7,10 @@
 #define TOWERTEMP_HPP
 // Data wire is plugged into port 42 on the ESP32
 #define ONE_WIRE_BUS 42
-#include <defines.hpp>
+#include <Arduino.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <vector>
 
 class TowerTemp
 {
@@ -25,13 +26,13 @@ public:
 
     struct Temp
     {
-        float temp[10];
+        std::vector<float> temp;
     };
 
     Temp temp_sensor_results;
 
-    Temp ReadTempSensorData();
-    Temp GetTempF();
+    Temp getTempC();
+    Temp getTempF();
 
     // Friends
 

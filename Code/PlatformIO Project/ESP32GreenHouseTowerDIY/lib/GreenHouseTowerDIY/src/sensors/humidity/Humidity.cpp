@@ -39,39 +39,37 @@ byte Humidity::setupSensor()
 {
 #if USE_DHT_SENSOR
   // Initialize the DHT sensor.
-  if (dht.begin())
-  {
-    log_i("DHT Sensor connected!");
-    _status = 1;
-    // Print temperature sensor details.
-    sensor_t sensor;
-    dht.temperature().getSensor(&sensor);
-    log_d("------------------------------------");
-    log_d("Temperature Sensor");
-    log_d("Sensor Type: %c", sensor.name);
-    log_d("Driver Ver: %d", sensor.version);
-    log_d("Unique ID:  %d", sensor.sensor_id);
-    log_d("Max Value: %d °C", sensor.max_value);
-    log_d("Min Value: %d °C", sensor.min_value);
-    log_d("Resolution: %d °C", sensor.resolution);
-    log_d("------------------------------------");
-    // Print humidity sensor details.
-    dht.humidity().getSensor(&sensor);
-    log_d("Humidity Sensor");
-    log_d("Sensor Type: %c", sensor.name);
-    log_d("Driver Ver: %d", sensor.version);
-    log_d("Unique ID:  %d", sensor.sensor_id);
-    log_d("Max Value:  %d %%", sensor.max_value);   // 100%
-    log_d("Min Value:  %d %%", sensor.min_value);   // 0%
-    log_d("Resolution:  %d %%", sensor.resolution); // 0.5%
-    log_d("------------------------------------");
-    // Set delay between sensor readings based on sensor details.
-    _delayS = sensor.min_delay / 1000000;
-    log_d("Delay: %d ms", _delayS);
-    log_d("------------------------------------");
-    log_d("");
-    return _status;
-  }
+  dht.begin();
+  log_i("DHT Sensor connected!");
+  _status = 1;
+  // Print temperature sensor details.
+  sensor_t sensor;
+  dht.temperature().getSensor(&sensor);
+  log_d("------------------------------------");
+  log_d("Temperature Sensor");
+  log_d("Sensor Type: %c", sensor.name);
+  log_d("Driver Ver: %d", sensor.version);
+  log_d("Unique ID:  %d", sensor.sensor_id);
+  log_d("Max Value: %d °C", sensor.max_value);
+  log_d("Min Value: %d °C", sensor.min_value);
+  log_d("Resolution: %d °C", sensor.resolution);
+  log_d("------------------------------------");
+  // Print humidity sensor details.
+  dht.humidity().getSensor(&sensor);
+  log_d("Humidity Sensor");
+  log_d("Sensor Type: %c", sensor.name);
+  log_d("Driver Ver: %d", sensor.version);
+  log_d("Unique ID:  %d", sensor.sensor_id);
+  log_d("Max Value:  %d %%", sensor.max_value);   // 100%
+  log_d("Min Value:  %d %%", sensor.min_value);   // 0%
+  log_d("Resolution:  %d %%", sensor.resolution); // 0.5%
+  log_d("------------------------------------");
+  // Set delay between sensor readings based on sensor details.
+  _delayS = sensor.min_delay / 1000000;
+  log_d("Delay: %d ms", _delayS);
+  log_d("------------------------------------");
+  log_d("");
+  return _status;
 #endif // USE_DHT_SENSOR
 
 #if USE_SHT31_SENSOR
@@ -242,27 +240,37 @@ float Humidity::AverageStackTemp()
   switch (_HUMIDITY_SENSORS_ACTIVE)
   {
   case 0:
+  {
     float stack_temp = 0;
     return stack_temp; // return 0 if no sensors are active
     break;
+  }
 
   case 1:
+  {
     float stack_temp = result.temp_sht31;
     return stack_temp; // Only one sensor - return the value of that sensor
     break;
+  }
 
   case 2:
+  {
     float stack_temp = result.temp_sht31_2;
     return stack_temp; // Only one sensor - return the value of that sensor
     break;
+  }
 
   case 3:
+  {
     float stack_temp = result.temp_sht31 + result.temp_sht31_2;
     return stack_temp / 2; // Read the _temperature from the sensor and average the two sensors.
     break;
+  }
 
   default:
+  {
     break;
+  }
   }
 }
 

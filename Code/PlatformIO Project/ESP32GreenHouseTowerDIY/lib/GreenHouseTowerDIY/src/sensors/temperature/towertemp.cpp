@@ -92,7 +92,7 @@ void TowerTemp::checkSensors()
         float no_sensors[] = {0};
         for (int i = 0; i < _sensors_count; i++)
         {
-            temp_sensor_results.temp[i] = no_sensors[i];
+            temp_sensor_results.temp.push_back(no_sensors[i]);
         }
         log_i("No temperature sensors found - please connect them and restart the device");
     }
@@ -104,7 +104,7 @@ void TowerTemp::checkSensors()
 // * Parameters: None
 // * Return: float array - Temperature of the sensors
 //******************************************************************************
-TowerTemp::Temp TowerTemp::ReadTempSensorData()
+TowerTemp::Temp TowerTemp::getTempC()
 {
     // handle the case where no sensors are connected
     checkSensors();
@@ -113,7 +113,7 @@ TowerTemp::Temp TowerTemp::ReadTempSensorData()
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
         {
-            temp_sensor_results.temp[i] = sensors.getTempC(temp_sensor_addresses);
+            temp_sensor_results.temp.push_back(sensors.getTempC(temp_sensor_addresses));
             printAddress(temp_sensor_addresses);
             log_i("\n");
         }
@@ -131,7 +131,7 @@ TowerTemp::Temp TowerTemp::ReadTempSensorData()
 // * Parameters: None
 // * Return: float array - Temperature of the sensors in fahrenheit
 //******************************************************************************
-TowerTemp::Temp TowerTemp::GetTempF()
+TowerTemp::Temp TowerTemp::getTempF()
 {
     // handle the case where no sensors are connected
     checkSensors();
@@ -140,7 +140,7 @@ TowerTemp::Temp TowerTemp::GetTempF()
         // Search the wire for address
         if (sensors.getAddress(temp_sensor_addresses, i))
         {
-            temp_sensor_results.temp[i] = sensors.getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0;
+            temp_sensor_results.temp.push_back(sensors.getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0);
             printAddress(temp_sensor_addresses);
             log_i("\n");
         }

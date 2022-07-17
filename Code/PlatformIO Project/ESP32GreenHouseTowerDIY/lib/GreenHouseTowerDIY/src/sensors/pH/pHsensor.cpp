@@ -71,9 +71,9 @@ void PHSENSOR::parse_cmd(char *string)
     }
 }
 
-void PHSENSOR::getPH()
+float PHSENSOR::getPH()
 {
-    cfg.config.pH = pH.read_ph();
+    return pH.read_ph();
 }
 
 void PHSENSOR::phSensorLoop()
@@ -85,8 +85,7 @@ void PHSENSOR::phSensorLoop()
         _input_string_complete = false;                   // reset the flag used to tell if we have received a completed string from the PC
         _inputstring = "";                                // clear the string
     }
-    getPH();
-    Serial.println(cfg.config.pH);
+    Serial.println(getPH());
 }
 
 void PHSENSOR::eventListener(const char *topic, const uint8_t *payload, uint16_t length)

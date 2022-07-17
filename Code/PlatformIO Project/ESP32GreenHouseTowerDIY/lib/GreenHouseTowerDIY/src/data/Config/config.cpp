@@ -41,6 +41,7 @@ void Config::CreateDefaultConfig()
         {false, false, false, false, false}, // relays
         {0, 0, 0, 0, 0},                     // relays_pin
         0                                    // numSensors
+        
     };
 }
 

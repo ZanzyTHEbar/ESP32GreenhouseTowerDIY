@@ -2,6 +2,7 @@
 #define ACCUMULATEDATA_HPP
 #include <defines.hpp>
 #include <lists.h>
+#include <vector>
 
 class AccumulateData : public linkListObj
 {
@@ -10,31 +11,12 @@ public:
     virtual ~AccumulateData();
 
     void begin();
-
-    void addSelf(void);
     virtual void execute(void);
 
     void InitAccumulateData();
-    int ChargeStatus();
     bool SendData();
 
-    struct Data
-    {
-        // Variables
-        float humidity;
-        float humidity_temp;
-        float humidity_sht31;
-        float humidity_sht31_2;
-        float humidity_temp_sht31;
-        float humidity_temp_sht31_2;
-        float humidity_sht31_average;
-        float humidity_temp_sht31_average;
-        float temp_sensors[10];
-        int flow_rate;
-        int flow_rate_sensor_temp;
-        int water_level;
-    };
-    Data config;
+    // Variables
     bool inList;
 
 private:

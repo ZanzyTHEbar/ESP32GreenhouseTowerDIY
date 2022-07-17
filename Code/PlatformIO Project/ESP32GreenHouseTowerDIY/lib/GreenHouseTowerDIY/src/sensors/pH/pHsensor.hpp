@@ -18,7 +18,7 @@ public:
     void phSensorLoop();
     void eventListener(const char *topic, const uint8_t *payload, uint16_t length);
     void parse_cmd(char *string);
-    void getPH();
+    float getPH();
 
     // Friends
     friend class BASEMQTT;

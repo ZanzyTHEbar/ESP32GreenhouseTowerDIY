@@ -10,31 +10,13 @@ AccumulateData::~AccumulateData()
     timedTasks.unlinkObj(this);
 }
 
-void AccumulateData::addSelf(void)
+void AccumulateData::begin()
 {
     if (!inList)
     {
         timedTasks.addToTop(this);
         inList = true;
     }
-}
-
-void AccumulateData::begin()
-{
-    addSelf();
-    config = {
-        .humidity = 0.0,
-        .humidity_temp = 0.0,
-        .humidity_sht31 = 0.0,
-        .humidity_sht31_2 = 0.0,
-        .humidity_temp_sht31 = 0.0,
-        .humidity_temp_sht31_2 = 0.0,
-        .humidity_sht31_average = 0.0,
-        .humidity_temp_sht31_average = 0.0,
-        .temp_sensors = {0.0},
-        .flow_rate = 0,
-        .flow_rate_sensor_temp = 0,
-        .water_level = 0};
 }
 
 //******************************************************************************
@@ -51,57 +33,17 @@ void AccumulateData::InitAccumulateData()
     // Initialize the library
 #if USE_SHT31_SENSOR
     humidity.ReadSensor();
-    config.humidity_sht31_average = humidity.StackHumidity();
-    config.humidity_temp_sht31_average = humidity.AverageStackTemp();
-    switch (humidity._HUMIDITY_SENSORS_ACTIVE)
-    {
-    case 0:
-        config.humidity_sht31 = 0;
-        config.humidity_sht31_2 = 0;
-        config.humidity_temp_sht31 = 0;
-        config.humidity_temp_sht31_2 = 0;
-        break;
-    case 1:
-        config.humidity_sht31 = humidity.result.humidity_sht31;
-        config.humidity_sht31 = humidity.result.temp_sht31;
-        break;
-    case 2:
-        config.humidity_sht31_2 = humidity.result.humidity_sht31_2;
-        config.humidity_temp_sht31_2 = humidity.result.temp_sht31_2;
-        break;
-    case 3:
-        config.humidity_sht31 = humidity.result.humidity_sht31;
-        config.humidity_sht31 = humidity.result.temp_sht31;
-        config.humidity_sht31_2 = humidity.result.humidity_sht31_2;
-        config.humidity_temp_sht31_2 = humidity.result.temp_sht31_2;
-        break;
-    default:
-        config.humidity_sht31 = 0;
-        config.humidity_sht31_2 = 0;
-        config.humidity_temp_sht31 = 0;
-        config.humidity_temp_sht31_2 = 0;
-        break;
-    }
 #endif // USE_SHT31_SENSOR
 
 #if USE_DHT_SENSOR
     humidity.readDHT();
-    config.humidity = humidity.result.humidity;
-    config.humidity_temp = humidity.result.temp;
 #endif // USE_DHT_SENSOR
 
 #if ENABLE_PH_SUPPORT
     phsensor.phSensorLoop();
 #endif // ENABLE_PH_SUPPORT
 
-    // loop through and store temp data
-    for (int i = 0; i < _numTempSensors; i++)
-    {
-        config.temp_sensors[i] = tower_temp.temp_sensor_results.temp[i];
-    }
-
-    config.water_level = waterlevelSensor.getWaterLevel();
-
+    tower_temp.getTempC();
     // Relays
     for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
     {
@@ -113,61 +55,76 @@ void AccumulateData::InitAccumulateData()
 bool AccumulateData::SendData()
 {
     String json = "";
-    json += R"====({)====";
+    StaticJsonDocument<1024> jsonDoc;
+    jsonDoc["id"] = "1";
+    jsonDoc["timestamp"] = time(NULL);
+    jsonDoc["max_temp"] = _maxTemp;
+    jsonDoc["num_temp_sensors"] = _numTempSensors;
+    // jsonDoc["flow_rate"] = _config.flow_rate;
+    // jsonDoc["flow_rate_sensor_temp"] = _config.flow_rate_sensor_temp;
+    jsonDoc["water_level_sensor"] = waterlevelSensor.getWaterLevel();
 
-    json += R"====("stack_humidity":)====";
-    json += (String)cfg.config.stack_humidity + ",\n";
-
-    json += R"====("stack_temp":)====";
-    json += (String)cfg.config.stack_temp + ",\n";
-
-    json += R"====("relays":[)====";
-    json += (String)cfg.config.relays[0] + "," + (String)cfg.config.relays[1] + "," + (String)cfg.config.relays[2] + "," + (String)cfg.config.relays[3] + "," + (String)cfg.config.relays[4] + "],\n";
-
-    json += R"====("stack_voltage":)====";
-    json += (String)cfg.config.stack_voltage + ",\n";
-
-    json += R"====("mqtt_enable":)====";
-    json += (String)cfg.config.MQTTEnabled + ",\n";
-
-    json += R"====("charge_status":)====";
-    json += (String)chargeState + ",\n";
-
-    json += R"====("GraphData":[)====";
-    json += "\n";
-    for (int i = 0; i < 10; i++)
+#if USE_SHT31_SENSOR
+    switch (humidity._HUMIDITY_SENSORS_ACTIVE)
     {
-        delay(0);
-        json += R"====({"label": "🌡 )====" + (String)i + "\",\n";
-        json += R"====("type": "temp",)====" + (String) "\n";
-        json += R"====("value": )====" + (String)cfg.config.cell_temp[i] + (String) ",\n";
-        json += R"====("maxValue": )====" + (String)_maxTemp;
-        json += R"====(})====" + (String) "\n";
-        json += R"====(,)====";
-
-        json += R"====({"label": "⚡ )====" + (String)i + "\",\n";
-        json += R"====("type": "volt",)====" + (String) "\n";
-        json += R"====("value": )====" + (String)cfg.config.cell_voltage[i] + (String) ",\n";
-        json += R"====("maxValue": )====" + (String)_maxVoltage;
-        json += R"====(})====" + (String) "\n";
-
-        if (i < 9)
-        {
-            json += R"====(,)====";
-        };
+    case 0:
+        break;
+    case 1:
+        jsonDoc["humidity_sht31"] = humidity.result.humidity_sht31;
+        jsonDoc["humidity_temp_sht31"] = humidity.result.temp_sht31;
+        break;
+    case 2:
+        jsonDoc["humidity_sht31_2"] = humidity.result.humidity_sht31_2;
+        jsonDoc["humidity_temp_sht31_2"] = humidity.result.temp_sht31_2;
+        break;
+    case 3:
+        jsonDoc["humidity_sht31"] = humidity.result.humidity_sht31;
+        jsonDoc["humidity_temp_sht31"] = humidity.result.temp_sht31;
+        jsonDoc["humidity_sht31_2"] = humidity.result.humidity_sht31_2;
+        jsonDoc["humidity_temp_sht31_2"] = humidity.result.temp_sht31_2;
+        break;
+    default:
+        break;
     }
-    json += R"====(])====";
-    json += R"====(})====";
+
+    jsonDoc["humidity_sht31_average"] = humidity.StackHumidity();
+    jsonDoc["humidity_temp_sht31_average"] = humidity.AverageStackTemp();
+#endif // USE_SHT31_SENSOR
+#if USE_DHT_SENSOR
+    jsonDoc["humidity_dht"] = humidity.result.humidity;
+    jsonDoc["humidity_temp_dht"] = humidity.result.temp;
+#endif // USE_DHT_SENSOR
+#if ENABLE_PH_SUPPORT
+    jsonDoc["ph_sensor"] = phsensor.getPH();
+#endif // ENABLE_PH_SUPPORT
+    JsonArray temp_sensor_data = jsonDoc.createNestedArray("temp_sensors");
+    for (int i = 0; i < _numTempSensors; i++)
+    {
+        temp_sensor_data.add(tower_temp.temp_sensor_results.temp[i]);
+    }
+
+    // Relays
+    JsonArray Relays = jsonDoc.createNestedArray("Tower_Relays_State");
+    for (int i = 0; i < sizeof(cfg.config.relays) / sizeof(cfg.config.relays[0]); i++)
+    {
+        Relays.add(cfg.config.relays[i]);
+    }
+
+    if (serializeJson(jsonDoc, json) == 0)
+    {
+        log_e("[Data Json Document]: Failed to write to file");
+        return false;
+    }
 
     if (json.length() > 0)
     {
         cfg.config.data_json_string = json;
+        serializeJsonPretty(jsonDoc, json);
+        log_d("[Data Json Document]: %s", json.c_str());
         return true;
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
 AccumulateData accumulatedata;
