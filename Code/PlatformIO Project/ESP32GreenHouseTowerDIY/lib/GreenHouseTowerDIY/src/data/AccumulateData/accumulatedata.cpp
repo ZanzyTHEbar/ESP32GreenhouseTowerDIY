@@ -44,6 +44,7 @@ void AccumulateData::InitAccumulateData()
 #endif // ENABLE_PH_SUPPORT
 
     tower_temp.getTempC();
+    
     // Relays
     for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
     {

@@ -157,7 +157,7 @@ void BASEMQTT::checkState()
 void BASEMQTT::mqttReconnect()
 {
     // Loop until we're reconnected
-    if (stateManager.getCurrentMQTTState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected)
+    if (stateManager.getCurrentState<ProgramStates::DeviceStates::MQTTState_e>() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected)
     {
         log_i("Attempting MQTT connection...");
         // Attempt to connect
@@ -183,7 +183,7 @@ void BASEMQTT::mqttLoop()
 {
     my_delay(1L);
 
-    if (stateManager.getCurrentMQTTState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected || stateManager.getCurrentMQTTState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Error)
+    if (stateManager.getCurrentState<ProgramStates::DeviceStates::MQTTState_e>() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected || stateManager.getCurrentState<ProgramStates::DeviceStates::MQTTState_e>() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Error)
     {
         unsigned long currentMillis = millis();
         if (currentMillis - _previousMillis >= _interval_reconnect)
@@ -213,16 +213,9 @@ void BASEMQTT::mqttLoop()
                 _user_bytes_received = 0;
                 memset(_user_data, 0, sizeof(_user_data));
             }
-#if ENABLE_PH_SUPPORT
             log_i("Sending message to topic: %s", phsensor._pHOutTopic);
-
-            float newpH = cfg.config.pH;
             String timeStamp = networkntp.getTimeStamp();
-            log_i("pH: %s", String(newpH).c_str());
-
-            mqttClient.publish(phsensor._pHOutTopic, String(newpH).c_str(), true);
             mqttClient.publish(phsensor._pHOutTopic, timeStamp.c_str(), true);
-#endif // ENABLE_PH_SUPPORT
         }
     }
 }

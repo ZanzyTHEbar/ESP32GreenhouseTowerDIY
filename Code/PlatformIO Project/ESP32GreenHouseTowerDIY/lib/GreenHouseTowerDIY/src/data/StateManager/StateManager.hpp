@@ -1,5 +1,6 @@
 #ifndef STATEMANAGER_HPP
 #define STATEMANAGER_HPP
+#include <Arduino.h>
 
 /*
  * StateManager
@@ -82,37 +83,38 @@ public:
  * EventManager
  * All Project Events are managed here
  */
-
+template <class T>
 class StateManager
 {
 public:
-    StateManager();
-    virtual ~StateManager();
+    StateManager() {}
 
-    void setState(ProgramStates::DeviceStates::State_e state);
-    void setState(ProgramStates::DeviceStates::WiFiState_e state);
-    void setState(ProgramStates::DeviceStates::WebServerState_e state);
-    void setState(ProgramStates::DeviceStates::MDNSState_e state);
-    void setState(ProgramStates::DeviceStates::MQTTState_e state);
-    void setState(ProgramStates::DeviceStates::ButtonState_e state);
-    void setState(ProgramStates::DeviceStates::PumpState_e state);
+    virtual ~StateManager() {}
 
-    ProgramStates::DeviceStates::State_e getCurrentState();
-    ProgramStates::DeviceStates::WiFiState_e getCurrentWiFiState();
-    ProgramStates::DeviceStates::WebServerState_e getCurrentWebServerState();
-    ProgramStates::DeviceStates::MDNSState_e getCurrentMDNSState();
-    ProgramStates::DeviceStates::MQTTState_e getCurrentMQTTState();
-    ProgramStates::DeviceStates::ButtonState_e getCurrentButtonState();
-    ProgramStates::DeviceStates::PumpState_e getCurrentPumpState();
+    void setState(T state)
+    {
+        _current_state = state;
+    }
+
+    /*
+     * Get States
+     * Returns the current state of the device
+     */
+    T getCurrentState()
+    {
+        return _current_state;
+    }
 
 private:
-    ProgramStates::DeviceStates::State_e _current_state;
-    ProgramStates::DeviceStates::WiFiState_e _current_wifi_state;
-    ProgramStates::DeviceStates::WebServerState_e _current_webserver_state;
-    ProgramStates::DeviceStates::MDNSState_e _current_mdns_state;
-    ProgramStates::DeviceStates::MQTTState_e _current_mqtt_state;
-    ProgramStates::DeviceStates::ButtonState_e _current_button_state;
-    ProgramStates::DeviceStates::PumpState_e _current_pump_state;
+    T _current_state;
 };
-extern StateManager stateManager;
+
+extern StateManager<ProgramStates::DeviceStates::State_e> StateManager_Device;
+extern StateManager<ProgramStates::DeviceStates::WiFiState_e> StateManager_WiFi;
+extern StateManager<ProgramStates::DeviceStates::WebServerState_e> StateManager_WebServer;
+extern StateManager<ProgramStates::DeviceStates::MDNSState_e> StateManager_MDNS;
+extern StateManager<ProgramStates::DeviceStates::MQTTState_e> StateManager_MQTT;
+extern StateManager<ProgramStates::DeviceStates::ButtonState_e> StateManager_Buttons;
+extern StateManager<ProgramStates::DeviceStates::PumpState_e> StateManager_Pump;
+
 #endif // STATEMANAGER_HPP
