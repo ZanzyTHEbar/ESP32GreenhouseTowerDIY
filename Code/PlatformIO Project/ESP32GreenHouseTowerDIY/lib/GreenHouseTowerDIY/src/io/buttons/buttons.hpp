@@ -63,15 +63,13 @@ public:
 
     inline bool getPin(byte &_pin)
     {
-        if (_pin > 0)
-        {
-            _inPin = _pin;
-            return true;
-        }
-        else
-        {
+        if (_pin <= 0)
+        {     
             return false;
         }
+
+        _inPin = _pin;
+        return true;
     }
 
 private:

@@ -33,12 +33,8 @@ Buttons::Buttons(byte inPin, bool input) : mechButton(inPin), _messageCallback(n
     }
 }
 
-// Destructor, nothing allocated so nothing to do.
-Buttons::~Buttons(void)
-{
-}
+Buttons::~Buttons(void) { _instance = nullptr; }
 
-// begin, Needed somewhere to place the hookup() call. begin is traditional.
 bool Buttons::begin(void)
 {
     log_d("Initializing Buttons");
@@ -82,12 +78,10 @@ void Buttons::processState(void)
     _messageCallback();
 }
 
-// Your standard sketch loop()
 void Buttons::ButtonLoop(void)
 {
-    bool Buttonstate;
     idle();                             // Let all the idlers have time to do their thing.
-    Buttonstate = trueFalse();          // Have a look at what the current Buttons state is.
+    bool Buttonstate = trueFalse();          // Have a look at what the current Buttons state is.
     digitalWrite(_inPin, !Buttonstate); // Since the Buttons ground when pushed, invert logic with !
 }
 
