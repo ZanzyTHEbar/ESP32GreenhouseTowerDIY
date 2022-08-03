@@ -39,6 +39,7 @@ HASensor sht31_humidity_2("tower_humidity_sht31");
 HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
 #endif // USE_SHT31_SENSOR
 
+
 /***********************************************************************************************************************
  * Class Global Variables
  * Please only make changes to the following class variables within the ini file. Do not change them here.
@@ -314,9 +315,9 @@ void HASSMQTT::mqttLoop()
     if ((millis() - lastSentAt) >= 5000)
     {
         lastSentAt = millis();
-        tower_humidity_temp.setValue(accumulatedata.config.humidity_temp);
-        tower_humidity.setValue(accumulatedata.config.humidity);
-        water_temp.setValue(accumulatedata.config.temp_sensors[0]);
+        tower_humidity_temp.setValue(humidity.result.temp);
+        tower_humidity.setValue(humidity.result.humidity);
+        water_temp.setValue(tower_temp.temp_sensor_results.temp[0]);
         light.setValue(ldr.getLux());
 #if USE_SHT31_SENSOR
         sht31_humidity.setValue(lastValue);

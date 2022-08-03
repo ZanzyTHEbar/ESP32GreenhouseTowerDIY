@@ -2,6 +2,9 @@
 #define PUMP_HPP
 #include <defines.hpp>
 #include <TimeLib.h> // For timekeeping#ifndef PUMP_HPP
+#include "io/Relays/Relays.hpp"
+#include "network/ntp.hpp"
+#include "sensors/light/ldr.hpp"
 
 class PUMP
 {

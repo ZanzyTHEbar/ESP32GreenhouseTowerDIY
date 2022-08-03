@@ -7,6 +7,10 @@
 #define PHSENSOR_HPP
 #include <defines.hpp>
 #include <ph_grav.h>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <map>
 
 class PHSENSOR
 {
@@ -15,9 +19,10 @@ public:
     PHSENSOR();
     virtual ~PHSENSOR();
 
+    void begin();
+
     void phSensorLoop();
     void eventListener(const char *topic, const uint8_t *payload, uint16_t length);
-    void parse_cmd(char *string);
     float getPH();
 
     // Friends
@@ -29,6 +34,9 @@ public:
 
 private:
     // Private functions
+    //void parse_cmd(const char *string);
+    void parse_cmd_lookup(std::string *index);
+    void setPHPin(byte pin, int *doseTime);
     void serialEvent();
 
     // Private variables
@@ -42,7 +50,15 @@ private:
     String _inputstring;            // a string to hold incoming data from the PC
     boolean _input_string_complete; // a flag to indicate have we received all the data from the PC
     char _inputstring_array[10];    // a char array needed for string parsing
-};
+    // std::vector<std::function<void>> _pHcommandLookupVec;
+    std::shared_ptr<Gravity_pH> _pH;
+    // create a map of the commands and their corresponding functions
+    // std::map<std::string*, std::function<std::shared_ptr<Gravity_pH>>> _pHcommandMap;
 
+    std::map<std::string *, std::shared_ptr<Gravity_pH>> _pHcommandMap;
+    std::map<std::string *, std::function<PHSENSOR>> _pHcustomcommandsMap;
+    size_t MAP_SIZE = _pHcommandMap.size();
+    size_t CUSTOM_MAP_SIZE = _pHcustomcommandsMap.size();
+};
 extern PHSENSOR phsensor;
 #endif // PHSENSOR_HPP

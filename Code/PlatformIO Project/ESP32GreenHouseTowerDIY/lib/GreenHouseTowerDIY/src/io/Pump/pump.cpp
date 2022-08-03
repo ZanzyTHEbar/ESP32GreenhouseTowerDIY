@@ -8,6 +8,7 @@ int pumpSchedule[3][3] = {
     {1, 10, 1}, // Run the pump (Default)
     {0, 10, 1}  // Night setting (Default)
 };
+
 // Day setting set (0:00-23:00)
 int pumpScheduleIndex[1][24] = {
     {2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2} // Pump at 12:00
@@ -36,9 +37,7 @@ PUMP::PUMP() : _pump_relay_pin(PUMP_RELAY_PIN),
     setTime(12, 0, 0, networkntp.getDay().toInt(), networkntp.getMonth().toInt(), networkntp.getYear().toInt()); // hour,min,sec,day,month,year
 }
 
-PUMP::~PUMP()
-{
-}
+PUMP::~PUMP() {}
 
 void PUMP::PumpLoop()
 {
@@ -48,6 +47,7 @@ void PUMP::PumpLoop()
     {
         serialControl();
     }
+    
     if (_t_ < _tDelay)
     {
         return;

@@ -93,13 +93,13 @@ bool BASEMQTT::begin()
     {
         // connection failed
         log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
-        stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Error);
+        StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Error);
         cfg.config.MQTTConnectedState = mqttClient.state();
         return false;
     }
 
     cfg.config.MQTTConnectedState = mqttClient.state();
-    stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected);
+    StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected);
 #if ENABLE_PH_SUPPORT
     // connection succeeded
     log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
@@ -150,14 +150,14 @@ void BASEMQTT::checkState()
 {
     cfg.config.MQTTConnectedState = mqttClient.connected();
 
-    cfg.config.MQTTConnectedState ? stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected) : stateManager.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected);
+    cfg.config.MQTTConnectedState ? StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected) : StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected);
     log_i("MQTT client state is: %d", mqttClient.state());
 }
 
 void BASEMQTT::mqttReconnect()
 {
     // Loop until we're reconnected
-    if (stateManager.getCurrentState<ProgramStates::DeviceStates::MQTTState_e>() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected)
+    if (StateManager_MQTT.getCurrentState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected)
     {
         log_i("Attempting MQTT connection...");
         // Attempt to connect
@@ -183,7 +183,7 @@ void BASEMQTT::mqttLoop()
 {
     my_delay(1L);
 
-    if (stateManager.getCurrentState<ProgramStates::DeviceStates::MQTTState_e>() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected || stateManager.getCurrentState<ProgramStates::DeviceStates::MQTTState_e>() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Error)
+    if (StateManager_MQTT.getCurrentState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected || StateManager_MQTT.getCurrentState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Error)
     {
         unsigned long currentMillis = millis();
         if (currentMillis - _previousMillis >= _interval_reconnect)

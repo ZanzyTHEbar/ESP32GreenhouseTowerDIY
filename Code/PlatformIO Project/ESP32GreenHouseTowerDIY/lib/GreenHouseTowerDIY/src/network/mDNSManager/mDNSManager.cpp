@@ -2,8 +2,8 @@
 
 namespace mDNSManager
 {
-    MDNSHandler::MDNSHandler(StateManager *stateManager, Config *deviceConfig) : stateManager(stateManager),
-                                                                                 deviceConfig(deviceConfig) {}
+    MDNSHandler::MDNSHandler(StateManager<ProgramStates::DeviceStates::MDNSState_e> *stateManager, Config *deviceConfig) : stateManager(stateManager),
+                                                                                                                           deviceConfig(deviceConfig) {}
 
     MDNSHandler::~MDNSHandler()
     {
@@ -14,12 +14,12 @@ namespace mDNSManager
         auto localConfig = deviceConfig->getDeviceConfig();
         if (!MDNS.begin(localConfig->hostname))
         {
-            stateManager->setState(_State::MDNSError);
+            stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNS_Error);
             log_e("Error initializing MDNS");
             return false;
         }
 
-        stateManager->setState(_State::MDNSSuccess);
+        stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNS_Success);
         MDNS.addService("GreenhouseTowerDIY", "tcp", 80);
         MDNS.addServiceTxt("GreenhouseTowerDIY", "tcp", "webserver_port", String(80));
         log_i("MDNS initialized!");

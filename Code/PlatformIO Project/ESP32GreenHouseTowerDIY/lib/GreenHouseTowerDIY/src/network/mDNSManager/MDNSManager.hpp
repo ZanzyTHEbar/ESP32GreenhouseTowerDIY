@@ -1,18 +1,23 @@
 #ifndef MDNSMANAGER_HPP
 #define MDNSMANAGER_HPP
 #include <defines.hpp>
+#include <WiFi.h>
 #include <ESPmDNS.h>
+#include <observer.hpp>
+
+#include "data/StateManager/StateManager.hpp"
+#include "data/Config/config.hpp"
 
 namespace mDNSManager
 {
     class MDNSHandler : public IObserver
     {
     private:
-        StateManager *stateManager;
+        StateManager<ProgramStates::DeviceStates::MDNSState_e> *stateManager;
         Config *deviceConfig;
 
     public:
-        MDNSHandler(StateManager *stateManager, Config *deviceConfig);
+        MDNSHandler(StateManager<ProgramStates::DeviceStates::MDNSState_e> *stateManager, Config *deviceConfig);
         virtual ~MDNSHandler();
         bool startMDNS();
         void update(ObserverEvent::Event event);

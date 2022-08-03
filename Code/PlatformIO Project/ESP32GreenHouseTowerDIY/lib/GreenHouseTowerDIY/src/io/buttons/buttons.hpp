@@ -4,6 +4,8 @@
 #include <mechButton.h>
 #include <idlers.h>
 
+#include "data/Config/config.hpp"
+
 #define Buttons_DEBUG 0
 #define BUTTON_CALLBACK(name) void (*name)()
 #define BUTTON_MESSAGE_CALLBACK(name) void (*name)()

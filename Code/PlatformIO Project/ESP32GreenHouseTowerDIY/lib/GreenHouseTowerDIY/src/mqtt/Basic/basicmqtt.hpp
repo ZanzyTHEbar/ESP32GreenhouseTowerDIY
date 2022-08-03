@@ -8,7 +8,15 @@
 #include <defines.hpp>
 #include <PubSubClient.h>
 
-class BASEMQTT : public IPAddress
+#include "network/network.hpp"
+#include "network/ntp.hpp"
+#include "io/Pump/pump.hpp"
+#include "io/Relays/Relays.hpp"
+#include "sensors/pH/pHsensor.hpp"
+#include "data/StateManager/StateManager.hpp"
+
+
+class BASEMQTT : public Network, IPAddress
 {
 public:
     // Constructor

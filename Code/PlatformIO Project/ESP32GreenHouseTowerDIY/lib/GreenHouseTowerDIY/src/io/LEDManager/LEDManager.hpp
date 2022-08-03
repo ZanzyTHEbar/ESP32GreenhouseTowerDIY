@@ -2,11 +2,10 @@
 #define LEDMANAGER_HPP
 #include <Arduino.h>
 
-template <class T>
 class LEDManager
 {
 public:
-    LEDManager(T pin);
+    LEDManager(byte pin);
     virtual ~LEDManager();
 
     void begin();
@@ -16,9 +15,10 @@ public:
     void indicateWaterLevel(int waterlevel);
 
 private:
-    T _ledPin;
+    byte _ledPin;
+    byte _leds[3];
     unsigned long _previousMillis;
     bool _ledState;
 };
-
+extern LEDManager ledManager;
 #endif // LEDMANAGER_HPP

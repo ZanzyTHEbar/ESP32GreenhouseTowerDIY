@@ -11,76 +11,9 @@
 #define LED_BUILTIN 2
 
 #include <Arduino.h>
-#include <stdio.h>  /* printf, NULL */
-#include <stdlib.h> /* strtoul */
-#include <ArduinoJson.h>
+#include <stdio.h>  //* printf, NULL */
+#include <stdlib.h> //* strtoul */
 #include <strTools.h>
-#include <PID_v1.h>
-
-// File System
-#include <SPIFFS.h>
-#include "observer.hpp"
-
-// data Struct
-#include "data/Config/config.hpp"
-
-#include "data/StateManager/StateManager.hpp"
-#include "network/mDNSManager/mDNSManager.hpp"
-#include "io/LEDManager/LEDManager.hpp"
-
-// IO
-#include <Wire.h>
-#if ENABLE_I2C_SCANNER
-#include "io/i2cScanner/i2cscan.hpp"
-#endif // ENABLE_I2C_SCANNER
-
-// Light Sensors
-#if USE_BH1750
-#include "sensors/light/bh1750.hpp"
-#else
-#include "sensors/light/ldr.hpp"
-#endif // USE_BH1750
-
-// Temp Sensors
-#include "sensors/temperature/towertemp.hpp"
-
-// Humidity Sensors
-#include "sensors/humidity/Humidity.hpp"
-
-// Water Level Sensors
-#include "sensors/water_level/waterlevelsensor.hpp"
-
-// PH Sensors
-#if ENABLE_PH_SUPPORT
-#include "sensors/pH/pHsensor.hpp"
-#endif // ENABLE_PH_SUPPORT
-
-// Network definitions
-#include "network/network.hpp"
-#include "network/ntp.hpp"
-#include "network/OTA/OTA.hpp"
-
-// Accumulate Data
-#include "data/AccumulateData/accumulatedata.hpp"
-
-// Timed tasks
-#include "data/BackgroundTasks/timedtasks.hpp"
-
-/*######################## MQTT Configuration ########################*/
-// MQTT includes
-#if ENABLE_MDNS_SUPPORT
-#include "network/mDNSManager/mDNSManager.hpp"
-#endif // ENABLE_MDNS_SUPPORT
-#if ENABLE_HASS
-#include "mqtt/HASSIO/hassmqtt.hpp"
-#else
-#include "mqtt/BASIC/basicmqtt.hpp"
-#endif // ENABLE_HASS
-/*###################### MQTT Configuration END ######################*/
-
-// Relays and other IO
-#include "io/Relays/Relays.hpp"
-#include "io/Pump/pump.hpp"
 
 /**
  * @brief The below Macros print data to the terminal during compilation.
@@ -138,6 +71,21 @@
 char *StringtoChar(String inputString);
 char *appendChartoChar(const char *hostname, const char *def_host);
 void my_delay(volatile long delay_time);
+void custom_delay(int time);
 String generateDeviceID();
+
+template <class... Args, class T, class R>
+auto resolve(R (T::*m)(Args...)) -> decltype(m)
+{
+    return m;
+}
+
+template <class T, class R>
+auto resolve(R (T::*m)(void)) -> decltype(m)
+{
+    return m;
+}
+
+extern unsigned long PreviousMillis;
 
 #endif // DEFINES_hpp

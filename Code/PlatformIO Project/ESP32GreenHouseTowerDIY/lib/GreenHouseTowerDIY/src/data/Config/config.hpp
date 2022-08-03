@@ -7,6 +7,9 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 #include <defines.hpp>
+#include <observer.hpp>
+#include <ArduinoJson.h>
+#include <SPIFFS.h>
 
 class Config : public ISubject
 {

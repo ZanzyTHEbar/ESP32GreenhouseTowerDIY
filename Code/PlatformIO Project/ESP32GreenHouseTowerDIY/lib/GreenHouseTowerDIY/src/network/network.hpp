@@ -10,6 +10,8 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
+#include "data/Config/config.hpp"
+#include "data/StateManager/StateManager.hpp"
 
 extern WiFiClient espClient;
 

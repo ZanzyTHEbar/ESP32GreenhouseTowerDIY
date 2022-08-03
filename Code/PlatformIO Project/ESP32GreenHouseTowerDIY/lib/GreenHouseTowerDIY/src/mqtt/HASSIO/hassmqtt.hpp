@@ -8,7 +8,15 @@
 #include <defines.hpp>
 #include <ArduinoHA.h>
 
-class HASSMQTT
+#include "network/network.hpp"
+#include "network/ntp.hpp"
+#include "io/Pump/pump.hpp"
+#include "io/Relays/Relays.hpp"
+#include "sensors/pH/pHsensor.hpp"
+#include "data/StateManager/StateManager.hpp"
+#include "data/AccumulateData/accumulatedata.hpp"
+
+class HASSMQTT : public Network
 {
 public:
   // Constructor

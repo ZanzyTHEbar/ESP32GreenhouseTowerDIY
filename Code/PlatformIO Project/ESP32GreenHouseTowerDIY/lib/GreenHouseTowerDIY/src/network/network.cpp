@@ -210,19 +210,19 @@ bool Network::SetupNetworkStack()
 
     while (WiFi.status() != WL_CONNECTED)
     {
-        stateManager.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
+        StateManager_WiFi.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
         currentMillis = millis();
         if (currentMillis - _previousMillis >= _interval)
         {
             log_i("[INFO]: WiFi connection timed out.\n");
-            stateManager.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error);
+            StateManager_WiFi.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error);
             return false;
         }
     }
 
     log_i("[INFO]: Connected to WiFi.\n");
     log_i("IP address: %s\n", WiFi.localIP().toString().c_str());
-    stateManager.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected);
+    StateManager_WiFi.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected);
     return true;
 }
 

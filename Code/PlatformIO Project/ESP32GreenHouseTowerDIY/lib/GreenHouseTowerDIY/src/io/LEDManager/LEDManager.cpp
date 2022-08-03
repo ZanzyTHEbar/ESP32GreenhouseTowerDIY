@@ -1,12 +1,10 @@
 #include "LEDManager.hpp"
-template <typename T>
-LEDManager<T>::LEDManager(T pin) : _ledPin(pin), _previousMillis(0), _ledState(false) {}
 
-template <typename T>
-LEDManager<T>::~LEDManager() {}
+LEDManager::LEDManager(byte pin) : _ledPin(pin), _previousMillis(0), _ledState(false), _leds{0} {}
 
-template <typename T>
-void LEDManager<T>::begin()
+LEDManager::~LEDManager() {}
+
+void LEDManager::begin()
 {
     pinMode(_ledPin, OUTPUT);
     onOff(false);
@@ -20,14 +18,12 @@ void LEDManager<T>::begin()
     }
 }
 
-template <typename T>
-void LEDManager<T>::onOff(bool state) const
+void LEDManager::onOff(bool state) const
 {
     digitalWrite(_ledPin, state);
 }
 
-template <typename T>
-void LEDManager<T>::blink(unsigned long time)
+void LEDManager::blink(unsigned long time)
 {
     unsigned long currentMillis = millis();
     if (currentMillis - _previousMillis >= time)
@@ -38,13 +34,11 @@ void LEDManager<T>::blink(unsigned long time)
     }
 }
 
-template <typename T>
-void LEDManager<T>::displayStatus()
+void LEDManager::displayStatus()
 {
 }
 
-template <typename T>
-void LEDManager<T>::indicateWaterLevel(int waterlevel)
+void LEDManager::indicateWaterLevel(int waterlevel)
 {
     int p = waterlevel;
     if (p <= 25)
@@ -66,3 +60,27 @@ void LEDManager<T>::indicateWaterLevel(int waterlevel)
         digitalWrite(_leds[2], HIGH);
     }
 }
+
+
+void Switch(int state){
+    // create switch case
+    switch (state)
+    {
+    case 0:
+        // do nothing
+        break;
+    case 1:
+        // do nothing
+        break;
+    case 2:
+        // do nothing
+        break;
+    case 3:
+        // do nothing
+        break;
+    default:
+        // do nothing
+        break;
+    }
+}
+LEDManager ledManager;

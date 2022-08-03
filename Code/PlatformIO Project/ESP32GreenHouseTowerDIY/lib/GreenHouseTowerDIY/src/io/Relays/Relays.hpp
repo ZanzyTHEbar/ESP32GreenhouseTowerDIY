@@ -1,6 +1,7 @@
 #ifndef RELAYS_HPP
 #define RELAYS_HPP
 #include <defines.hpp>
+#include <PID_v1.h>
 
 class Relays
 {

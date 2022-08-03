@@ -11,6 +11,8 @@
 #include "calibrationbutton.hpp"
 #endif // USE_CAP
 
+#include "sensors/temperature/towertemp.hpp"
+
 class WaterLevelSensor
 {
 public:
