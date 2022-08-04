@@ -26,7 +26,7 @@ BASEMQTT::BASEMQTT() : _interval(60000),
 
 BASEMQTT::~BASEMQTT() {}
 
-char *getBroker()
+const char *getBroker()
 {
 #if ENABLE_MDNS_SUPPORT
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
@@ -48,6 +48,7 @@ char *getBroker()
     return MQTT_BROKER;
 #endif // ENABLE_MDNS_SUPPORT
 }
+
 
 // Handles messages arrived on subscribed topic(s)
 void callback(char *topic, byte *payload, unsigned int length)
