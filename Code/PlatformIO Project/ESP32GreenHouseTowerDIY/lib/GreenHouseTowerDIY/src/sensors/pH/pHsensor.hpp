@@ -8,7 +8,6 @@
 #include <defines.hpp>
 #include <ph_grav.h>
 #include <vector>
-#include <functional>
 #include <memory>
 #include <map>
 
@@ -32,33 +31,34 @@ public:
     friend void onMqttConnected();
     friend class HASSMQTT;
 
+    typedef void (Gravity_pH::*map_method_t)(void);
+    typedef std::map<std::string, map_method_t> _pHcommandMap;
+
+    typedef void (PHSENSOR::*map_custom_method_t)(void);
+    typedef std::map<std::string, map_custom_method_t> _phmap;
+
+    
+
 private:
     // Private functions
-    //void parse_cmd(const char *string);
-    void parse_cmd_lookup(std::string *index);
-    void setPHPin(byte pin, int *doseTime);
+    // void parse_cmd(const char *string);
+    void parse_cmd_lookup(std::string index);
+    void setPHUpPin();
+    void setPHDnPin();
     void serialEvent();
 
     // Private variables
-    const char *_pHTopic;
-    const char *_pHOutTopic;
     int _phDnPIN;
     int _phUpPIN;
     int _doseTimeSm;
     int _doseTimeMed;
     int _doseTimeLg;
+    const char *_pHTopic;
+    const char *_pHOutTopic;
     String _inputstring;            // a string to hold incoming data from the PC
     boolean _input_string_complete; // a flag to indicate have we received all the data from the PC
     char _inputstring_array[10];    // a char array needed for string parsing
-    // std::vector<std::function<void>> _pHcommandLookupVec;
     std::shared_ptr<Gravity_pH> _pH;
-    // create a map of the commands and their corresponding functions
-    // std::map<std::string*, std::function<std::shared_ptr<Gravity_pH>>> _pHcommandMap;
-
-    std::map<std::string *, std::shared_ptr<Gravity_pH>> _pHcommandMap;
-    std::map<std::string *, std::function<PHSENSOR>> _pHcustomcommandsMap;
-    size_t MAP_SIZE = _pHcommandMap.size();
-    size_t CUSTOM_MAP_SIZE = _pHcustomcommandsMap.size();
 };
 extern PHSENSOR phsensor;
 #endif // PHSENSOR_HPP

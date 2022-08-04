@@ -1,23 +1,21 @@
 #include "OTA.hpp"
 
-OTA::OTA()
-{
-}
+OTA::OTA() {}
 
-OTA::~OTA()
-{
-}
+OTA::~OTA() {}
 
-void OTA::SetupOTA(Config deviceConfig)
+void OTA::SetupOTA()
 {
+    std::unique_ptr<Config> _deviceConfig(new Config());
     log_e("Setting up OTA updates");
-    auto localConfig = deviceConfig.getOTAConfig();
+    auto localConfig = _deviceConfig->getOTAConfig();
 
     if (strcmp(localConfig->OTAPassword, "") == 0)
     {
         log_e("THE PASSWORD IS REQUIRED, [[ABORTING]]");
         return;
     }
+
     ArduinoOTA.setPort(localConfig->OTAPort);
 
     ArduinoOTA

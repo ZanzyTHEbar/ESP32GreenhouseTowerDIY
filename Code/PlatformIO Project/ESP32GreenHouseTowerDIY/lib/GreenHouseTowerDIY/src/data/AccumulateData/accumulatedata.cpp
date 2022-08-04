@@ -1,23 +1,12 @@
 #include "accumulatedata.hpp"
 
-AccumulateData::AccumulateData() : _maxTemp(100), _numTempSensors(0), inList(false)
+AccumulateData::AccumulateData() : _maxTemp(100), _numTempSensors(0)
 {
 }
 
-AccumulateData::~AccumulateData()
-{
-    // Before we die, we need to tell our master to let us go.
-    timedTasks.unlinkObj(this);
-}
+AccumulateData::~AccumulateData() {}
 
-void AccumulateData::begin()
-{
-    if (!inList)
-    {
-        timedTasks.addToTop(this);
-        inList = true;
-    }
-}
+void AccumulateData::begin() {}
 
 //******************************************************************************
 // * Function: Accumulate Data to send from sensors and store in json
@@ -44,7 +33,7 @@ void AccumulateData::InitAccumulateData()
 #endif // ENABLE_PH_SUPPORT
 
     tower_temp.getTempC();
-    
+
     // Relays
     for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
     {

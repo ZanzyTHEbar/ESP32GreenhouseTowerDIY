@@ -30,23 +30,21 @@
 #include "sensors/pH/pHsensor.hpp"
 #endif // ENABLE_PH_SUPPORT
 
+#include "io/Relays/relays.hpp"
+
 // Timed tasks
 #include "data/BackgroundTasks/timedtasks.hpp"
 
-class AccumulateData : public linkListObj
+class AccumulateData
 {
 public:
     AccumulateData();
     virtual ~AccumulateData();
 
     void begin();
-    virtual void execute(void);
 
     void InitAccumulateData();
     bool SendData();
-
-    // Variables
-    bool inList;
 
 private:
     // Stack Data to send

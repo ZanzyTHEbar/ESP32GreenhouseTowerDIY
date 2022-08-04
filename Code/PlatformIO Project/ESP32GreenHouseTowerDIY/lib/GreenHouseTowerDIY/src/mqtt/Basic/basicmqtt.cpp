@@ -195,7 +195,7 @@ void BASEMQTT::mqttLoop()
     else
     {
         mqttClient.loop();
-        //callback;
+        // callback;
 
         unsigned long currentMillis = millis();
         if (currentMillis - _previousMillis >= _interval)
@@ -209,10 +209,12 @@ void BASEMQTT::mqttLoop()
 
             if (_user_bytes_received)
             {
-                phsensor.parse_cmd(_user_data);
+                std::string temp = _user_data;
+                phsensor.parse_cmd_lookup(temp);
                 _user_bytes_received = 0;
                 memset(_user_data, 0, sizeof(_user_data));
             }
+            
             log_i("Sending message to topic: %s", phsensor._pHOutTopic);
             String timeStamp = networkntp.getTimeStamp();
             mqttClient.publish(phsensor._pHOutTopic, timeStamp.c_str(), true);

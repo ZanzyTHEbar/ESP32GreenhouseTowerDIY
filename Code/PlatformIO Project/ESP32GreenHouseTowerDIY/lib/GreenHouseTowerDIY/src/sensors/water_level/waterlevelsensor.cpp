@@ -240,7 +240,7 @@ int WaterLevelSensor::getWaterLevel()
 {
 #if USE_CAP
     return getPercentage();
-#else if USE_UC
+#elif USE_UC
     return readWaterLevelUltraSonic();
 #endif // USE_CAP
 }

@@ -76,7 +76,7 @@
 #pragma message(Reminder "This is a development build.")
 #endif
 
-mDNSManager::MDNSHandler mdnsHandler = mDNSManager::MDNSHandler(&StateManager_MDNS, &cfg);
+mDNSManager::MDNSHandler mdnsHandler(&StateManager_MDNS, &cfg);
 
 void setup()
 {
@@ -168,7 +168,7 @@ void setup()
   }
 
   ledManager.onOff(true);
-  ota.SetupOTA(cfg);
+  ota.SetupOTA();
 
   Serial.print(F("\n===================================\n"));
   Serial.println(F("Setup Complete"));

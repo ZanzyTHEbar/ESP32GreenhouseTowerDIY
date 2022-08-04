@@ -6,13 +6,19 @@
 #include <idlers.h>
 #include <lists.h>
 
-class TimedTasks : public timeObj, public linkList
+#include "data/Config/config.hpp"
+#include "data/AccumulateData/accumulatedata.hpp"
+#include "network/ntp.hpp"
+#include "mqtt/Basic/basicmqtt.hpp"
+#include "mqtt/HASSIO/hassmqtt.hpp"
+
+class TimedTasks : public timeObj //, public linkList
 {
 public:
   TimedTasks(void);
   virtual ~TimedTasks(void);
   bool begin(void);
-  void execute(void);
+  /* void execute(void); */
 
   void updateCurrentData(void);
   void checkMQTTState(void);

@@ -2,6 +2,7 @@
 #define RELAYS_HPP
 #include <defines.hpp>
 #include <PID_v1.h>
+#include "data/Config/config.hpp"
 
 class Relays
 {

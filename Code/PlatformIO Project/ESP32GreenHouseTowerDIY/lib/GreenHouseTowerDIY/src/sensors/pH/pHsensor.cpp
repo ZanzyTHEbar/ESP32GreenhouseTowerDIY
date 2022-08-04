@@ -1,5 +1,8 @@
 #include "pHsensor.hpp"
 
+PHSENSOR::_pHcommandMap mapping;
+PHSENSOR::_phmap phmap;
+
 PHSENSOR::PHSENSOR() : _pH{std::make_shared<Gravity_pH>(PH_SENSOR_PIN)},
                        _pHTopic(PH_TOPIC),
                        _pHOutTopic(PH_OUT_TOPIC),
@@ -10,9 +13,7 @@ PHSENSOR::PHSENSOR() : _pH{std::make_shared<Gravity_pH>(PH_SENSOR_PIN)},
                        _doseTimeMed(DOSE_TIME_MED),
                        _doseTimeLg(DOSE_TIME_LG),
                        _inputstring(""),
-                       _input_string_complete(false),
-                       _pHcommandMap{0, 0},
-                       _pHcustomcommandsMap{0, 0} {}
+                       _input_string_complete(false) {}
 
 PHSENSOR::~PHSENSOR()
 {
@@ -20,11 +21,11 @@ PHSENSOR::~PHSENSOR()
     // delete _pHcommandMap;
     // delete _pHcustomcommandsMap;
 
-    // _pHcommandMap.clear();
+    mapping.clear();
     // _pHcustomcommandsMap.clear();
 
-    _pHcommandMap.erase(_pHcommandMap.begin(), _pHcommandMap.end());
-    _pHcustomcommandsMap.erase(_pHcustomcommandsMap.begin(), _pHcustomcommandsMap.end());
+    //_pHcommandMap.erase(_pHcommandMap.begin(), _pHcommandMap.end());
+    //_pHcustomcommandsMap.erase(_pHcustomcommandsMap.begin(), _pHcustomcommandsMap.end());
 }
 
 void PHSENSOR::begin()
@@ -34,37 +35,19 @@ void PHSENSOR::begin()
     // pH probe calibration serial commands
     Serial.println(F("Use commands \"CAL,7\", \"CAL,4\", and \"CAL,10\" to calibrate the circuit to those respective values"));
     Serial.println(F("Use command \"CAL,CLEAR\" to clear the calibration"));
-    if (_pH->begin())
+    if (!_pH->begin())
     {
-        log_i("Loaded EEPROM");
+        log_i("Failed to load EEPROM");
+        return;
     }
 
-    // create a map of the commands and their corresponding functions
-    //_pHcommandMap.emplace(new std::string("CAL,4"), std::bind(static_cast<void (Gravity_pH::*)()>(&Gravity_pH::cal_low)));
-    //_pHcommandMap.emplace(new std::string("CAL,4"), resolve(&Gravity_pH::cal_low));
-    //_pHcommandMap.emplace(new std::string("CAL,7"), std::bind(static_cast<void (Gravity_pH::*)()>(&Gravity_pH::cal_mid)));
-    //_pHcommandMap.emplace(new std::string("CAL,10"), std::bind(static_cast<void (Gravity_pH::*)()>(&Gravity_pH::cal_high)));
-    //_pHcommandMap.emplace(new std::string("CAL,CLEAR"), std::bind(&Gravity_pH::cal_clear));
-    //_pHcommandMap.emplace(&std::string("CAL,4"), &Gravity_pH::cal_low);
-    //_pHcommandMap.emplace(&std::string("CAL,7"), &Gravity_pH::cal_mid);
-    //_pHcommandMap.emplace(&std::string("CAL,10"), &Gravity_pH::cal_high);
-    //_pHcommandMap.emplace(&std::string("CAL,CLEAR"), &Gravity_pH::cal_clear);
+    mapping["CAL,4"] = &Gravity_pH::cal_low;
+    mapping["CAL,7"] = &Gravity_pH::cal_mid;
+    mapping["CAL,10"] = &Gravity_pH::cal_high;
+    mapping["CAL,CLEAR"] = &Gravity_pH::cal_clear;
 
-    _pHcustomcommandsMap.emplace(new std::string("PHUP"), std::bind(&PHSENSOR::setPHPin, this, _phUpPIN, &_doseTimeSm));
-    _pHcustomcommandsMap.emplace(new std::string("PHDN"), std::bind(&PHSENSOR::setPHPin, this, _phDnPIN, &_doseTimeSm));
-    _pHcustomcommandsMap.emplace(new std::string("PHUP_MED"), std::bind(&PHSENSOR::setPHPin, this, _phUpPIN, &_doseTimeMed));
-    _pHcustomcommandsMap.emplace(new std::string("PHDN_MED"), std::bind(&PHSENSOR::setPHPin, this, _phDnPIN, &_doseTimeMed));
-    _pHcustomcommandsMap.emplace(new std::string("PHUP_LG"), std::bind(&PHSENSOR::setPHPin, this, _phUpPIN, &_doseTimeLg));
-    _pHcustomcommandsMap.emplace(new std::string("PHDN_LG"), std::bind(&PHSENSOR::setPHPin, this, _phDnPIN, &_doseTimeLg));
-
-    _pHcommandMap.emplace(new std::string("CAL,10"), [this]()
-                          { _pH->cal_high(); });
-    _pHcommandMap.emplace(new std::string("CAL,7"), [this]()
-                          { _pH->cal_mid(); });
-    _pHcommandMap.emplace(new std::string("CAL,4"), [this]()
-                          { _pH->cal_low(); });
-    _pHcommandMap.emplace(new std::string("CAL,CLEAR"), [this]()
-                          { _pH->cal_clear(); });
+    phmap["PHUP"] = &setPHUpPin;
+    phmap["PHDN"] = &setPHDnPin;
 }
 
 void PHSENSOR::serialEvent()
@@ -110,26 +93,33 @@ void PHSENSOR::serialEvent()
     }
 } */
 
-void PHSENSOR::setPHPin(byte pin, int *doseTime)
+void PHSENSOR::setPHUpPin()
 {
-    digitalWrite(pin, HIGH);
-    custom_delay(*doseTime);
-    digitalWrite(pin, LOW);
+    digitalWrite(_phUpPIN, HIGH);
+    custom_delay(_doseTimeSm);
+    digitalWrite(_phUpPIN, LOW);
 }
 
-void PHSENSOR::parse_cmd_lookup(std::string *index)
+void PHSENSOR::setPHDnPin()
 {
-    std::map<std::string *, std::shared_ptr<Gravity_pH>>::iterator it;
-    std::map<std::string *, std::function<PHSENSOR>>::iterator it_2;
-    it = _pHcommandMap.find(index);
-    it_2 = _pHcustomcommandsMap.find(index);
-    if (it != _pHcommandMap.end())
+    digitalWrite(_phDnPIN, HIGH);
+    custom_delay(_doseTimeSm);
+    digitalWrite(_phDnPIN, LOW);
+}
+
+void PHSENSOR::parse_cmd_lookup(std::string index)
+{
+    _pHcommandMap::iterator it = mapping.find(index);
+    _phmap::iterator it_2 = phmap.find(index);
+    if (it != mapping.end())
     {
-        _pHcommandMap.at(index);
+        Gravity_pH m(*_pH);
+        (m.*(it->second))();
+        // mapping.at(index);
     }
-    else if (it_2 != _pHcustomcommandsMap.end())
+    else if (it_2 != phmap.end())
     {
-        _pHcustomcommandsMap.at(index);
+        (this->*(it_2->second))();
     }
     else
     {
@@ -149,7 +139,7 @@ void PHSENSOR::phSensorLoop()
     {                                                     // check if data received
         _inputstring.toCharArray(_inputstring_array, 30); // convert the string to a char array
         std::string temp = _inputstring_array;            // create a string from the char array
-        parse_cmd_lookup(&temp);                          // send data to pars_cmd function
+        parse_cmd_lookup(temp);                           // send data to pars_cmd function
         _input_string_complete = false;                   // reset the flag used to tell if we have received a completed string from the PC
         _inputstring = "";                                // clear the string
     }

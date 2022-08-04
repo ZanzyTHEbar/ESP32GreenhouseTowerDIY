@@ -1,7 +1,7 @@
 
 #include "timedtasks.hpp"
 
-TimedTasks::TimedTasks(void) : linkList()
+TimedTasks::TimedTasks(void)
 {
 }
 
@@ -92,7 +92,7 @@ void TimedTasks::checkMQTTState(void) // check to see if the data has changed
 }
 
 // Run down the list and call the idle() method on each one.
-void TimedTasks::execute(void)
+/* void TimedTasks::execute(void)
 {
   AccumulateData *trace;
 
@@ -102,6 +102,6 @@ void TimedTasks::execute(void)
     trace->execute();
     trace = (AccumulateData *)trace->getNext();
   }
-}
+} */
 
 TimedTasks timedTasks;
