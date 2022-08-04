@@ -17,15 +17,14 @@ PHSENSOR::PHSENSOR() : _pH{std::make_shared<Gravity_pH>(PH_SENSOR_PIN)},
 
 PHSENSOR::~PHSENSOR()
 {
-
-    // delete _pHcommandMap;
-    // delete _pHcustomcommandsMap;
+    // mapping.erase(mapping.begin(), mapping.end());
+    // phmap.erase(phmap.begin(), phmap.end());µ
 
     mapping.clear();
-    // _pHcustomcommandsMap.clear();
+    phmap.clear();
 
-    //_pHcommandMap.erase(_pHcommandMap.begin(), _pHcommandMap.end());
-    //_pHcustomcommandsMap.erase(_pHcustomcommandsMap.begin(), _pHcustomcommandsMap.end());
+    delete &mapping;
+    delete &phmap;
 }
 
 void PHSENSOR::begin()
