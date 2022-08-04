@@ -1,10 +1,11 @@
 #include "serialmanager.hpp"
 #include "io/Pump/pump.hpp"
 
-namespace SerialHandler {
-
+class SerialHandler
+{
+public:
+    SerialHandler();
+    virtual ~SerialHandler();
+    void begin(char *cmd, void (*callback)());
     void loop();
-    void begin();
-    void pumpSerialHandler();
-    void settingsSerialHandler();
-}
+};

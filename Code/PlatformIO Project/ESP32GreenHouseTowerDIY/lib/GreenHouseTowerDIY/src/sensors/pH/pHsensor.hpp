@@ -37,8 +37,6 @@ public:
     typedef void (PHSENSOR::*map_custom_method_t)(void);
     typedef std::map<std::string, map_custom_method_t> _phmap;
 
-    
-
 private:
     // Private functions
     // void parse_cmd(const char *string);

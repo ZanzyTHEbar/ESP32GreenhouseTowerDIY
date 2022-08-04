@@ -1,5 +1,9 @@
 #include "serialhandler.hpp"
 
+SerialHandler::SerialHandler() {}
+
+SerialHandler::~SerialHandler() {}
+
 void SerialHandler::begin(char *cmd, void (*callback)())
 {
     serialManager.addExecuteManager((char *)cmd, callback);
@@ -26,7 +30,7 @@ void SerialHandler::loop()
  * ,int(0-1),int(0-59),int(0-59)
  * S,0,20,5 (pump,_nozzleInterval,_nozzleDuration)
  */
-void SerialHandler::pumpSerialHandler()
+void pumpSerialHandler()
 {
     char *arg;
     bool ok = false;
@@ -70,6 +74,7 @@ void SerialHandler::pumpSerialHandler()
         default:
             // Unexpected value
             ok = false;
+            break;
         }
     }
 

@@ -52,7 +52,7 @@ void onMqttConnectionFailed();
 void onPHStateChanged(bool state, HASwitch *s);
 String getBroker();
 
-HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(digitalRead(pump._pump_relay_pin)), lastSentAt(millis())
+HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(digitalRead(pump.pump_data._pump_relay_pin)), lastSentAt(millis())
 {
     // Unique ID must be set!
     String mac = WiFi.macAddress();
@@ -146,10 +146,7 @@ HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()),
 #endif // MQTT_SECURE
 }
 
-HASSMQTT::~HASSMQTT()
-{
-    // Destructor
-}
+HASSMQTT::~HASSMQTT() {}
 
 String getBroker()
 {
@@ -192,17 +189,17 @@ void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
     log_i("Message: [%s]", result.c_str());
 
     // Check if the message is for the current device
-    if (strcmp(topic, pump._pumpTopic) == 0)
+    if (strcmp(topic, pump.pump_data._pumpTopic) == 0)
     {
         if (strcmp(result.c_str(), "ON") == 0)
         {
             log_i("Turning on the pump");
-            Relay.RelayOnOff(pump._pump_relay_pin, true);
+            Relay.RelayOnOff(pump.pump_data._pump_relay_pin, true);
         }
         else if (strcmp(result.c_str(), "OFF") == 0)
         {
             log_i("Turning off the pump");
-            Relay.RelayOnOff(pump._pump_relay_pin, false);
+            Relay.RelayOnOff(pump.pump_data._pump_relay_pin, false);
         }
     }
 #if ENABLE_PH_SUPPORT
@@ -220,8 +217,8 @@ void onMqttConnected()
 {
     // You can subscribe to custom topic if you need
     log_i("Connected to the broker!");
-    log_i("Subscribing to the topic: %s", pump._pumpTopic);
-    mqtt.subscribe(pump._pumpTopic);
+    log_i("Subscribing to the topic: %s", pump.pump_data._pumpTopic);
+    mqtt.subscribe(pump.pump_data._pumpTopic);
 
     log_i("Subscribing to the topic: %s", phsensor._pHTopic);
     mqtt.subscribe(phsensor._pHTopic);
@@ -301,7 +298,7 @@ void HASSMQTT::mqttLoop()
     if ((millis() - lastReadAt) > 30)
     { // read in 30ms interval
         // library produces MQTT message if a new state is different than the previous one
-        relay.setState(digitalRead(pump._pump_relay_pin));
+        relay.setState(digitalRead(pump.pump_data._pump_relay_pin));
         lastInputState = relay.getState();
         lastReadAt = millis();
     }

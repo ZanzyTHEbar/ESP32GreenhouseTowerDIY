@@ -3,12 +3,12 @@
 IPAddress broker_ip;
 
 void callback(char *topic, byte *payload, unsigned int length);
-char *getBroker();
+const char *getBrokerAddress();
 
 #if MQTT_SECURE
-PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(getBrokerAddress()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
 #else
-PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(getBrokerAddress()), MQTT_PORT, callback, espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
 //***********************************************************************************************************************
@@ -26,7 +26,7 @@ BASEMQTT::BASEMQTT() : _interval(60000),
 
 BASEMQTT::~BASEMQTT() {}
 
-const char *getBroker()
+const char *getBrokerAddress()
 {
 #if ENABLE_MDNS_SUPPORT
 #pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
@@ -63,17 +63,17 @@ void callback(char *topic, byte *payload, unsigned int length)
     log_i("Message: [%s]", result.c_str());
 
     // Check if the message is for the current topic
-    if (strcmp(topic, pump._pumpTopic) == 0)
+    if (strcmp(topic, pump.pump_data._pumpTopic) == 0)
     {
         if (strcmp(result.c_str(), "ON") == 0)
         {
             log_i("Turning on the pump");
-            Relay.RelayOnOff(pump._pump_relay_pin, true);
+            Relay.RelayOnOff(pump.pump_data._pump_relay_pin, true);
         }
         else if (strcmp(result.c_str(), "OFF") == 0)
         {
             log_i("Turning off the pump");
-            Relay.RelayOnOff(pump._pump_relay_pin, false);
+            Relay.RelayOnOff(pump.pump_data._pump_relay_pin, false);
         }
     }
 #if ENABLE_PH_SUPPORT
@@ -106,8 +106,8 @@ bool BASEMQTT::begin()
     log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
     mqttClient.subscribe(phsensor._pHTopic);
 #endif // ENABLE_PH_SUPPORT
-    log_i("Subscribing to the topic [%s]", pump._pumpTopic);
-    mqttClient.subscribe(pump._pumpTopic);
+    log_i("Subscribing to the topic [%s]", pump.pump_data._pumpTopic);
+    mqttClient.subscribe(pump.pump_data._pumpTopic);
 
     log_i("Successfully subscribed to the topic.");
     /* _speakerTopic = SPEAKER_TOPIC;
