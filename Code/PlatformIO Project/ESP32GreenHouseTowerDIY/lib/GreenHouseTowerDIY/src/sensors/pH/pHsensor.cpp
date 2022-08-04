@@ -45,8 +45,8 @@ void PHSENSOR::begin()
     mapping["CAL,10"] = &Gravity_pH::cal_high;
     mapping["CAL,CLEAR"] = &Gravity_pH::cal_clear;
 
-    phmap["PHUP"] = &setPHUpPin;
-    phmap["PHDN"] = &setPHDnPin;
+    phmap["PHUP"] = &PHSENSOR::setPHUpPin;
+    phmap["PHDN"] = &PHSENSOR::setPHDnPin;
 }
 
 void PHSENSOR::serialEvent()
