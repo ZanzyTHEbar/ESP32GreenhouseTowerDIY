@@ -134,16 +134,16 @@ void setup()
   network.SetupWebServer();
   cfg.attach(&mdnsHandler);
   network.SetupServer();
+  Serial.println(F("Setting up MQTT"));
 #if ENABLE_HASS
   hassmqtt.loadMQTTConfig();
 #else
   basemqtt.loadMQTTConfig();
 #endif // ENABLE_HASS
-  Serial.println(F("Setting up MQTT"));
 
 #if ENABLE_MDNS_SUPPORT
-  mdnsHandler.startMDNS();
-  if (mdnsHandler.DiscovermDNSBroker())
+  mDNSManager::mdnsHandler.startMDNS();
+  if (mDNSManager::mdnsHandler.DiscovermDNSBroker())
   {
     Serial.println(F("[mDNS responder started] Setting up Broker..."));
   }
@@ -152,6 +152,7 @@ void setup()
     Serial.println(F("[mDNS responder failed]"));
   }
 #endif // ENABLE_MDNS_SUPPORT
+
 #if ENABLE_HASS
   hassmqtt.begin();
 #else
@@ -166,8 +167,6 @@ void setup()
   {
     Serial.println(F("Network Stack Setup Failed - Activating Access-Point Mode"));
   }
-
-  ledManager.onOff(true);
   ota.SetupOTA();
 
   Serial.print(F("\n===================================\n"));
