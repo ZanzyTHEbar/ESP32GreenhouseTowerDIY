@@ -65,6 +65,7 @@ void PHSENSOR::setPHPin(uint8_t *pin, int *time, bool state)
     digitalWrite(*time, state);
     phsensor.custom_delay(*time);
     digitalWrite(*pin, !state);
+    float test = getPH();
 }
 
 void PHSENSOR::parse_cmd_lookup(std::string index)

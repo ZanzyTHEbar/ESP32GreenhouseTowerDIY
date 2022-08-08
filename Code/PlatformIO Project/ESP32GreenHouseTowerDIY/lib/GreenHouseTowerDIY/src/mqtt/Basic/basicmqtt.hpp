@@ -7,6 +7,9 @@
 #define BASEMQTT_HPP
 #include <defines.hpp>
 #include <PubSubClient.h>
+#include <map>
+#include <string>
+#include <iostream>
 
 #include "network/network.hpp"
 #include "network/ntp.hpp"
@@ -14,7 +17,6 @@
 #include "io/Relays/Relays.hpp"
 #include "sensors/pH/pHsensor.hpp"
 #include "data/StateManager/StateManager.hpp"
-
 
 class BASEMQTT : public Network, IPAddress
 {
@@ -48,6 +50,38 @@ private:
     const char *_commandTopic;
     const char *_configTopic;
     const char *_menuTopic;
+
+    // Value-Defintions of the different String values
+    enum RelayEnum
+    {
+        UnDefined,
+        On,
+        Off,
+        End
+    };
+
+    enum PumpEnum
+    {
+        UnDefinedPump,
+        PumpOn,
+        PumpOff,
+        PumpEnd
+    };
+
+    enum CallbackEnum
+    {
+        UnDefinedCallback,
+        Pump,
+        Relay,
+        Ph,
+        Info,
+        Menu,
+        EndCallback
+    };
+
+    static std::map<std::string, RelayEnum> s_relay_control_map;
+    static std::map<std::string, PumpEnum> s_pump_control_map;
+    static std::map<std::string, CallbackEnum> s_callback_map;
 };
 
 extern BASEMQTT basemqtt;

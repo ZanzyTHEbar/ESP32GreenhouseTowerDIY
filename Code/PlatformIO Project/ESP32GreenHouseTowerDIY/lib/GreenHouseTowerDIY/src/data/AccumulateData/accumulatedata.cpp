@@ -29,7 +29,7 @@ void AccumulateData::InitAccumulateData()
 #endif // USE_DHT_SENSOR
 
 #if ENABLE_PH_SUPPORT
-    phsensor.phSensorLoop();
+    phsensor.getPH();
 #endif // ENABLE_PH_SUPPORT
 
     tower_temp.getTempC();

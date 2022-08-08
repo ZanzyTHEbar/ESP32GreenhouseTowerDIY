@@ -15,22 +15,6 @@
 class PHSENSOR
 {
 private:
-    struct ph_Data_t
-    {
-        // Private variables
-        uint8_t _phDnPIN;
-        uint8_t _phUpPIN;
-        int _doseTimeSm;
-        int _doseTimeMed;
-        int _doseTimeLg;
-        const char *_pHTopic;
-        const char *_pHOutTopic;
-        String _inputstring;            // a string to hold incoming data from the PC
-        boolean _input_string_complete; // a flag to indicate have we received all the data from the PC
-        char _inputstring_array[10];    // a char array needed for string parsing
-    };
-
-    ph_Data_t _phData;
 
     // Private functions
     // void parse_cmd(const char *string);
@@ -77,6 +61,22 @@ public:
 
     void setPHPin(uint8_t *pin, int *time, bool state);
 
+    struct ph_Data_t
+    {
+        // Private variables
+        uint8_t _phDnPIN;
+        uint8_t _phUpPIN;
+        int _doseTimeSm;
+        int _doseTimeMed;
+        int _doseTimeLg;
+        const char *_pHTopic;
+        const char *_pHOutTopic;
+        String _inputstring;            // a string to hold incoming data from the PC
+        boolean _input_string_complete; // a flag to indicate have we received all the data from the PC
+        char _inputstring_array[10];    // a char array needed for string parsing
+    };
+
+    ph_Data_t _phData;
     ph_Data_t *getphData(void) { return &this->_phData; }
 };
 extern PHSENSOR phsensor;

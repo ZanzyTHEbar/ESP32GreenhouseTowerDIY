@@ -49,44 +49,75 @@ const char *getBrokerAddress()
 #endif // ENABLE_MDNS_SUPPORT
 }
 
-
 // Handles messages arrived on subscribed topic(s)
 void callback(char *topic, byte *payload, unsigned int length)
 {
-    String result;
+    std::string result = "";
     log_i("Message arrived on topic: [%s] ", topic);
-    for (int i = 0; i < length; i++)
-    {
-        log_i("payload is: [%s]", (char)payload[i]);
-        result += (char)payload[i];
-    }
+    std::string result;
+    char buffer[length + 1];
+    memcpy(buffer, payload, length);
+    buffer[length] = '\0'; // Null-terminate the string
+    result += buffer;
+    log_i("payload is: [%s]", buffer);
+    result += buffer;
     log_i("Message: [%s]", result.c_str());
 
     // Check if the message is for the current topic
-    if (strcmp(topic, pump.pump_data._pumpTopic) == 0)
+    switch (basemqtt.s_callback_map[topic])
     {
-        if (strcmp(result.c_str(), "ON") == 0)
+    case basemqtt.Info:
+        break;
+    case basemqtt.Menu:
+        break;
+    case basemqtt.Relay:
+        break;
+#if ENABLE_PH_SUPPORT
+    case basemqtt.Ph:
+        log_i("Setting pH level to: [%s]", result.c_str());
+        phsensor.parse_cmd_lookup(result.c_str());
+        break;
+#endif // ENABLE_PH_SUPPORT
+    case basemqtt.Pump:
+        switch (basemqtt.s_relay_control_map[result])
         {
+        case basemqtt.On:
             log_i("Turning on the pump");
             Relay.RelayOnOff(pump.pump_data._pump_relay_pin, true);
-        }
-        else if (strcmp(result.c_str(), "OFF") == 0)
-        {
+            break;
+        case basemqtt.Off:
             log_i("Turning off the pump");
             Relay.RelayOnOff(pump.pump_data._pump_relay_pin, false);
+            break;
+        case basemqtt.UnDefined:
+            log_e("Undefined command");
+            break;
+        case basemqtt.End:
+            //! Implement a method to turn off MQTT
+            break;
         }
+        break;
+    default:
+        break;
     }
-#if ENABLE_PH_SUPPORT
-    else if (strcmp(topic, phsensor._pHTopic) == 0)
-    {
-        log_i("Setting pH level to: [%s]", result.c_str());
-        phsensor.eventListener(topic, payload, length);
-    }
-#endif // ENABLE_PH_SUPPORT
 }
 
 bool BASEMQTT::begin()
 {
+    /* Initialize maps */
+    s_callback_map["Undefined"] = UnDefinedCallback;
+    s_callback_map[pump.pump_data._pumpTopic] = Pump;
+    s_callback_map["Relay"] = Relay;
+    s_callback_map[phsensor._phData._pHTopic] = Ph;
+    s_callback_map[_infoTopic] = Info;
+    s_callback_map[_menuTopic] = Menu;
+    s_callback_map["End"] = EndCallback;
+
+    s_relay_control_map["UNDEFINED"] = UnDefined;
+    s_relay_control_map["ON"] = On;
+    s_relay_control_map["OFF"] = Off;
+    s_relay_control_map["End"] = End;
+
     log_i("Setting up MQTT...");
 
     // Local Mosquitto Connection -- Start
@@ -103,8 +134,8 @@ bool BASEMQTT::begin()
     StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected);
 #if ENABLE_PH_SUPPORT
     // connection succeeded
-    log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
-    mqttClient.subscribe(phsensor._pHTopic);
+    log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._phData._pHTopic);
+    mqttClient.subscribe(phsensor._phData._pHTopic);
 #endif // ENABLE_PH_SUPPORT
     log_i("Subscribing to the topic [%s]", pump.pump_data._pumpTopic);
     mqttClient.subscribe(pump.pump_data._pumpTopic);
@@ -167,7 +198,7 @@ void BASEMQTT::mqttReconnect()
             log_i("Connected to MQTT broker.");
             // Subscribe
 #if ENABLE_PH_SUPPORT
-            mqttClient.subscribe(phsensor._pHTopic);
+            mqttClient.subscribe(phsensor._phData._pHTopic);
 #endif // ENABLE_PH_SUPPORT
         }
         else
@@ -215,10 +246,10 @@ void BASEMQTT::mqttLoop()
                 _user_bytes_received = 0;
                 memset(_user_data, 0, sizeof(_user_data));
             }
-            
-            log_i("Sending message to topic: %s", phsensor._pHOutTopic);
+
+            log_i("Sending message to topic: %s", phsensor._phData._pHOutTopic);
             String timeStamp = networkntp.getTimeStamp();
-            mqttClient.publish(phsensor._pHOutTopic, timeStamp.c_str(), true);
+            mqttClient.publish(phsensor._phData._pHOutTopic, timeStamp.c_str(), true);
         }
     }
 }

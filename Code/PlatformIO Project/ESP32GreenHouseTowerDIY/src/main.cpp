@@ -77,8 +77,7 @@
 #pragma message(Reminder "This is a development build.")
 #endif
 
-SerialHandler pumpSerialHandler;
-SerialHandler settingsSerialHandler;
+SerialHandler serialHandler;
 
 mDNSManager::MDNSHandler mdnsHandler(&StateManager_MDNS, &cfg);
 
@@ -172,7 +171,7 @@ void setup()
     Serial.println(F("Network Stack Setup Failed - Activating Access-Point Mode"));
   }
   pump.begin();
-  pumpSerialHandler.begin("AT+PUMP", NULL);
+  serialHandler.begin();
   ota.SetupOTA();
 
   Serial.print(F("\n===================================\n"));
@@ -187,7 +186,7 @@ void loop()
   ota.HandleOTAUpdate();
   ledManager.displayStatus();
   ledManager.indicateWaterLevel(waterlevelSensor.getWaterLevel());
-  pumpSerialHandler.loop();
+  serialHandler.loop();
 
 #if ENABLE_I2C_SCANNER
   timedTasks.ScanI2CBus();
