@@ -1,18 +1,28 @@
 #include "serialhandler.hpp"
 
+void pumpSerialHandler();
+void pHSerialHandler();
+
 SerialHandler::SerialHandler() {}
 
 SerialHandler::~SerialHandler() {}
 
-void SerialHandler::begin(char *cmd, void (*callback)())
+void SerialHandler::begin()
 {
-    serialManager.addExecuteManager((char *)cmd, callback);
+    /*
+     * Setup callbacks for SerialCommand commands:
+     * PU+COMMAND=X -> Write handler
+     * Messages consist of the letter S followed by
+     * ,int(0-1),int(0-59),int(0-59)
+     * S,0,20,5 (pump,_nozzleInterval,_nozzleDuration)
+     */
+    serialManager.addWriteManager("PU+CONTROL", &pumpSerialHandler); // pump control
 
     /*
      * Setup callbacks for SerialCommand commands:
-     * AT+COMMAND=X -> Write handler
+     * PH+CALIB -> Execute handler
      */
-    serialManager.addWriteManager((char *)cmd, &pumpSerialHandler);
+    serialManager.addWriteManager("PH+CALIB", &pHSerialHandler); // triggers ph serial event listener to listen for pH commands
 }
 
 void SerialHandler::loop()
@@ -25,11 +35,7 @@ void SerialHandler::loop()
     - AT+COMMAND=1<CR>
     - AT+COMMAND=0<CR>
 */
-/*
- * Messages consist of the letter S followed by
- * ,int(0-1),int(0-59),int(0-59)
- * S,0,20,5 (pump,_nozzleInterval,_nozzleDuration)
- */
+
 void pumpSerialHandler()
 {
     char *arg;
@@ -41,6 +47,7 @@ void pumpSerialHandler()
         switch (*arg)
         {
         case 'S':
+        {
             pump.pump_data._pumpOn = Serial.parseInt();
             pump.pump_data._nozzleInterval = Serial.parseInt();
             pump.pump_data._nozzleDuration = Serial.parseInt();
@@ -48,22 +55,29 @@ void pumpSerialHandler()
             pump.setPump();
             pump.setNozzle();
             break;
+        }
         case 'R':
+        {
             pump.serialReport();
             break;
+        }
         case 'Q':
+        {
             if (pump.pump_data._runProgram == 1)
             {
                 pump.pump_data._runProgram = 0;
                 break;
             }
+
             if (pump.pump_data._runProgram == 0)
             {
                 pump.pump_data._runProgram = 1;
                 break;
             }
             break;
+        }
         case 'T':
+        {
             int hour = Serial.parseInt();                                                            // First valid integer
             int min = Serial.parseInt();                                                             // Second valid integer
             int day = Serial.parseInt();                                                             // Third valid integer
@@ -71,20 +85,44 @@ void pumpSerialHandler()
             pump.pump_data._t_ = now();
             pump.pump_data._tDelay = pump.pump_data._runInterval;
             break;
+        }
         default:
-            // Unexpected value
+        { // Unexpected value
             ok = false;
             break;
+        }
         }
     }
 
     if (ok)
     {
-        log_i("[SerialHandler] : Data ok");
+        log_i("[SerialHandler] : PUMPHandler - Data ok");
     }
     else
     {
-        log_e("[SerialHandler] : \r\nERROR\r\n");
+        log_e("[SerialHandler] : \r\nPUMPHandler - ERROR\r\n");
+    }
+    // ok = false;
+}
+
+void pHSerialHandler()
+{
+    char *arg;
+    bool ok = false;
+    arg = serialManager.next(); /* Get the next argument from the SerialCommand object buffer */
+    if (arg != NULL)            /* Check if argument exists */
+    {
+        ok = true;
+        phsensor.parse_cmd_lookup(arg);
+    }
+
+    if (ok)
+    {
+        log_i("[SerialHandler] : PHHandler - Data ok");
+    }
+    else
+    {
+        log_e("[SerialHandler] : \r\nPHHandler - ERROR\r\n");
     }
     // ok = false;
 }

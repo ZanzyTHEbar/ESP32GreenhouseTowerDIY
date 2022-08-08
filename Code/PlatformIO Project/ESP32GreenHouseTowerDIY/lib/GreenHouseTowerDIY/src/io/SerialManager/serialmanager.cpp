@@ -46,6 +46,12 @@ SerialManager::SerialManager() : userErrorHandler(NULL), _serial(NULL), ManagerC
     clear();
 }
 
+SerialManager::~SerialManager()
+{
+    clear();
+    delete &ManagerList;
+}
+
 void SerialManager::begin(Stream &serialPort)
 {
     /* Save Serial Port configurations */

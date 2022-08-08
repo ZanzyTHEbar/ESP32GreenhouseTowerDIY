@@ -10,19 +10,47 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <functional>
 
 class PHSENSOR
 {
+private:
+    struct ph_Data_t
+    {
+        // Private variables
+        uint8_t _phDnPIN;
+        uint8_t _phUpPIN;
+        int _doseTimeSm;
+        int _doseTimeMed;
+        int _doseTimeLg;
+        const char *_pHTopic;
+        const char *_pHOutTopic;
+        String _inputstring;            // a string to hold incoming data from the PC
+        boolean _input_string_complete; // a flag to indicate have we received all the data from the PC
+        char _inputstring_array[10];    // a char array needed for string parsing
+    };
+
+    ph_Data_t _phData;
+
+    // Private functions
+    // void parse_cmd(const char *string);
+    void setPHUpPin();
+    void setPHDnPin();
+
+    unsigned long PreviousMillis = 0;
+    std::shared_ptr<Gravity_pH> _pH;
+
 public:
     // Constructor
     PHSENSOR();
     virtual ~PHSENSOR();
 
     void begin();
-
-    void phSensorLoop();
-    void eventListener(const char *topic, const uint8_t *payload, uint16_t length);
     float getPH();
+    void parse_cmd_lookup(std::string index);
+
+    // void phSensorLoop();
+    // void serialEvent();
 
     // Friends
     friend class BASEMQTT;
@@ -34,29 +62,22 @@ public:
     typedef void (Gravity_pH::*map_method_t)(void);
     typedef std::map<std::string, map_method_t> _pHcommandMap;
 
-    typedef void (PHSENSOR::*map_custom_method_t)(void);
-    typedef std::map<std::string, map_custom_method_t> _phmap;
+    typedef std::function<void(uint8_t *, int *)> func;
+    std::map<std::string, func> phmap;
 
-private:
-    // Private functions
-    // void parse_cmd(const char *string);
-    void parse_cmd_lookup(std::string index);
-    void setPHUpPin();
-    void setPHDnPin();
-    void serialEvent();
+    void custom_delay(int time)
+    {
+        unsigned long currentMillis = millis();
+        if (currentMillis - PreviousMillis >= time)
+        {
+            PreviousMillis = currentMillis;
+            return;
+        }
+    }
 
-    // Private variables
-    int _phDnPIN;
-    int _phUpPIN;
-    int _doseTimeSm;
-    int _doseTimeMed;
-    int _doseTimeLg;
-    const char *_pHTopic;
-    const char *_pHOutTopic;
-    String _inputstring;            // a string to hold incoming data from the PC
-    boolean _input_string_complete; // a flag to indicate have we received all the data from the PC
-    char _inputstring_array[10];    // a char array needed for string parsing
-    std::shared_ptr<Gravity_pH> _pH;
+    void setPHPin(uint8_t *pin, int *time, bool state);
+
+    ph_Data_t *getphData(void) { return &this->_phData; }
 };
 extern PHSENSOR phsensor;
 #endif // PHSENSOR_HPP

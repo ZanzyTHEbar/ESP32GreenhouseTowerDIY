@@ -1,7 +1,5 @@
 #include <defines.hpp>
 
-unsigned long PreviousMillis = 0;
-
 // Globally available functions
 char *StringtoChar(String inputString)
 {
@@ -29,15 +27,7 @@ void my_delay(volatile long delay_time)
     ;
 }
 
-void custom_delay(int time)
-{
-  unsigned long currentMillis = millis();
-  if (currentMillis - PreviousMillis >= time)
-  {
-    PreviousMillis = currentMillis;
-    return;
-  }
-}
+
 
 // a function to generate the device ID and called generateDeviceID()
 String generateDeviceID()

@@ -71,7 +71,7 @@
 char *StringtoChar(String inputString);
 char *appendChartoChar(const char *hostname, const char *def_host);
 void my_delay(volatile long delay_time);
-void custom_delay(int time);
+
 String generateDeviceID();
 
 template <class... Args, class T, class R>

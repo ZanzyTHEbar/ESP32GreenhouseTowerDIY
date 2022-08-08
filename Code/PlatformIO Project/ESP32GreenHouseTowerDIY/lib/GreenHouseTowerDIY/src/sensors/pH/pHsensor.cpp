@@ -1,19 +1,12 @@
 #include "pHsensor.hpp"
 
 PHSENSOR::_pHcommandMap mapping;
-PHSENSOR::_phmap phmap;
 
-PHSENSOR::PHSENSOR() : _pH{std::make_shared<Gravity_pH>(PH_SENSOR_PIN)},
-                       _pHTopic(PH_TOPIC),
-                       _pHOutTopic(PH_OUT_TOPIC),
-                       _inputstring_array{0},
-                       _phDnPIN(PH_DN_PIN),
-                       _phUpPIN(PH_UP_PIN),
-                       _doseTimeSm(DOSE_TIME_SM),
-                       _doseTimeMed(DOSE_TIME_MED),
-                       _doseTimeLg(DOSE_TIME_LG),
-                       _inputstring(""),
-                       _input_string_complete(false) {}
+// void setPHPin(uint8_t *pin, int *time, bool state);
+
+PHSENSOR::PHSENSOR() : _pH{std::make_shared<Gravity_pH>(PH_SENSOR_PIN)}
+{
+}
 
 PHSENSOR::~PHSENSOR()
 {
@@ -29,8 +22,22 @@ PHSENSOR::~PHSENSOR()
 
 void PHSENSOR::begin()
 {
-    pinMode(_phUpPIN, OUTPUT);
-    pinMode(_phDnPIN, OUTPUT);
+    pinMode(_phData._phUpPIN, OUTPUT);
+    pinMode(_phData._phDnPIN, OUTPUT);
+
+    _phData = {
+        ._phDnPIN = PH_DN_PIN,
+        ._phUpPIN = PH_UP_PIN,
+        ._doseTimeSm = DOSE_TIME_SM,
+        ._doseTimeMed = DOSE_TIME_MED,
+        ._doseTimeLg = DOSE_TIME_LG,
+        ._pHTopic = PH_TOPIC,
+        ._pHOutTopic = PH_OUT_TOPIC,
+        ._inputstring = "",
+        ._input_string_complete = false,
+        ._inputstring_array = {0},
+    };
+
     // pH probe calibration serial commands
     Serial.println(F("Use commands \"CAL,7\", \"CAL,4\", and \"CAL,10\" to calibrate the circuit to those respective values"));
     Serial.println(F("Use command \"CAL,CLEAR\" to clear the calibration"));
@@ -45,15 +52,67 @@ void PHSENSOR::begin()
     mapping["CAL,10"] = &Gravity_pH::cal_high;
     mapping["CAL,CLEAR"] = &Gravity_pH::cal_clear;
 
-    phmap["PHUP"] = &PHSENSOR::setPHUpPin;
-    phmap["PHDN"] = &PHSENSOR::setPHDnPin;
+    phmap.emplace("PHUP", std::bind(&PHSENSOR::setPHPin, this, &_phData._phUpPIN, &_phData._doseTimeSm, true));
+    phmap.emplace("PHDN", std::bind(&PHSENSOR::setPHPin, this, &_phData._phDnPIN, &_phData._doseTimeSm, true));
+    phmap.emplace("PHUP,MED", std::bind(&PHSENSOR::setPHPin, this, &_phData._phUpPIN, &_phData._doseTimeMed, true));
+    phmap.emplace("PHDN,MED", std::bind(&PHSENSOR::setPHPin, this, &_phData._phDnPIN, &_phData._doseTimeMed, true));
+    phmap.emplace("PHUP,LG", std::bind(&PHSENSOR::setPHPin, this, &_phData._phUpPIN, &_phData._doseTimeLg, true));
+    phmap.emplace("PHDN,LG", std::bind(&PHSENSOR::setPHPin, this, &_phData._phDnPIN, &_phData._doseTimeLg, true));
 }
 
-void PHSENSOR::serialEvent()
-{                                              // if the hardware serial port_0 receives a char
-    _inputstring = Serial.readStringUntil(13); // read the string until we see a <CR>
-    _input_string_complete = true;             // set the flag used to tell if we have received a completed string from the PC
+void PHSENSOR::setPHPin(uint8_t *pin, int *time, bool state)
+{
+    digitalWrite(*time, state);
+    phsensor.custom_delay(*time);
+    digitalWrite(*pin, !state);
 }
+
+void PHSENSOR::parse_cmd_lookup(std::string index)
+{
+    _pHcommandMap::iterator it = mapping.find(index);
+    std::map<std::string, func>::iterator it_2 = phmap.find(index);
+    if (it == mapping.end())
+    {
+        log_i("Command not found");
+        return;
+    }
+
+    if (it_2 == phmap.end())
+    {
+        log_i("Command not found");
+        return;
+    }
+
+    Gravity_pH m(*_pH);
+    (m.*(it->second))();
+    // mapping.at(index);
+
+    phmap[index];
+}
+
+float PHSENSOR::getPH()
+{
+    return _pH->read_ph();
+}
+
+/* void PHSENSOR::serialEvent()
+{                                                        // if the hardware serial port_0 receives a char
+    _phData._inputstring = Serial.readStringUntil('\r'); // read the string until we see a <CR>
+    _phData._input_string_complete = true;               // set the flag used to tell if we have received a completed string from the PC
+} */
+
+/* void PHSENSOR::phSensorLoop()
+{
+    if (_phData._input_string_complete == true)
+    {                                                     // check if data received
+        _phData._inputstring.toCharArray(_phData._inputstring_array, 30); // convert the string to a char array
+        std::string temp = _phData._inputstring_array;                     // create a string from the char array
+        parse_cmd_lookup(temp);                           // send data to pars_cmd function
+        _phData._input_string_complete = false;                   // reset the flag used to tell if we have received a completed string from the PC
+        _phData._inputstring = "";                                // clear the string
+    }
+    Serial.println(getPH());
+} */
 
 /* Legacy Function */
 /* void PHSENSOR::parse_cmd(const char *string)
@@ -91,115 +150,5 @@ void PHSENSOR::serialEvent()
         digitalWrite(_phDnPIN, LOW); // Dose of pH down
     }
 } */
-
-void PHSENSOR::setPHUpPin()
-{
-    digitalWrite(_phUpPIN, HIGH);
-    custom_delay(_doseTimeSm);
-    digitalWrite(_phUpPIN, LOW);
-}
-
-void PHSENSOR::setPHDnPin()
-{
-    digitalWrite(_phDnPIN, HIGH);
-    custom_delay(_doseTimeSm);
-    digitalWrite(_phDnPIN, LOW);
-}
-
-void PHSENSOR::parse_cmd_lookup(std::string index)
-{
-    _pHcommandMap::iterator it = mapping.find(index);
-    _phmap::iterator it_2 = phmap.find(index);
-    if (it != mapping.end())
-    {
-        Gravity_pH m(*_pH);
-        (m.*(it->second))();
-        // mapping.at(index);
-    }
-    else if (it_2 != phmap.end())
-    {
-        (this->*(it_2->second))();
-    }
-    else
-    {
-        log_e("Command not found");
-        return;
-    }
-}
-
-float PHSENSOR::getPH()
-{
-    return _pH->read_ph();
-}
-
-void PHSENSOR::phSensorLoop()
-{
-    if (_input_string_complete == true)
-    {                                                     // check if data received
-        _inputstring.toCharArray(_inputstring_array, 30); // convert the string to a char array
-        std::string temp = _inputstring_array;            // create a string from the char array
-        parse_cmd_lookup(temp);                           // send data to pars_cmd function
-        _input_string_complete = false;                   // reset the flag used to tell if we have received a completed string from the PC
-        _inputstring = "";                                // clear the string
-    }
-    Serial.println(getPH());
-}
-
-void PHSENSOR::eventListener(const char *topic, const uint8_t *payload, uint16_t length)
-{
-    // The message is for the pH sensor.
-    // The message is in the format:
-    // <pH>:<pH_value>
-    String result;
-    for (int i = 0; i < length; i++)
-    {
-        log_i("%s", (char)payload[i]);
-        result += (char)payload[i];
-    }
-
-    // Act on the message
-    if (result.equalsIgnoreCase("UP MED"))
-    {
-        log_i("Adjust pH UP a medium amount!");
-        digitalWrite(_phUpPIN, HIGH);
-        my_delay(_doseTimeMed);
-        digitalWrite(_phUpPIN, LOW);
-    }
-    else if (result.equalsIgnoreCase("DOWN MED"))
-    {
-        log_i("Adjusting pH DOWN a medium amount!");
-        digitalWrite(_phDnPIN, HIGH);
-        my_delay(_doseTimeMed);
-        digitalWrite(_phDnPIN, LOW);
-    }
-    else if (result.equalsIgnoreCase("UP SM"))
-    {
-        log_i("Adjust pH UP a small amount!");
-        digitalWrite(_phUpPIN, HIGH);
-        my_delay(_doseTimeSm);
-        digitalWrite(_phUpPIN, LOW);
-    }
-    else if (result.equalsIgnoreCase("DOWN SM"))
-    {
-        log_i("Adjusting pH DOWN a small amount!");
-        digitalWrite(_phDnPIN, HIGH);
-        my_delay(_doseTimeSm);
-        digitalWrite(_phDnPIN, LOW);
-    }
-    else if (result.equalsIgnoreCase("UP LG"))
-    {
-        log_i("Adjust pH UP a large amount!");
-        digitalWrite(_phUpPIN, HIGH);
-        my_delay(_doseTimeLg);
-        digitalWrite(_phUpPIN, LOW);
-    }
-    else if (result.equalsIgnoreCase("DOWN LG"))
-    {
-        log_i("Adjusting pH DOWN a large amount!");
-        digitalWrite(_phDnPIN, HIGH);
-        my_delay(_doseTimeLg);
-        digitalWrite(_phDnPIN, LOW);
-    }
-}
 
 PHSENSOR phsensor;
