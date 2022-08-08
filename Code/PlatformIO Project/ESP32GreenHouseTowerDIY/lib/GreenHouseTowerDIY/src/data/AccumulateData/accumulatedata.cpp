@@ -28,10 +28,6 @@ void AccumulateData::InitAccumulateData()
     humidity.readDHT();
 #endif // USE_DHT_SENSOR
 
-#if ENABLE_PH_SUPPORT
-    phsensor.getPH();
-#endif // ENABLE_PH_SUPPORT
-
     tower_temp.getTempC();
 
     // Relays

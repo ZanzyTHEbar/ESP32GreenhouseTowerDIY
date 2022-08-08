@@ -54,7 +54,6 @@ void callback(char *topic, byte *payload, unsigned int length)
 {
     std::string result = "";
     log_i("Message arrived on topic: [%s] ", topic);
-    std::string result;
     char buffer[length + 1];
     memcpy(buffer, payload, length);
     buffer[length] = '\0'; // Null-terminate the string
