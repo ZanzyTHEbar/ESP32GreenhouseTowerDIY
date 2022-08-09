@@ -3,37 +3,28 @@
  Copyright (c) 2021 ZanzyTHEbar
  */
 #pragma once
-#ifndef BASEMQTT_HPP
-#define BASEMQTT_HPP
-#include <defines.hpp>
+#ifndef BASICMQTT_HPP
+#define BASICMQTT_HPP
 #include <PubSubClient.h>
 #include <map>
 #include <string>
 #include <iostream>
+#include <functional>
+#include <memory>
+#include "mqtt/base.hpp"
 
-#include "network/network.hpp"
-#include "network/ntp.hpp"
-#include "io/Pump/pump.hpp"
-#include "io/Relays/Relays.hpp"
-#include "sensors/pH/pHsensor.hpp"
-#include "data/StateManager/StateManager.hpp"
-
-class BASEMQTT : public Network, IPAddress
+class BASICMQTT : public BaseMQTT, IPAddress
 {
 public:
     // Constructor
-    BASEMQTT();
-    virtual ~BASEMQTT();
+    BASICMQTT();
+    virtual ~BASICMQTT();
 
     bool begin();
     void loadMQTTConfig();
     void checkState();
     void mqttReconnect();
     void mqttLoop();
-
-    // Friends
-    friend class LDR;
-    friend void callback(char *topic, byte *payload, unsigned int length);
 
 private:
     // Private functions
@@ -45,44 +36,8 @@ private:
     uint8_t _user_bytes_received;
     char _user_data[100];
 
-    const char *_infoTopic;
-    const char *_statusTopic;
-    const char *_commandTopic;
-    const char *_configTopic;
-    const char *_menuTopic;
-
-    // Value-Defintions of the different String values
-    enum RelayEnum
-    {
-        UnDefined,
-        On,
-        Off,
-        End
-    };
-
-    enum PumpEnum
-    {
-        UnDefinedPump,
-        PumpOn,
-        PumpOff,
-        PumpEnd
-    };
-
-    enum CallbackEnum
-    {
-        UnDefinedCallback,
-        Pump,
-        Relay,
-        Ph,
-        Info,
-        Menu,
-        EndCallback
-    };
-
-    static std::map<std::string, RelayEnum> s_relay_control_map;
-    static std::map<std::string, PumpEnum> s_pump_control_map;
-    static std::map<std::string, CallbackEnum> s_callback_map;
+    const PHSENSOR::ph_Data_t &phData = phsensor.ph_data.at("id");
 };
 
-extern BASEMQTT basemqtt;
+extern BASICMQTT basicmqtt;
 #endif // HAMQTT_HPP

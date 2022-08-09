@@ -5,30 +5,20 @@
 #pragma once
 #ifndef HAMQTT_HPP
 #define HAMQTT_HPP
-#include <defines.hpp>
 #include <ArduinoHA.h>
+#include "mqtt/base.hpp"
 
-#include "network/network.hpp"
-#include "network/ntp.hpp"
-#include "io/Pump/pump.hpp"
-#include "io/Relays/Relays.hpp"
-#include "sensors/pH/pHsensor.hpp"
-#include "data/StateManager/StateManager.hpp"
-#include "data/AccumulateData/accumulatedata.hpp"
-
-class HASSMQTT : public Network
+class HASSMQTT : public BaseMQTT
 {
 public:
   // Constructor
   HASSMQTT();
   virtual ~HASSMQTT();
 
-  void loadMQTTConfig();
+  bool begin();
   void mqttLoop();
 
   // Friends
-  friend class LDR;
-  friend void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
   friend void onMqttConnected();
 
 private:
@@ -39,6 +29,8 @@ private:
   unsigned long lastAvailabilityToggleAt;
   bool lastInputState;
   unsigned long lastSentAt;
+
+  const PHSENSOR::ph_Data_t &phData = phsensor.ph_data.at("id");
 };
 
 extern HASSMQTT hassmqtt;

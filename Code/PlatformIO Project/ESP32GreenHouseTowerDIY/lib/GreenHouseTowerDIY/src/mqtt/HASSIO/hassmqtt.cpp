@@ -39,7 +39,6 @@ HASensor sht31_humidity_2("tower_humidity_sht31");
 HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
 #endif // USE_SHT31_SENSOR
 
-
 /***********************************************************************************************************************
  * Class Global Variables
  * Please only make changes to the following class variables within the ini file. Do not change them here.
@@ -50,9 +49,12 @@ void onBeforeStateChanged(bool state, HASwitch *s);
 void onRelayStateChanged(bool state, HASwitch *s);
 void onMqttConnectionFailed();
 void onPHStateChanged(bool state, HASwitch *s);
-String getBroker();
 
-HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(digitalRead(pump.pump_data._pump_relay_pin)), lastSentAt(millis())
+HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(digitalRead(pump.pump_data._pump_relay_pin)), lastSentAt(millis()) {}
+
+HASSMQTT::~HASSMQTT() {}
+
+bool HASSMQTT::begin()
 {
     // Unique ID must be set!
     String mac = WiFi.macAddress();
@@ -140,77 +142,11 @@ HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()),
     mqtt.setDiscoveryPrefix("Greenhouse_Tower");
 
 #if MQTT_SECURE
-    mqtt.begin(broker_ip.fromString(getBroker()), cfg.config.MQTTUser, cfg.config.MQTTPass);
+    bool success = mqtt.begin(broker_ip.fromString(getBrokerAddress()), cfg.config.MQTTUser, cfg.config.MQTTPass);
 #else
-    mqtt.begin(broker_ip.fromString(getBroker()));
+    bool success = mqtt.begin(broker_ip.fromString(getBrokerAddress()));
 #endif // MQTT_SECURE
-}
-
-HASSMQTT::~HASSMQTT() {}
-
-String getBroker()
-{
-#if ENABLE_MDNS_SUPPORT
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
-    if (mDNSDiscovery::DiscovermDNSBroker())
-    {
-        Serial.println(F("[mDNS responder started] Setting up Broker..."));
-        String BROKER_ADDR = cfg.config.MQTTBroker; // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-        return BROKER_ADDR;
-    }
-    else
-    {
-        Serial.println(F("[mDNS responder failed]"));
-        String BROKER_ADDR = MQTT_BROKER;
-        return BROKER_ADDR;
-    }
-    return String(MQTT_BROKER);
-#else
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
-    return String(MQTT_BROKER);
-#endif // ENABLE_MDNS_SUPPORT
-}
-
-void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length)
-{
-    // This callback is called when message from MQTT broker is received.
-    // Please note that you should always verify if the message's topic is the one you expect.
-    // For example: if (memcmp(topic, "myCustomTopic") == 0) { ... }
-    log_i("New message on topic: %s", topic);
-    log_i("Data: %s", (const char *)payload);
-
-    String result;
-    log_i("Message arrived on topic: [%s] ", topic);
-    for (int i = 0; i < length; i++)
-    {
-        log_i("payload is: [%s]", (char)payload[i]);
-        result += (char)payload[i];
-    }
-    log_i("Message: [%s]", result.c_str());
-
-    // Check if the message is for the current device
-    if (strcmp(topic, pump.pump_data._pumpTopic) == 0)
-    {
-        if (strcmp(result.c_str(), "ON") == 0)
-        {
-            log_i("Turning on the pump");
-            Relay.RelayOnOff(pump.pump_data._pump_relay_pin, true);
-        }
-        else if (strcmp(result.c_str(), "OFF") == 0)
-        {
-            log_i("Turning off the pump");
-            Relay.RelayOnOff(pump.pump_data._pump_relay_pin, false);
-        }
-    }
-#if ENABLE_PH_SUPPORT
-    else if (strcmp(topic, phsensor._pHTopic) == 0)
-    {
-        log_i("Setting pH level to: [%s]", result.c_str());
-        phsensor.eventListener(topic, payload, length);
-    }
-#endif // ENABLE_PH_SUPPORT
-
-    mqtt.publish("greenhouse_tower_info", "Hello from the Greenhouse Tower!");
+    return success;
 }
 
 void onMqttConnected()
@@ -220,8 +156,8 @@ void onMqttConnected()
     log_i("Subscribing to the topic: %s", pump.pump_data._pumpTopic);
     mqtt.subscribe(pump.pump_data._pumpTopic);
 
-    log_i("Subscribing to the topic: %s", phsensor._pHTopic);
-    mqtt.subscribe(phsensor._pHTopic);
+    log_i("Subscribing to the topic: %s", hassmqtt.phData._pHTopic);
+    mqtt.subscribe(hassmqtt.phData._pHTopic);
 }
 
 void onMqttConnectionFailed()
@@ -253,44 +189,6 @@ void onPHStateChanged(bool state, HASwitch *s)
     bool ph = state;
 }
 #endif // ENABLE_PH_SUPPORT
-
-/**
- * @brief Check if the current hostname is the same as the one in the config file
- * Call in the Setup BEFORE the WiFi.begin()
- * @param None
- * @return None
- */
-void HASSMQTT::loadMQTTConfig()
-{
-    log_i("Checking if hostname is set and valid");
-    size_t size = sizeof(cfg.config.hostname);
-    if (!cfg.isValidHostname(cfg.config.hostname, size - 1))
-    {
-        heapStr(&cfg.config.hostname, DEFAULT_HOSTNAME);
-        cfg.setConfigChanged();
-    }
-
-    String MQTT_CLIENT_ID = generateDeviceID();
-    const char *mqtt_user = MQTT_USER;
-    const char *mqtt_pass = MQTT_PASS;
-    char *mqtt_client_id = StringtoChar(MQTT_CLIENT_ID);
-    heapStr(&cfg.config.MQTTUser, mqtt_user);
-    heapStr(&cfg.config.MQTTPass, mqtt_pass);
-    heapStr(&cfg.config.MQTTClientID, mqtt_client_id);
-    WiFi.setHostname(cfg.config.hostname); // define hostname
-    cfg.setConfigChanged();
-    free(mqtt_client_id);
-
-    log_i("Loaded config: hostname %s, MQTT enable relay %s, MQTT host %s, MQTT port %d, MQTT user %s, MQTT pass %s, MQTT topic %s, MQTT set topic %s, MQTT device name %s",
-          cfg.config.hostname,
-          cfg.config.MQTTBroker,
-          cfg.config.MQTTPort,
-          cfg.config.MQTTUser,
-          cfg.config.MQTTPass,
-          cfg.config.MQTTDeviceName);
-
-    log_i("Loaded config: hostname %s", cfg.config.hostname);
-}
 
 void HASSMQTT::mqttLoop()
 {

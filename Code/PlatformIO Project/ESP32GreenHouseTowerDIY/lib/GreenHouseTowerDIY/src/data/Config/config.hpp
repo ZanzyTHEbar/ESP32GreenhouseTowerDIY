@@ -40,8 +40,8 @@ public:
         long lastMsg;
         char *msg;
         int value;
-        char *WIFISSID;
-        char *WIFIPASS;
+        //char *WIFISSID;
+        //char *WIFIPASS;
         char *MDNS;
         bool data_json;
         String data_json_string;

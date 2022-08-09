@@ -1,17 +1,11 @@
 #include "pHsensor.hpp"
 
-PHSENSOR::_pHcommandMap mapping;
-
-// void setPHPin(uint8_t *pin, int *time, bool state);
-
-PHSENSOR::PHSENSOR() : _pH{std::make_shared<Gravity_pH>(PH_SENSOR_PIN)}
-{
-}
+PHSENSOR::PHSENSOR() : _pH{std::make_shared<Gravity_pH>(PH_SENSOR_PIN)} {}
 
 PHSENSOR::~PHSENSOR()
 {
     // mapping.erase(mapping.begin(), mapping.end());
-    // phmap.erase(phmap.begin(), phmap.end());µ
+    // phmap.erase(phmap.begin(), phmap.end());
 
     mapping.clear();
     phmap.clear();
@@ -25,7 +19,22 @@ void PHSENSOR::begin()
     pinMode(_phData._phUpPIN, OUTPUT);
     pinMode(_phData._phDnPIN, OUTPUT);
 
-    _phData = {
+    /* _phData = {
+        .id = 0,
+        ._phDnPIN = PH_DN_PIN,
+        ._phUpPIN = PH_UP_PIN,
+        ._doseTimeSm = DOSE_TIME_SM,
+        ._doseTimeMed = DOSE_TIME_MED,
+        ._doseTimeLg = DOSE_TIME_LG,
+        ._pHTopic = PH_TOPIC,
+        ._pHOutTopic = PH_OUT_TOPIC,
+        ._inputstring = "",
+        ._input_string_complete = false,
+        ._inputstring_array = {0},
+    }; */
+
+    ph_data_map["id"] = ph_Data_t{
+        .id = 0,
         ._phDnPIN = PH_DN_PIN,
         ._phUpPIN = PH_UP_PIN,
         ._doseTimeSm = DOSE_TIME_SM,
@@ -68,27 +77,31 @@ void PHSENSOR::setPHPin(uint8_t *pin, int *time, bool state)
     float test = getPH();
 }
 
-void PHSENSOR::parse_cmd_lookup(std::string index)
+void PHSENSOR::parse_cmd_lookup(std::string &index)
 {
-    _pHcommandMap::iterator it = mapping.find(index);
-    std::map<std::string, func>::iterator it_2 = phmap.find(index);
-    if (it == mapping.end())
+    PhCommandMap_t::const_iterator it = mapping.find(index);
+    PhMap_t::const_iterator it_2 = phmap.find(index);
+    if (it != mapping.end())
+    {
+        (*_pH.*(it->second))();
+    }
+    else if (it_2 != phmap.end())
+    {
+        it_2->second; //! FIXME: fix this
+        //(this->*(it_2->second))();
+    }
+    else
     {
         log_i("Command not found");
-        return;
     }
 
-    if (it_2 == phmap.end())
-    {
-        log_i("Command not found");
-        return;
-    }
+    auto &key_it = it->first;
+    // auto& value_it = it->second;
 
-    Gravity_pH m(*_pH);
-    (m.*(it->second))();
-    // mapping.at(index);
+    auto &key_it_2 = it_2->first;
+    // auto& value_it_2 = it_2->second;
 
-    phmap[index];
+    log_i("Command %s executed", key_it.c_str());
 }
 
 float PHSENSOR::getPH()

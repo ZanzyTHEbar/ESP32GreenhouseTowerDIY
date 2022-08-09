@@ -56,7 +56,7 @@ public:
      * @param write - Write Manager callback
      * @param execute - Execute Manager callback
      */
-    void addManager(char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)());
+    void addManager(const char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)());
 
     /**
      * Add a read-only Manager
@@ -64,7 +64,7 @@ public:
      * @param cmd - Manager to listen
      * @param callback - Read Manager callback
      */
-    void addTestManager(char *cmd, void (*callback)())
+    void addTestManager(const char *cmd, void (*callback)())
     {
         addManager(cmd, callback, NULL, NULL, NULL);
     }
@@ -75,7 +75,7 @@ public:
      * @param cmd - Manager to listen
      * @param callback - Read Manager callback
      */
-    void addReadManager(char *cmd, void (*callback)())
+    void addReadManager(const char *cmd, void (*callback)())
     {
         addManager(cmd, NULL, callback, NULL, NULL);
     }
@@ -86,7 +86,7 @@ public:
      * @param cmd - Manager to listen
      * @param callback - Write Manager callback
      */
-    void addWriteManager(char *cmd, void (*callback)())
+    void addWriteManager(const char *cmd, void (*callback)())
     {
         addManager(cmd, NULL, NULL, callback, NULL);
     }
@@ -97,7 +97,7 @@ public:
      * @param cmd - Manager to listen
      * @param callback - Execute Manager callback
      */
-    void addExecuteManager(char *cmd, void (*callback)())
+    void addExecuteManager(const char *cmd, void (*callback)())
     {
         addManager(cmd, NULL, NULL, NULL, callback);
     }

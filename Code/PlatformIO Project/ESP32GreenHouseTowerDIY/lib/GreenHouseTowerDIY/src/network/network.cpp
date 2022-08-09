@@ -154,8 +154,17 @@ void Network::networkRoutes()
  */
 bool Network::SetupNetworkStack()
 {
-    String SSID;
-    String PASS;
+    wifi_config_t conf;
+    unsigned int ssid_length = sizeof(conf.sta.ssid);
+    unsigned int password_length = sizeof(conf.sta.password);
+
+    char ssid[ssid_length + 1];
+    char password[ssid_length + 1];
+    memcpy(ssid, conf.sta.ssid, ssid_length);
+    memcpy(password, conf.sta.password, password_length);
+
+    ssid[ssid_length] = '\0';         // Null-terminate the string
+    password[password_length] = '\0'; // Null-terminate the string
 
     cfg.CreateDefaultConfig();
     if (!cfg.loadConfig())
@@ -166,22 +175,28 @@ bool Network::SetupNetworkStack()
 
     log_i("[INFO]: Loaded config\n");
     // Load values saved in SPIFFS
-    SSID = cfg.config.WIFISSID;
-    PASS = cfg.config.WIFIPASS;
+    // SSID = cfg.config.WIFISSID;
+    // PASS = cfg.config.WIFIPASS;
 
     if (!PRODUCTION)
     {
         // print it on the serial monitor
-        log_i("%s\n", PASS.c_str());
+        log_i("%s\n", password);
     }
 
-    if (SSID[0] == '\0' || PASS[0] == '\0')
+    if (ssid[0] == '\0')
     {
         log_i("[INFO]: No SSID or password has been set.\n");
         log_i("[INFO]: Please configure the Wifi Manager by scanning the QR code on your device.\r\n");
         return false;
     }
-    log_i("[INFO]: Configured SSID: %s\r\n", SSID.c_str());
+
+    if (password[0] == '\0')
+    {
+        log_i("[INFO]: No Password has been set.\n");
+    }
+
+    log_i("[INFO]: Configured SSID: %s\r\n", ssid);
 
     // Set your Gateway IP address
     IPAddress localIP;
@@ -203,7 +218,7 @@ bool Network::SetupNetworkStack()
 
     WiFi.setHostname(cfg.config.hostname); // define hostname
 
-    WiFi.begin(cfg.config.WIFISSID, cfg.config.WIFIPASS);
+    WiFi.begin(ssid, password); // connect to WiFi network
 
     unsigned long currentMillis = millis();
     _previousMillis = currentMillis;
@@ -399,6 +414,29 @@ bool Network::LoopWifiScan()
     // Wait a bit before scanning again
     my_delay(5L);
     return true;
+}
+
+// we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
+void Network::setWiFiConf(const char *ssid, const char *password)
+{
+#if defined(ESP32)
+    if (WiFiGenericClass::getMode() != WIFI_MODE_NULL)
+    {
+
+        wifi_config_t conf;
+        esp_wifi_get_config(WIFI_IF_STA, &conf);
+
+        memset(conf.sta.ssid, 0, sizeof(conf.sta.ssid));
+        for (int i = 0; i < sizeof(ssid) / sizeof(ssid[0]) && i < sizeof(conf.sta.ssid); i++)
+            conf.sta.ssid[i] = ssid[i];
+
+        memset(conf.sta.password, 0, sizeof(conf.sta.password));
+        for (int i = 0; i < sizeof(password) / sizeof(password[0]) && i < sizeof(conf.sta.password); i++)
+            conf.sta.password[i] = password[i];
+
+        esp_wifi_set_config(WIFI_IF_STA, &conf);
+    }
+#endif
 }
 
 Network network;

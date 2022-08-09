@@ -6,6 +6,13 @@
 #ifndef NETWORK_hpp
 #define NETWORK_hpp
 
+extern "C"
+{
+#include <esp_err.h>
+#include <esp_wifi.h>
+#include <esp_event.h>
+}
+
 #include <defines.hpp>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
@@ -29,6 +36,7 @@ public:
     void CheckNetworkLoop();
     void CheckConnectionLoop_Active();
     bool LoopWifiScan();
+    void setWiFiConf(const char *ssid, const char *password);
 
     // variables
 private:

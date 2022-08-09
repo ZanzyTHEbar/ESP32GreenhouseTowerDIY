@@ -113,7 +113,8 @@ void pHSerialHandler()
     if (arg != NULL)            /* Check if argument exists */
     {
         ok = true;
-        phsensor.parse_cmd_lookup(arg);
+        std::string temp(arg);
+        phsensor.parse_cmd_lookup(temp);
     }
 
     if (ok)

@@ -10,12 +10,13 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <unordered_map>
+#include <string>
 #include <functional>
 
 class PHSENSOR
 {
 private:
-
     // Private functions
     // void parse_cmd(const char *string);
     void setPHUpPin();
@@ -31,23 +32,25 @@ public:
 
     void begin();
     float getPH();
-    void parse_cmd_lookup(std::string index);
+    void parse_cmd_lookup(std::string &index);
+
+    template <typename T>
+    void addCommand(std::string command, T function)
+    {
+        phmap.emplace(command, function);
+    }
 
     // void phSensorLoop();
     // void serialEvent();
 
-    // Friends
-    friend class BASEMQTT;
-    friend void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
-    friend void callback(char *topic, byte *payload, unsigned int length);
-    friend void onMqttConnected();
-    friend class HASSMQTT;
+    using MapMethod_t = void (Gravity_pH::*)(void);
+    using PhCommandMap_t = std::unordered_map<std::string, MapMethod_t>;
 
-    typedef void (Gravity_pH::*map_method_t)(void);
-    typedef std::map<std::string, map_method_t> _pHcommandMap;
+    PhCommandMap_t mapping;
 
-    typedef std::function<void(uint8_t *, int *)> func;
-    std::map<std::string, func> phmap;
+    typedef std::function<void (uint8_t *, int *)> Func_t;
+    typedef std::unordered_map<std::string, Func_t> PhMap_t;
+    PhMap_t phmap;
 
     void custom_delay(int time)
     {
@@ -63,6 +66,7 @@ public:
 
     struct ph_Data_t
     {
+        uint8_t id;
         // Private variables
         uint8_t _phDnPIN;
         uint8_t _phUpPIN;
@@ -77,7 +81,34 @@ public:
     };
 
     ph_Data_t _phData;
-    ph_Data_t *getphData(void) { return &this->_phData; }
+
+    std::unordered_map<std::string, ph_Data_t> ph_data_map;
+
+    const std::unordered_map<std::string, ph_Data_t> &ph_data = ph_data_map; // a read-only reference to the map which is used to get the data without mutation
+
+    bool operator==(const PHSENSOR &other) const
+    {
+        // this->_phData.id == other._phData.id && this->_phData._phDnPIN == other._phData._phDnPIN && this->_phData._phUpPIN == other._phData._phUpPIN && this->_phData._doseTimeSm == other._phData._doseTimeSm && this->_phData._doseTimeMed == other._phData._doseTimeMed && this->_phData._doseTimeLg == other._phData._doseTimeLg && this->_phData._pHTopic == other._phData._pHTopic && this->_phData._pHOutTopic == other._phData._pHOutTopic && this->_phData._inputstring == other._phData._inputstring && this->_phData._input_string_complete == other._phData._input_string_complete && this->_phData._inputstring_array == other._phData._inputstring_array
+        return *this == other;
+    }
+
+    bool operator!=(const PHSENSOR &other) const
+    {
+        return !(*this == other);
+    }
 };
 extern PHSENSOR phsensor;
+
+//! IMPORTANT: implement later
+namespace std
+{
+    template <>
+    struct hash<PHSENSOR>
+    {
+        size_t operator()(const PHSENSOR &key) const
+        {
+            return 0;
+        }
+    };
+}
 #endif // PHSENSOR_HPP

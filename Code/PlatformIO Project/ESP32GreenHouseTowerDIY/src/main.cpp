@@ -141,7 +141,7 @@ void setup()
 #if ENABLE_HASS
   hassmqtt.loadMQTTConfig();
 #else
-  basemqtt.loadMQTTConfig();
+  basicmqtt.loadMQTTConfig();
 #endif // ENABLE_HASS
 
 #if ENABLE_MDNS_SUPPORT
@@ -159,7 +159,7 @@ void setup()
 #if ENABLE_HASS
   hassmqtt.begin();
 #else
-  basemqtt.begin();
+  basicmqtt.begin();
 #endif // ENABLE_HASS
   if (network.SetupNetworkStack())
   {
@@ -213,7 +213,7 @@ void loop()
 #if ENABLE_HASS
     hassmqtt.mqttLoop();
 #else
-    basemqtt.mqttLoop();
+    basicmqtt.mqttLoop();
 #endif // ENABLE_HASS
   }
   else

@@ -12,29 +12,29 @@ Config::~Config() {}
 void Config::CreateDefaultConfig()
 {
     config = {
-        NULL,                                // hostname
-        NULL,                                // MQTTClientID
-        1883,                                // MQTTPort
-        8883,                                // MQTTPort_Secure
-        NULL,                                // MQTTUser
-        NULL,                                // MQTTPass
-        NULL,                                // MQTTTopic
-        NULL,                                // MQTTSetTopic
-        NULL,                                // MQTTDeviceName
-        NULL,                                // MQTTBroker
-        false,                               // MQTTSecureState
-        false,                               // MQTTConnectedState
-        0,                                   // last_mqtt_connect_attempt
-        0,                                   // last_mqtt_publish_attempt
-        0,                                   // lastMillis
-        NULL,                                // IP
-        NULL,                                // netmask
-        NULL,                                // gateway
-        0,                                   // lastMsg
-        NULL,                                // msg
-        0,                                   // value
-        NULL,                                // WIFISSID
-        NULL,                                // WIFIPASS
+        NULL,  // hostname
+        NULL,  // MQTTClientID
+        1883,  // MQTTPort
+        8883,  // MQTTPort_Secure
+        NULL,  // MQTTUser
+        NULL,  // MQTTPass
+        NULL,  // MQTTTopic
+        NULL,  // MQTTSetTopic
+        NULL,  // MQTTDeviceName
+        NULL,  // MQTTBroker
+        false, // MQTTSecureState
+        false, // MQTTConnectedState
+        0,     // last_mqtt_connect_attempt
+        0,     // last_mqtt_publish_attempt
+        0,     // lastMillis
+        NULL,  // IP
+        NULL,  // netmask
+        NULL,  // gateway
+        0,     // lastMsg
+        NULL,  // msg
+        0,     // value
+        /* NULL,                                // WIFISSID
+        NULL,                                // WIFIPASS */
         NULL,                                // MDNS
         false,                               // data_json
         "",                                  // data_json_string
@@ -164,8 +164,8 @@ bool Config::loadConfig()
     config.lastMsg = jsonBuffer["lastMsg"];
     heapStr(&config.msg, jsonBuffer["msg"]);
     config.value = jsonBuffer["value"];
-    heapStr(&config.WIFISSID, jsonBuffer["WIFISSID"]);
-    heapStr(&config.WIFIPASS, jsonBuffer["WIFIPASS"]);
+    /* heapStr(&config.WIFISSID, jsonBuffer["WIFISSID"]);
+    heapStr(&config.WIFIPASS, jsonBuffer["WIFIPASS"]); */
     config.MQTTConnectedState = jsonBuffer["MQTTConnectedState"];
     heapStr(&config.MDNS, jsonBuffer["MDNS"]);
     config.numTempSensors = jsonBuffer["Number_of_Temp_Sensors"];
@@ -225,8 +225,8 @@ bool Config::saveConfig()
     json["lastMsg"] = config.lastMsg;
     json["msg"] = config.msg;
     json["value"] = config.value;
-    json["WIFISSID"] = config.WIFISSID;
-    json["WIFIPASS"] = config.WIFIPASS;
+    /* json["WIFISSID"] = config.WIFISSID;
+    json["WIFIPASS"] = config.WIFIPASS; */
     json["MQTTConnectedState"] = config.MQTTConnectedState;
     json["MDNS"] = config.MDNS;
     json["Number_of_Temp_Sensors"] = config.numTempSensors;
@@ -321,29 +321,6 @@ void Config::setHostname(String new_hostname)
     }
     config.hostname[j] = '\0';
     setConfigChanged();
-}
-
-// we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
-void Config::setWiFiConf(String ssid, String password)
-{
-    /* #if defined(ESP32)
-        if (WiFiGenericClass::getMode() != WIFI_MODE_NULL)
-        {
-
-            wifi_config_t conf;
-            esp_wifi_get_config(WIFI_IF_STA, &conf);
-
-            memset(conf.sta.ssid, 0, sizeof(conf.sta.ssid));
-            for (int i = 0; i < ssid.length() && i < sizeof(conf.sta.ssid); i++)
-                conf.sta.ssid[i] = ssid.charAt(i);
-
-            memset(conf.sta.password, 0, sizeof(conf.sta.password));
-            for (int i = 0; i < password.length() && i < sizeof(conf.sta.password); i++)
-                conf.sta.password[i] = password.charAt(i);
-
-            esp_wifi_set_config(WIFI_IF_STA, &conf);
-        }
-    #endif */
 }
 
 Config cfg;

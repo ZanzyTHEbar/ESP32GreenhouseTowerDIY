@@ -85,7 +85,7 @@ void TimedTasks::checkMQTTState(void) // check to see if the data has changed
 #if ENABLE_HASS
     hassmqtt.checkState();
 #else
-    basemqtt.checkState();
+    basicmqtt.checkState();
 #endif // ENABLE_HASS
     _Timer_10s_2.start();
   }
