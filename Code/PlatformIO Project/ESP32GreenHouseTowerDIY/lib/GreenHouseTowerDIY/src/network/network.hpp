@@ -13,6 +13,8 @@ extern "C"
 #include <esp_event.h>
 }
 
+#include <memory>
+
 #include <defines.hpp>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
@@ -36,7 +38,7 @@ public:
     void CheckNetworkLoop();
     void CheckConnectionLoop_Active();
     bool LoopWifiScan();
-    void setWiFiConf(const char *ssid, const char *password);
+    void setWiFiConf(const char *value, uint8_t *location);
 
     // variables
 private:
@@ -44,7 +46,8 @@ private:
     // Timer variables
     unsigned long _previousMillis;
     const long _interval; // interval to wait for Wi-Fi connection (milliseconds)
-    bool _wifiConnected;
+    std::shared_ptr<AsyncWebServer> server;
+    std::shared_ptr<WiFiClient> espClient;
 };
 
 extern Network network;

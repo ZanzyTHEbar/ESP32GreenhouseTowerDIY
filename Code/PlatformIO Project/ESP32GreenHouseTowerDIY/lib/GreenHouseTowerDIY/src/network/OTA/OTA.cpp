@@ -32,12 +32,25 @@ void OTA::SetupOTA()
                     { Serial.printf("Progress: %u%%\r", (progress / (total / 100))); })
         .onError([](ota_error_t error)
                  {
-                Serial.printf("Error[%u]: ", error);
-                if (error == OTA_AUTH_ERROR) log_e("Auth Failed");
-                else if (error == OTA_BEGIN_ERROR) log_e("Begin Failed");
-                else if (error == OTA_CONNECT_ERROR) log_e("Connect Failed");
-                else if (error == OTA_RECEIVE_ERROR) log_e("Receive Failed");
-                else if (error == OTA_END_ERROR) log_e("End Failed"); });
+                log_e("Error[%u]: ", error);
+                switch (error)
+                {
+                case OTA_AUTH_ERROR:
+                    log_e("Auth Failed");
+                    break;
+                case OTA_BEGIN_ERROR:
+                    log_e("Begin Failed");
+                    break;
+                case OTA_CONNECT_ERROR:
+                    log_e("Connect Failed");
+                    break;
+                case OTA_RECEIVE_ERROR:
+                    log_e("Receive Failed");
+                    break;
+                case OTA_END_ERROR:
+                    log_e("End Failed");
+                    break;
+                } });
 
     log_i("Starting up basic OTA server");
     log_i("OTA will be live for 30s, after which it will be disabled until restart");

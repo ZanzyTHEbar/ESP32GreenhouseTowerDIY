@@ -39,17 +39,14 @@
 
 #include "network.hpp"
 
-AsyncWebServer server(80);
-
-WiFiClient espClient;
-
 /**
  * @brief Construct a new Network:: Network object
  *
  */
 Network::Network() : _previousMillis(0),
                      _interval(30000),
-                     _wifiConnected(false) {}
+                     server{std::make_shared<AsyncWebServer>(80)},
+                     espClient{std::make_shared<WiFiClient>()} {}
 
 /**
  * @brief Destroy the Network:: Network object
@@ -60,22 +57,34 @@ Network::~Network() {}
 void notFound(AsyncWebServerRequest *request)
 {
     log_i("NOT_FOUND: ");
-    if (request->method() == HTTP_GET)
+    switch (request->method())
+    {
+    case HTTP_GET:
         log_i("GET");
-    else if (request->method() == HTTP_POST)
+        break;
+    case HTTP_POST:
         log_i("POST");
-    else if (request->method() == HTTP_DELETE)
-        log_i("DELETE");
-    else if (request->method() == HTTP_PUT)
+        break;
+    case HTTP_PUT:
         log_i("PUT");
-    else if (request->method() == HTTP_PATCH)
+        break;
+    case HTTP_PATCH:
         log_i("PATCH");
-    else if (request->method() == HTTP_HEAD)
-        log_i("HEAD");
-    else if (request->method() == HTTP_OPTIONS)
+        break;
+    case HTTP_DELETE:
+        log_i("DELETE");
+        break;
+    case HTTP_OPTIONS:
         log_i("OPTIONS");
-    else
+        break;
+    case HTTP_HEAD:
+        log_i("HEAD");
+        break;
+    default:
         log_i("UNKNOWN");
+        break;
+    }
+    log_i(" ");
     log_i(" http://%s%s\n", request->host().c_str(), request->url().c_str());
     request->send(404, "text/plain", "Not found.");
 }
@@ -91,12 +100,12 @@ void Network::networkRoutes()
     static const char *MIMETYPE_JSON{"application/json"};
 
     // Web Server Root URL
-    server.on("/", HTTP_GET, [&](AsyncWebServerRequest *request)
-              { request->send(200); });
+    server->on("/", HTTP_GET, [&](AsyncWebServerRequest *request)
+               { request->send(200); });
 
     // preflight cors check
-    server.on("/", HTTP_OPTIONS, [&](AsyncWebServerRequest *request)
-              {
+    server->on("/", HTTP_OPTIONS, [&](AsyncWebServerRequest *request)
+               {
         AsyncWebServerResponse* response = request->beginResponse(204);
         response->addHeader("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS");
         response->addHeader("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization, FileSize");
@@ -104,8 +113,8 @@ void Network::networkRoutes()
         request->send(response); });
 
     // Route to set GPIO state to LOW
-    server.on("/toggle", HTTP_GET, [&](AsyncWebServerRequest *request)
-              {
+    server->on("/toggle", HTTP_GET, [&](AsyncWebServerRequest *request)
+               {
                     int params = request->params();
                     for(int i=0;i<params;i++)
                     {
@@ -121,29 +130,56 @@ void Network::networkRoutes()
                     }
                     request->send(200, MIMETYPE_JSON, "toggled"); });
 
-    server.on("/data.json", HTTP_GET, [&](AsyncWebServerRequest *request)
-              {
+    server->on("/wifimanager", HTTP_GET, [&](AsyncWebServerRequest *request)
+               {
+                    wifi_config_t conf;
+                    int params = request->params();
+                    for(int i=0;i<params;i++)
+                    {
+                        const char* ssid = "";
+                        const char* password = "";
+                        AsyncWebParameter* p = request->getParam(i);
+                            // HTTP POST Relay Value
+                        {
+                            if (p->name() == "ssid") 
+                            {
+                                ssid = p->value().c_str();
+                                setWiFiConf(ssid, conf.sta.ssid);
+                            }
+                            
+                            if (p->name() == "password") 
+                            {
+                                password = p->value().c_str();
+                                setWiFiConf(password, conf.sta.password);
+                            }
+                        }
+                        log_i("GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
+                    }
+                    request->send(200, MIMETYPE_JSON, "toggled"); });
+
+    server->on("/data.json", HTTP_GET, [&](AsyncWebServerRequest *request)
+               {
                   cfg.config.data_json = true;
                   my_delay(1L);
                   String temp = cfg.config.data_json_string;
                   request->send(200, MIMETYPE_JSON, temp);
                   temp = ""; });
 
-    server.on("/api/reset/config", HTTP_GET, [&](AsyncWebServerRequest *request)
-              {
+    server->on("/api/reset/config", HTTP_GET, [&](AsyncWebServerRequest *request)
+               {
                   cfg.resetConfig();
                   request->send(200); });
 
-    server.on("/api/reset/device", HTTP_GET, [&](AsyncWebServerRequest *request)
-              {
+    server->on("/api/reset/device", HTTP_GET, [&](AsyncWebServerRequest *request)
+               {
                   request->send(200);
                   my_delay(1L);
                   ESP.restart(); });
 
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
 
-    server.onNotFound(notFound);
-    server.begin();
+    server->onNotFound(notFound);
+    server->begin();
 }
 
 /**
@@ -199,22 +235,20 @@ bool Network::SetupNetworkStack()
     log_i("[INFO]: Configured SSID: %s\r\n", ssid);
 
     // Set your Gateway IP address
-    IPAddress localIP;
+    /* IPAddress localIP;
     IPAddress gateway;
     IPAddress subnet;
 
     WiFi.mode(WIFI_STA);
-    /* localIP.fromString(WiFi.localIP().toString());
+    localIP.fromString(WiFi.localIP().toString());
     gateway.fromString(WiFi.gatewayIP().toString());
-    subnet.fromString(WiFi.subnetMask().toString());
+    subnet.fromString(WiFi.subnetMask().toString()); */
 
-    if (!WiFi.config(localIP, gateway, subnet))
+    if (!WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE))
     {
         log_e("[INFO]: STA Failed to configure\n");
         return false;
-    } */
-
-    WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+    }
 
     WiFi.setHostname(cfg.config.hostname); // define hostname
 
@@ -296,12 +330,12 @@ void Network::CheckNetworkLoop()
     // run current function every 5 seconds
     if (WiFi.status() != WL_CONNECTED)
     {
-        _wifiConnected = false;
+        StateManager_WiFi.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Disconnected);
         log_i("Wifi is not connected\n");
     }
     else
     {
-        _wifiConnected = true;
+        StateManager_WiFi.setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected);
         log_i("Wifi is connected\n");
         log_i("[INFO]: WiFi Connected! Open http://%s in your browser\n", WiFi.localIP().toString().c_str());
     }
@@ -311,7 +345,7 @@ void Network::CheckConnectionLoop_Active()
 {
     unsigned long currentMillis = millis();
     // if WiFi is down, try reconnecting
-    if (!_wifiConnected && (currentMillis - _previousMillis >= _interval))
+    if (StateManager_WiFi.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Disconnected && (currentMillis - _previousMillis >= _interval))
     {
         Serial.print(millis());
         Serial.println("Reconnecting to WiFi...");
@@ -417,22 +451,17 @@ bool Network::LoopWifiScan()
 }
 
 // we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
-void Network::setWiFiConf(const char *ssid, const char *password)
+void Network::setWiFiConf(const char *value, uint8_t *location)
 {
 #if defined(ESP32)
     if (WiFiGenericClass::getMode() != WIFI_MODE_NULL)
     {
-
         wifi_config_t conf;
         esp_wifi_get_config(WIFI_IF_STA, &conf);
 
-        memset(conf.sta.ssid, 0, sizeof(conf.sta.ssid));
-        for (int i = 0; i < sizeof(ssid) / sizeof(ssid[0]) && i < sizeof(conf.sta.ssid); i++)
-            conf.sta.ssid[i] = ssid[i];
-
-        memset(conf.sta.password, 0, sizeof(conf.sta.password));
-        for (int i = 0; i < sizeof(password) / sizeof(password[0]) && i < sizeof(conf.sta.password); i++)
-            conf.sta.password[i] = password[i];
+        memset(location, 0, sizeof(location));
+        for (int i = 0; i < sizeof(value) / sizeof(value[0]) && i < sizeof(location); i++)
+            location[i] = value[i];
 
         esp_wifi_set_config(WIFI_IF_STA, &conf);
     }

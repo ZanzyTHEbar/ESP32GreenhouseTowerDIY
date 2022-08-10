@@ -109,7 +109,7 @@ void setup()
   waterlevel.begin();
 #endif // USE_UC
 
-  switch (humidity.setupSensor())
+  switch (humidity.begin())
   {
   case 0:
     Serial.println(F("Humidity Sensor Setup Failed - No sensors present"));
@@ -141,14 +141,7 @@ void setup()
 
 #if ENABLE_MDNS_SUPPORT
   mDNSManager::mdnsHandler.startMDNS();
-  if (mDNSManager::mdnsHandler.DiscovermDNSBroker())
-  {
-    Serial.println(F("[mDNS responder started] Setting up Broker..."));
-  }
-  else
-  {
-    Serial.println(F("[mDNS responder failed]"));
-  }
+  mdnsHandler.DiscovermDNSBroker() ? log_d("[mDNS responder started] Setting up Broker...") : log_e("[mDNS responder]: failed");
 #endif // ENABLE_MDNS_SUPPORT
 
 #if ENABLE_HASS
@@ -192,13 +185,10 @@ void loop()
   if (cfg.config.data_json)
   {
     cfg.config.data_json = false;
-    if (accumulatedata.SendData())
+    if (!accumulatedata.SendData())
     {
       Serial.println(F("Data Sent"));
-    }
-    else
-    {
-      Serial.println(F("Data Not Sent"));
+      log_e("Data Not Sent");
     }
   }
 

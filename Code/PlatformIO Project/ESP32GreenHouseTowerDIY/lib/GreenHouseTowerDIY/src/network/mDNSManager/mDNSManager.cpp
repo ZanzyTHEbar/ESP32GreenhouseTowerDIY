@@ -5,9 +5,7 @@ namespace mDNSManager
     MDNSHandler::MDNSHandler(StateManager<ProgramStates::DeviceStates::MDNSState_e> *stateManager, Config *deviceConfig) : stateManager(stateManager),
                                                                                                                            deviceConfig(deviceConfig) {}
 
-    MDNSHandler::~MDNSHandler()
-    {
-    }
+    MDNSHandler::~MDNSHandler() {}
 
     bool MDNSHandler::startMDNS()
     {

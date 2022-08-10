@@ -5,9 +5,7 @@ LDR::LDR() : _GAMMA(0.7), _RL10(50)
     pinMode(LDR_PIN, INPUT);
 }
 
-LDR::~LDR()
-{
-}
+LDR::~LDR() {}
 
 float LDR::getLux()
 {

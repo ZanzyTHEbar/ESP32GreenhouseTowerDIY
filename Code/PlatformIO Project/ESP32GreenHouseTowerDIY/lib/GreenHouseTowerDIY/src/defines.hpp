@@ -66,7 +66,6 @@
  *
  * @see https://en.wikipedia.org/wiki/ANSI_escape_code
  */
-
 // Globally available functions
 char *StringtoChar(String inputString);
 char *appendChartoChar(const char *hostname, const char *def_host);

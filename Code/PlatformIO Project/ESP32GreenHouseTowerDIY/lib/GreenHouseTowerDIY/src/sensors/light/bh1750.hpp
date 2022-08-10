@@ -5,6 +5,7 @@
 #pragma once
 #ifndef BH1750_HPP
 #define BH1750_HPP
+#include <memory>
 #include <defines.hpp>
 #include <hp_BH1750.h>
 
@@ -20,7 +21,7 @@ public:
     float getLux();
 
 private:
-    // Private variables
+    std::shared_ptr<hp_BH1750> BH1750_sensor;
 };
 
 extern BH1750 bh1750;

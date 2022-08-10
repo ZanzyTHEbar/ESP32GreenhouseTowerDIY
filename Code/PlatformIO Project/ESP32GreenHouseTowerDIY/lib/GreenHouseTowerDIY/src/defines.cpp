@@ -27,8 +27,6 @@ void my_delay(volatile long delay_time)
     ;
 }
 
-
-
 // a function to generate the device ID and called generateDeviceID()
 String generateDeviceID()
 {
