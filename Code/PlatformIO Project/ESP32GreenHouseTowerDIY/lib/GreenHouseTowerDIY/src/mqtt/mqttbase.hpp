@@ -67,9 +67,9 @@ public:
         EndCallback
     };
 
-    inline static std::unordered_map<std::string, RelayEnum> s_relay_control_map;
-    inline static std::unordered_map<std::string, PumpEnum> s_pump_control_map;
-    inline static std::unordered_map<std::string, CallbackEnum> s_callback_map;
+    static std::unordered_map<std::string, RelayEnum> s_relay_control_map;
+    static std::unordered_map<std::string, PumpEnum> s_pump_control_map;
+    static std::unordered_map<std::string, CallbackEnum> s_callback_map;
 };
 extern XMqttBaseClass baseMQTT;
 #endif // BASEMQTT_HPP

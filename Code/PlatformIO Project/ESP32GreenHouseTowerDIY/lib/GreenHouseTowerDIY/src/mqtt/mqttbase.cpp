@@ -1,5 +1,9 @@
 #include "mqttbase.hpp"
 
+std::unordered_map<std::string, XMqttBaseClass::RelayEnum> XMqttBaseClass::s_relay_control_map(0);
+std::unordered_map<std::string, XMqttBaseClass::PumpEnum> XMqttBaseClass::s_pump_control_map(0);
+std::unordered_map<std::string, XMqttBaseClass::CallbackEnum> XMqttBaseClass::s_callback_map(0);
+
 XMqttBaseClass::XMqttBaseClass() : _menuTopic("menuControl/menu"), _infoTopic("user/info") {}
 
 XMqttBaseClass::~XMqttBaseClass() {}
