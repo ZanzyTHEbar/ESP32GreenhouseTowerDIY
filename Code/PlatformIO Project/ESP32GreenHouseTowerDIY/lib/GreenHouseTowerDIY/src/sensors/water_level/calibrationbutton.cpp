@@ -1,11 +1,9 @@
 #include "calibrationbutton.hpp"
 
 CalibrationButton::CalibrationButton(int inPin) : mechButton(inPin),
-                                                  timeObj(DEF_HOLD_MS, false)
-{
-    _longCallback = NULL;
-    _calibrationCallback = NULL;
-}
+                                                  timeObj(DEF_HOLD_MS, false),
+                                                  _longCallback(nullptr),
+                                                  _calibrationCallback(nullptr) {}
 
 CalibrationButton::~CalibrationButton(void) {}
 

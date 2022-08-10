@@ -7,8 +7,6 @@
 //! * Manual calibration is needed!!!
 //************************************************************************************************************************
 
-UltraSonicDistanceSensor _distanceSensor(ECHO_PIN, TRIG_PIN); // Initialize sensor that uses digital pins 13 and 12.
-
 // This is the function that is called on a quick click.
 void quickCallback(void)
 {
@@ -55,7 +53,8 @@ WaterLevelSensor::WaterLevelSensor() : _activateCalibration(false),
                                        _depthRange(0),
                                        _qNumberReadings{0},
                                        _depthArray{0},
-                                       _qNumberDepth{0} {}
+                                       _qNumberDepth{0},
+                                       _distanceSensor{std::make_shared<UltraSonicDistanceSensor>(ECHO_PIN, TRIG_PIN)} {}
 
 WaterLevelSensor::~WaterLevelSensor() {}
 
@@ -199,7 +198,7 @@ int WaterLevelSensor::convertToQNumber(int readings)
 
 double WaterLevelSensor::readSensor()
 {
-    double distance = _distanceSensor.measureDistanceCm(tower_temp.temp_sensor_results.temp[0]);
+    double distance = _distanceSensor->measureDistanceCm(tower_temp.temp_sensor_results.temp[0]);
     log_d("Distance: %.3f cm", distance, DEC);
     // Every 1 second, do a measurement using the sensor and print the distance in centimeters.
     my_delay(1L);

@@ -84,27 +84,26 @@ mDNSManager::MDNSHandler mdnsHandler(&StateManager_MDNS, &cfg);
 void setup()
 {
   Serial.begin(115200);
+  Serial.println(F("Green House Tower booting - please wait"));
+
+#if PRODUCTION
+#pragma message(Reminder "This is a production build.")
   Serial.setDebugOutput(true);
+#else
+#pragma message(Reminder "Debugging is disabled.")
+  Serial.setDebugOutput(false);
+#endif
+
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
   timedTasks.begin();
   ledManager.begin();
 
-  Serial.println(F("Setting up the program, standby..."));
+  Serial.println(F("Beginning the Setup up of your GreenHouse Tower, standby..."));
   // Setup the main loop
+  Wire.begin() ? Serial.println(F("I2C initialized")) : Serial.println(F("I2C failed"));
 
-  if (Wire.begin())
-  {
-    Serial.println(F("I2C initialized"));
-  }
-  else
-  {
-    Serial.println(F("I2C failed"));
-  }
-
-  Serial.println(F("Green House Tower booting - please wait"));
-  Serial.println(F("Starting..."));
   tower_temp.SetupSensors();
 #if USE_UC
   waterlevel.begin();

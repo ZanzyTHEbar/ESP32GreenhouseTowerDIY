@@ -1,6 +1,5 @@
-#pragma once
-#ifndef BASEMQTT_HPP
-#define BASEMQTT_HPP
+#ifndef XMQTTBASECLASS_HPP
+#define XMQTTBASECLASS_HPP
 #include <defines.hpp>
 #include "network/network.hpp"
 #include "network/ntp.hpp"
@@ -72,4 +71,4 @@ public:
     static std::unordered_map<std::string, CallbackEnum> s_callback_map;
 };
 extern XMqttBaseClass baseMQTT;
-#endif // BASEMQTT_HPP
+#endif // XMQTTBASECLASS_HPP

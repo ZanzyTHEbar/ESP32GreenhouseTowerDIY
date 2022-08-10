@@ -7,9 +7,9 @@
 #define HUMIDITY_HPP
 #include <defines.hpp>
 #include <Wire.h>
+#include <memory>
 #if USE_SHT31_SENSOR
 #include <Adafruit_SHT31.h>
-
 #endif // USE_SHT31_SENSOR
 
 #if USE_DHT_SENSOR
@@ -38,8 +38,17 @@ public:
   Humidity();
   virtual ~Humidity();
   // Initialize the library
-  byte setupSensor();
-  
+  enum _HUMIDITY_SENSORS_ACTIVE
+  {
+    HUMIDITY_SENSORS_ACTIVE_NONE = 0,
+    HUMIDITY_SENSORS_ACTIVE_SHT31 = 1,
+    HUMIDITY_SENSORS_ACTIVE_SHT31_2 = 2,
+    HUMIDITY_SENSORS_ACTIVE_BOTH = 3,
+    HUMIDITY_SENSORS_ACTIVE_DHT = 4,
+    HUMIDITY_SENSORS_ACTIVE_DHT_SHT31 = 5,
+    HUMIDITY_SENSORS_ACTIVE_DHT_SHT31_2 = 6,
+  };
+  _HUMIDITY_SENSORS_ACTIVE _humiditySensorsActive;
   struct Hum
   {
     float temp;
@@ -54,6 +63,7 @@ public:
 
   Hum result;
 
+  _HUMIDITY_SENSORS_ACTIVE begin();
 #if USE_DHT_SENSOR
   Hum readDHT();
 #endif // USE_DHT_SENSOR
@@ -72,14 +82,22 @@ public:
   // Variables
 private:
   uint32_t _delayS;
-#if USE_DHT_SENSOR
-  int _status;
-#endif // USE_DHT_SENSOR
 #if USE_SHT31_SENSOR
   bool _enableHeater;
   int _loopCnt;
-  byte _HUMIDITY_SENSORS_ACTIVE;
 #endif // USE_SHT31_SENSOR
+
+// Global Variables
+#if USE_SHT31_SENSOR
+  std::shared_ptr<Adafruit_SHT31> sht31;
+  std::shared_ptr<Adafruit_SHT31> sht31_2;
+#endif // USE_SHT31_SENSOR
+
+#if USE_DHT_SENSOR
+  std::shared_ptr<DHT_Unified> dht;
+#endif // USE_DHT_SENSOR
+
+  Humidity::Hum result;
 };
 extern Humidity humidity;
 #endif

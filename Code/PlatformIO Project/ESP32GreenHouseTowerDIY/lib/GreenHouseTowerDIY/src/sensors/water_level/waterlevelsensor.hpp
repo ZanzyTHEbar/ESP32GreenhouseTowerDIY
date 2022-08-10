@@ -6,6 +6,7 @@
 #ifndef WATERLEVELSENSOR_HPP
 #define WATERLEVELSENSOR_HPP
 #include <defines.hpp>
+#include <memory>
 #include <HCSR04.h>
 #if USE_CAP
 #include "calibrationbutton.hpp"
@@ -54,6 +55,8 @@ private:
     friend void holdCallback(void);
     friend void quickCallback(void);
     friend void longholdCallback(void);
+
+    std::shared_ptr<UltraSonicDistanceSensor> _distanceSensor; // Initialize sensor that uses digital pins 13 and 12.
 };
 
 extern WaterLevelSensor waterlevelSensor;

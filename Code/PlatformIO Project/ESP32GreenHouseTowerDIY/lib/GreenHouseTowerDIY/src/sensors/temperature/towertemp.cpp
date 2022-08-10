@@ -1,27 +1,14 @@
 #include "towertemp.hpp"
 
-// Setup a oneWire instance to communicate with any OneWire devices
-OneWire oneWire(ONE_WIRE_BUS);
-
-// Pass our oneWire reference to Dallas Temperature.
-DallasTemperature sensors(&oneWire);
-// variable to hold device addresses
-
-DeviceAddress temp_sensor_addresses;
-
 TowerTemp::Temp temp_sensor_results;
 
-TowerTemp::TowerTemp() : _sensors_count(0)
-{
-}
+TowerTemp::TowerTemp() : _sensors_count(0), oneWire{std::make_shared<OneWire>(ONE_WIRE_BUS)}, sensors{std::make_shared<DallasTemperature>(&oneWire)} {}
 
-TowerTemp::~TowerTemp()
-{
-}
+TowerTemp::~TowerTemp() {}
 
 void TowerTemp::setSensorCount()
 {
-    _sensors_count = sensors.getDeviceCount(); // returns the number of sensors found
+    _sensors_count = sensors->getDeviceCount(); // returns the number of sensors found
 }
 
 int TowerTemp::getSensorCount()
@@ -38,7 +25,7 @@ int TowerTemp::getSensorCount()
 void TowerTemp::SetupSensors()
 {
     // Start up the ds18b20 library
-    sensors.begin();
+    sensors->begin();
     setSensorCount();
 
     // handle the case where no sensors are connected
@@ -55,7 +42,7 @@ void TowerTemp::SetupSensors()
     for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
-        if (sensors.getAddress(temp_sensor_addresses, i))
+        if (sensors->getAddress(temp_sensor_addresses, i))
         {
             log_i("Found device %d with address:", i, DEC);
             printAddress(temp_sensor_addresses);
@@ -111,9 +98,9 @@ TowerTemp::Temp TowerTemp::getTempC()
     for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
-        if (sensors.getAddress(temp_sensor_addresses, i))
+        if (sensors->getAddress(temp_sensor_addresses, i))
         {
-            temp_sensor_results.temp.push_back(sensors.getTempC(temp_sensor_addresses));
+            temp_sensor_results.temp.push_back(sensors->getTempC(temp_sensor_addresses));
             printAddress(temp_sensor_addresses);
             log_i("\n");
         }
@@ -138,9 +125,9 @@ TowerTemp::Temp TowerTemp::getTempF()
     for (int i = 0; i < _sensors_count; i++)
     {
         // Search the wire for address
-        if (sensors.getAddress(temp_sensor_addresses, i))
+        if (sensors->getAddress(temp_sensor_addresses, i))
         {
-            temp_sensor_results.temp.push_back(sensors.getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0);
+            temp_sensor_results.temp.push_back(sensors->getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0);
             printAddress(temp_sensor_addresses);
             log_i("\n");
         }

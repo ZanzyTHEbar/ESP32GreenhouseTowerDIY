@@ -1,50 +1,50 @@
 #include "Humidity.hpp"
 
-// Global Variables
-#if USE_SHT31_SENSOR
-Adafruit_SHT31 sht31;
-Adafruit_SHT31 sht31_2;
-#endif // USE_SHT31_SENSOR
-
-#if USE_DHT_SENSOR
-DHT_Unified dht(DHTPIN, DHTTYPE);
-#endif // USE_DHT_SENSOR
-
-Humidity::Hum result;
-
 Humidity::Humidity() : _delayS(0),
 #if USE_DHT_SENSOR
-                       _status(0)
+                       dht{std::make_shared<DHT_Unified>(DHTPIN, DHTTYPE)}
 #endif // USE_DHT_SENSOR
 #if USE_SHT31_SENSOR
                        ,
                        _enableHeater(false),
                        _loopCnt(0),
-                       _HUMIDITY_SENSORS_ACTIVE(0)
+                       sht31{std::make_shared<Adafruit_SHT31>()},
+                       sht31_2{std::make_shared<Adafruit_SHT31>()},
+                       _humiditySensorsActive(HUMIDITY_SENSORS_ACTIVE_NONE)
 #endif // USE_SHT31_SENSOR
 {
 }
 
-Humidity::~Humidity()
+Humidity::~Humidity() {}
+
+void checkISNAN(const char *msg, float data)
 {
+  if (!isnan(data))
+  { // check if 'is not a number'
+    log_d("%s = %.3f\t\t", msg, data);
+  }
+  else
+  {
+    log_d("Failed to read %s\t\t", msg);
+  }
 }
 
 /******************************************************************************
  * Function: Setup Humidity Sensors
  * Description: This function is used to initialise the humidity sensors and their respective heaters
  * Parameters: None
- * Return: int - 0 for no sensors found, 1 for  1 sensor found, 2 for 1 sensors found, 3 for 2 sensors found
+ * Return: Enum _HUMIDITY_SENSORS_ACTIVE
  ******************************************************************************/
-byte Humidity::setupSensor()
+Humidity::_HUMIDITY_SENSORS_ACTIVE Humidity::begin()
 {
 #if USE_DHT_SENSOR
   // Initialize the DHT sensor.
-  dht.begin();
+  dht->begin();
   log_i("DHT Sensor connected!");
-  _status = 1;
+  _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_DHT;
   // Print temperature sensor details.
   sensor_t sensor;
-  dht.temperature().getSensor(&sensor);
+  dht->temperature().getSensor(&sensor);
   log_d("------------------------------------");
   log_d("Temperature Sensor");
   log_d("Sensor Type: %c", sensor.name);
@@ -55,7 +55,7 @@ byte Humidity::setupSensor()
   log_d("Resolution: %d °C", sensor.resolution);
   log_d("------------------------------------");
   // Print humidity sensor details.
-  dht.humidity().getSensor(&sensor);
+  dht->humidity().getSensor(&sensor);
   log_d("Humidity Sensor");
   log_d("Sensor Type: %c", sensor.name);
   log_d("Driver Ver: %d", sensor.version);
@@ -69,40 +69,35 @@ byte Humidity::setupSensor()
   log_d("Delay: %d ms", _delayS);
   log_d("------------------------------------");
   log_d("");
-  return _status;
 #endif // USE_DHT_SENSOR
 
 #if USE_SHT31_SENSOR
   log_d("SHT31 Sensors Setup Beginning....");
   // Set to 0x45 for alternate i2c address
-  if (!sht31.begin(0x44) && !sht31_2.begin(0x45))
+  if (!sht31->begin(0x44) && !sht31_2->begin(0x45))
   {
     log_d("Couldn't find SHT31 sensors");
     log_d("SHT31 Sensors Setup did not complete successfully, check your wiring or the addresses and try again");
-    _HUMIDITY_SENSORS_ACTIVE = 0;
-    return 0;
+    _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_NONE;
   }
-  else if (!sht31.begin(0x44) && sht31_2.begin(0x45))
+  else if (!sht31->begin(0x44) && sht31_2->begin(0x45))
   {
     log_d("Found 1 SHT31 Sensor");
-    _HUMIDITY_SENSORS_ACTIVE = 1;
-    return 1;
+    _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_SHT31;
   }
-  else if (!sht31_2.begin(0x45) && sht31.begin(0x44))
+  else if (!sht31_2->begin(0x45) && sht31->begin(0x44))
   {
     log_d("Found 2 SHT31 Sensor");
-    _HUMIDITY_SENSORS_ACTIVE = 2;
-    return 2;
+    _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_SHT31_2;
   }
   else
   {
     log_d("SHT31 Sensors Setup Complete");
-    _HUMIDITY_SENSORS_ACTIVE = 3;
-    return 3;
+    _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_BOTH;
   }
   my_delay(2L); // delay in between reads for stability
 #endif          // USE_SHT31_SENSOR
-  return 0;
+  return _humiditySensorsActive;
 }
 
 #if USE_DHT_SENSOR
@@ -112,25 +107,11 @@ Humidity::Hum Humidity::readDHT()
   my_delay(_delayS);
   // Get temperature event and print its value.
   sensors_event_t event;
-  dht.temperature().getEvent(&event);
-  if (isnan(event.temperature))
-  {
-    log_d("Error reading temperature!");
-  }
-  else
-  {
-    log_d("Temperature: %.3f°C", event.temperature);
-  }
+  dht->temperature().getEvent(&event);
+  checkISNAN("Temperature", event.temperature);
   // Get humidity event and print its value.
-  dht.humidity().getEvent(&event);
-  if (isnan(event.relative_humidity))
-  {
-    log_d("Error reading humidity!");
-  }
-  else
-  {
-    log_d("Humidity: %.3f%%", event.relative_humidity);
-  }
+  dht->humidity().getEvent(&event);
+  checkISNAN("Humidity", event.relative_humidity);
   result.temp = event.temperature;
   result.humidity = event.relative_humidity;
   return result;
@@ -140,19 +121,19 @@ Humidity::Hum Humidity::readDHT()
 #if USE_SHT31_SENSOR
 bool Humidity::checkHeaterEnabled()
 {
-  switch (_HUMIDITY_SENSORS_ACTIVE)
+  switch (_humiditySensorsActive)
   {
-  case 0:
+  case HUMIDITY_SENSORS_ACTIVE_NONE:
     return false;
     break;
-  case 1:
+  case HUMIDITY_SENSORS_ACTIVE_SHT31:
   {
-    bool _sensor1 = sht31.isHeaterEnabled();
+    bool _sensor1 = sht31->isHeaterEnabled();
     bool heaterenabled = false;
     if (_loopCnt >= 30)
     {
       _enableHeater = !_enableHeater;
-      sht31.heater(_enableHeater);
+      sht31->heater(_enableHeater);
       log_d("Heater Enabled State: %s", _enableHeater ? "Enabled" : "Disabled");
       if (_sensor1)
       {
@@ -170,14 +151,14 @@ bool Humidity::checkHeaterEnabled()
     return heaterenabled;
     break;
   }
-  case 2:
+  case HUMIDITY_SENSORS_ACTIVE_SHT31_2:
   {
-    bool _sensor2 = sht31_2.isHeaterEnabled();
+    bool _sensor2 = sht31_2->isHeaterEnabled();
     bool heaterenabled = false;
     if (_loopCnt >= 30)
     {
       _enableHeater = !_enableHeater;
-      sht31_2.heater(_enableHeater);
+      sht31_2->heater(_enableHeater);
       log_d("Heater Enabled State: %s", _enableHeater ? "Enabled" : "Disabled");
       if (_sensor2)
       {
@@ -195,16 +176,16 @@ bool Humidity::checkHeaterEnabled()
     return heaterenabled;
     break;
   }
-  case 3:
+  case HUMIDITY_SENSORS_ACTIVE_BOTH:
   {
-    bool _sensor1 = sht31.isHeaterEnabled();
-    bool _sensor2 = sht31_2.isHeaterEnabled();
+    bool _sensor1 = sht31->isHeaterEnabled();
+    bool _sensor2 = sht31_2->isHeaterEnabled();
     bool heaterenabled = false;
     if (_loopCnt >= 30)
     {
       _enableHeater = !_enableHeater;
-      sht31.heater(_enableHeater);
-      sht31_2.heater(_enableHeater);
+      sht31->heater(_enableHeater);
+      sht31_2->heater(_enableHeater);
       log_d("Heater Enabled State: %s", _enableHeater ? "Enabled" : "Disabled");
       if (_sensor1 != _sensor2)
       {
@@ -237,36 +218,32 @@ bool Humidity::checkHeaterEnabled()
  ******************************************************************************/
 float Humidity::AverageStackTemp()
 {
-  switch (_HUMIDITY_SENSORS_ACTIVE)
+  switch (_humiditySensorsActive)
   {
-  case 0:
+  case HUMIDITY_SENSORS_ACTIVE_NONE:
   {
     float stack_temp = 0;
     return stack_temp; // return 0 if no sensors are active
     break;
   }
-
-  case 1:
+  case HUMIDITY_SENSORS_ACTIVE_SHT31:
   {
     float stack_temp = result.temp_sht31;
     return stack_temp; // Only one sensor - return the value of that sensor
     break;
   }
-
-  case 2:
+  case HUMIDITY_SENSORS_ACTIVE_SHT31_2:
   {
     float stack_temp = result.temp_sht31_2;
     return stack_temp; // Only one sensor - return the value of that sensor
     break;
   }
-
-  case 3:
+  case HUMIDITY_SENSORS_ACTIVE_BOTH:
   {
     float stack_temp = result.temp_sht31 + result.temp_sht31_2;
     return stack_temp / 2; // Read the _temperature from the sensor and average the two sensors.
     break;
   }
-
   default:
   {
     break;
@@ -283,36 +260,32 @@ float Humidity::AverageStackTemp()
  ******************************************************************************/
 float Humidity::StackHumidity()
 {
-  switch (_HUMIDITY_SENSORS_ACTIVE)
+  switch (_humiditySensorsActive)
   {
-  case 0:
+  case HUMIDITY_SENSORS_ACTIVE_NONE:
   {
     float stack_humidity = 0;
     return stack_humidity; // return 0 if no sensors are active
     break;
   }
-
-  case 1:
+  case HUMIDITY_SENSORS_ACTIVE_SHT31:
   {
     float stack_humidity = result.humidity;
     return stack_humidity; // Only one sensor - return the value of that sensor
     break;
   }
-
-  case 2:
+  case HUMIDITY_SENSORS_ACTIVE_SHT31_2:
   {
     float stack_humidity = result.humidity_2;
     return stack_humidity; // Only one sensor - return the value of that sensor
     break;
   }
-
-  case 3:
+  case HUMIDITY_SENSORS_ACTIVE_BOTH:
   {
     float stack_humidity = result.humidity + result.humidity_2;
     return stack_humidity / 2; // Read the _humidity from the sensor and average the two sensors.
     break;
   }
-
   default:
   {
     break;
@@ -328,9 +301,9 @@ float Humidity::StackHumidity()
  ******************************************************************************/
 Humidity::Hum Humidity::ReadSensor()
 {
-  switch (_HUMIDITY_SENSORS_ACTIVE)
+  switch (_humiditySensorsActive)
   {
-  case 0:
+  case HUMIDITY_SENSORS_ACTIVE_NONE:
   {
     result.temp_sht31 = 0;
     result.humidity_sht31 = 0;
@@ -339,28 +312,13 @@ Humidity::Hum Humidity::ReadSensor()
     return result;
     break;
   }
-  case 1:
+  case HUMIDITY_SENSORS_ACTIVE_SHT31:
   {
-    float temp = sht31.readTemperature();
-    float hum = sht31.readHumidity();
-    // check if 'is not a number
-    if (!isnan(temp))
-    { // check if 'is not a number'
-      log_d("Temp *C = %.3f\t\t", temp);
-    }
-    else
-    {
-      log_d("Failed to read temperature");
-    }
-
-    if (!isnan(hum))
-    { // check if 'is not a number'
-      log_d("Hum. % = %.3f\t\t", hum);
-    }
-    else
-    {
-      log_d("Failed to read humidity");
-    }
+    float temp = sht31->readTemperature();
+    float hum = sht31->readHumidity();
+    // check if 'is not a number'
+    checkISNAN("Temp", temp);
+    checkISNAN("Humidity", hum);
     my_delay(0.1L); // delay in between reads for stability
 
     // Toggle heater enabled state every 30 seconds
@@ -372,27 +330,14 @@ Humidity::Hum Humidity::ReadSensor()
     return result;
     break;
   }
-  case 2:
+  case HUMIDITY_SENSORS_ACTIVE_SHT31_2:
   {
-    float temp_2 = sht31_2.readTemperature();
-    float hum_2 = sht31_2.readHumidity();
-    if (!isnan(temp_2))
-    { // check if 'is not a number'
-      log_d("Temp *C = %.3f\t\t", temp_2);
-    }
-    else
-    {
-      log_d("Failed to read temperature");
-    }
+    float temp_2 = sht31_2->readTemperature();
+    float hum_2 = sht31_2->readHumidity();
 
-    if (!isnan(hum_2))
-    { // check if 'is not a number'
-      log_d("Hum. % = %.3f\t\t", hum_2);
-    }
-    else
-    {
-      log_d("Failed to read humidity");
-    }
+    checkISNAN("Temp_2", temp_2);
+    checkISNAN("Hum_2", hum_2);
+
     my_delay(0.1L); // delay in between reads for stability
 
     // Toggle heater enabled state every 30 seconds
@@ -404,48 +349,18 @@ Humidity::Hum Humidity::ReadSensor()
     return result;
     break;
   }
-  case 3:
+  case HUMIDITY_SENSORS_ACTIVE_BOTH:
   {
-    float temp_1 = sht31.readTemperature();
-    float temp_2 = sht31_2.readTemperature();
-    if (!isnan(temp_1))
-    { // check if 'is not a number'
-      log_d("Temp 1 *C = %.3f\t\t", temp_1);
-    }
-    else
-    {
-      log_d("Failed to read temperature");
-    }
-
-    if (!isnan(temp_2))
-    { // check if 'is not a number'
-      log_d("Temp 2 *C = %.3f\t\t", temp_2);
-    }
-    else
-    {
-      log_d("Failed to read humidity");
-    }
+    float temp_1 = sht31->readTemperature();
+    float temp_2 = sht31_2->readTemperature();
+    checkISNAN("Temp_1", temp_1);
+    checkISNAN("Temp_2", temp_2);
 
     // check if 'is not a number'
-    float hum_1 = sht31.readHumidity();
-    float hum_2 = sht31_2.readHumidity();
-    if (!isnan(hum_1))
-    { // check if 'is not a number'
-      log_d("Temp 1 *C = %.3f\t\t", hum_1);
-    }
-    else
-    {
-      log_d("Failed to read temperature");
-    }
-
-    if (!isnan(hum_2))
-    { // check if 'is not a number'
-      log_d("Temp 2 *C = %.3f\t\t", hum_2);
-    }
-    else
-    {
-      log_d("Failed to read humidity");
-    }
+    float hum_1 = sht31->readHumidity();
+    float hum_2 = sht31_2->readHumidity();
+    checkISNAN("Hum_1", hum_1);
+    checkISNAN("Hum_2", hum_2);
     my_delay(1L); // delay in between reads for stability
     result = {temp_1, hum_1, temp_2, hum_2};
     return result;

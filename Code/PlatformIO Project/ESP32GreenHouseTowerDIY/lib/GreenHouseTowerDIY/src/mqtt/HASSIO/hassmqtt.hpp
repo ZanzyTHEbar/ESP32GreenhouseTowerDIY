@@ -3,8 +3,8 @@
  Copyright (c) 2021 ZanzyTHEbar
  */
 #pragma once
-#ifndef HAMQTT_HPP
-#define HAMQTT_HPP
+#ifndef HASSMQTT_HPP
+#define HASSMQTT_HPP
 #include <ArduinoHA.h>
 #include "mqtt/mqttbase.hpp"
 

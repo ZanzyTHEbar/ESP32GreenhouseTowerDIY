@@ -8,7 +8,7 @@ IPAddress broker_ip;
 void basicCallback(char *topic, byte *payload, unsigned int length);
 
 #if MQTT_SECURE
-PubSubClient mqttClient(broker_ip.fromString(basicMqtt.getBrokerAddress()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
 #else
 PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_PORT, basicCallback, espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
@@ -22,9 +22,7 @@ BasicMqtt::BasicMqtt() : _interval(60000),
                          _interval_reconnect(5000),
                          _user_data{0},
                          _previousMillis(0),
-                         _user_bytes_received(0)
-{
-}
+                         _user_bytes_received(0) {}
 
 BasicMqtt::~BasicMqtt() {}
 
