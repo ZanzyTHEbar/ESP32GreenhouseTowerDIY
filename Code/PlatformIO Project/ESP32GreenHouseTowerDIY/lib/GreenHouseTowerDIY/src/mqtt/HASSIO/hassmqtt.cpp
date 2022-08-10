@@ -43,7 +43,12 @@ HASensor sht31_humidity_temp_2("tower_humidity_temp_sht31");
  * Class Global Variables
  * Please only make changes to the following class variables within the ini file. Do not change them here.
  **********************************************************************************************************************/
-void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
+
+void basicCallback(const char *topic, const uint8_t *payload, uint16_t length)
+{
+    baseMQTT.callback(topic, payload, length);
+}
+
 void onMqttConnected();
 void onBeforeStateChanged(bool state, HASwitch *s);
 void onRelayStateChanged(bool state, HASwitch *s);
@@ -56,6 +61,7 @@ HASSMQTT::~HASSMQTT() {}
 
 bool HASSMQTT::begin()
 {
+    baseMQTT.begin();
     // Unique ID must be set!
     String mac = WiFi.macAddress();
     byte buf[100];
@@ -135,16 +141,16 @@ bool HASSMQTT::begin()
     light.setDeviceClass("illuminance");
     light.setIcon("mdi:lightbulb");
     light.setName("Light");
-    mqtt.onMessage(onMqttMessage);
+    mqtt.onMessage(basicCallback);
     mqtt.onConnected(onMqttConnected);
     mqtt.onConnectionFailed(onMqttConnectionFailed);
 
     mqtt.setDiscoveryPrefix("Greenhouse_Tower");
 
 #if MQTT_SECURE
-    bool success = mqtt.begin(broker_ip.fromString(getBrokerAddress()), cfg.config.MQTTUser, cfg.config.MQTTPass);
+    bool success = mqtt.begin(broker_ip.fromString(baseMQTT.getBrokerAddress()), cfg.config.MQTTUser, cfg.config.MQTTPass);
 #else
-    bool success = mqtt.begin(broker_ip.fromString(getBrokerAddress()));
+    bool success = mqtt.begin(broker_ip.fromString(baseMQTT.getBrokerAddress()));
 #endif // MQTT_SECURE
     return success;
 }

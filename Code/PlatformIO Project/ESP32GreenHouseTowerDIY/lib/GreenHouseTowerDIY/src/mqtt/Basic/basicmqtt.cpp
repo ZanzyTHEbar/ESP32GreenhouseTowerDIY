@@ -1,20 +1,24 @@
-#include "basicmqtt.hpp"
+#include "basicMqtt.hpp"
 
 //***********************************************************************************************************************
 // * Basic MQTT Class
 // * This class is used to connect to a MQTT broker and publish and subscribe to topics.
 //************************************************************************************************************************
-
+IPAddress broker_ip;
 void basicCallback(char *topic, byte *payload, unsigned int length);
 
-IPAddress broker_ip;
 #if MQTT_SECURE
-PubSubClient mqttClient(broker_ip.fromString(basicmqtt.getBrokerAddress()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(basicMqtt.getBrokerAddress()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
 #else
-PubSubClient mqttClient(broker_ip.fromString(basicmqtt.getBrokerAddress()), MQTT_PORT, basicCallback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_PORT, basicCallback, espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
-BASICMQTT::BASICMQTT() : _interval(60000),
+void basicCallback(char *topic, byte *payload, unsigned int length)
+{
+    baseMQTT.callback(topic, payload, length);
+}
+
+BasicMqtt::BasicMqtt() : _interval(60000),
                          _interval_reconnect(5000),
                          _user_data{0},
                          _previousMillis(0),
@@ -22,15 +26,11 @@ BASICMQTT::BASICMQTT() : _interval(60000),
 {
 }
 
-void basicCallback(char *topic, byte *payload, unsigned int length)
-{
-    basicmqtt.callback(topic, payload, length);
-}
+BasicMqtt::~BasicMqtt() {}
 
-BASICMQTT::~BASICMQTT() {}
-
-bool BASICMQTT::begin()
+bool BasicMqtt::begin()
 {
+    baseMQTT.begin();
     // Local Mosquitto Connection -- Start
     if (!mqttClient.connect(DEFAULT_HOSTNAME))
     {
@@ -47,7 +47,7 @@ bool BASICMQTT::begin()
     // connection succeeded
     if (phsensor.ph_data.find("id") != phsensor.ph_data.end())
     {
-        
+
         log_i("Connection succeeded. Subscribing to the topic [%s]", phData._pHTopic);
         mqttClient.subscribe(phData._pHTopic);
     }
@@ -61,7 +61,7 @@ bool BASICMQTT::begin()
     return true;
 }
 
-void BASICMQTT::mqttReconnect()
+void BasicMqtt::mqttReconnect()
 {
     // Loop until we're reconnected
     if (StateManager_MQTT.getCurrentState() == ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected)
@@ -86,7 +86,7 @@ void BASICMQTT::mqttReconnect()
     }
 }
 
-void BASICMQTT::mqttLoop()
+void BasicMqtt::mqttLoop()
 {
     my_delay(1L);
 
@@ -129,4 +129,12 @@ void BASICMQTT::mqttLoop()
     }
 }
 
-BASICMQTT basicmqtt;
+void BasicMqtt::checkState()
+{
+    cfg.config.MQTTConnectedState = mqttClient.connected();
+
+    cfg.config.MQTTConnectedState ? StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected) : StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected);
+    log_i("MQTT client state is: %d", mqttClient.state());
+}
+
+BasicMqtt basicmqtt;

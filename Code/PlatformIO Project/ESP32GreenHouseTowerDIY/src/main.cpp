@@ -138,11 +138,7 @@ void setup()
   cfg.attach(&mdnsHandler);
   network.SetupServer();
   Serial.println(F("Setting up MQTT"));
-#if ENABLE_HASS
-  hassmqtt.loadMQTTConfig();
-#else
-  basicmqtt.loadMQTTConfig();
-#endif // ENABLE_HASS
+  baseMQTT.loadMQTTConfig();
 
 #if ENABLE_MDNS_SUPPORT
   mDNSManager::mdnsHandler.startMDNS();

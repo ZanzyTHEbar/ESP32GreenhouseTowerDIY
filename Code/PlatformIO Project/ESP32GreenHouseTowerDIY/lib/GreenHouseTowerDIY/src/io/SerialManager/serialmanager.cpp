@@ -251,7 +251,7 @@ bool SerialManager::ManagerHandler(void)
 // Adds a "Manager" and a handler function to the list of available Managers.
 // This is used for matching a found token in the buffer, and gives the pointer
 // to the handler function to deal with it.
-void SerialManager::addManager(char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)())
+void SerialManager::addManager(const char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)())
 {
 
 #if SERIAL_CMD_DBG_EN

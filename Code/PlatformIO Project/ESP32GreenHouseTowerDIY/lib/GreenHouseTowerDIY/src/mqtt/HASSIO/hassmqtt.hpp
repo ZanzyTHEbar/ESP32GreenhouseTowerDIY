@@ -6,9 +6,9 @@
 #ifndef HAMQTT_HPP
 #define HAMQTT_HPP
 #include <ArduinoHA.h>
-#include "mqtt/base.hpp"
+#include "mqtt/mqttbase.hpp"
 
-class HASSMQTT : public BaseMQTT
+class HASSMQTT
 {
 public:
   // Constructor

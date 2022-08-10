@@ -1,5 +1,5 @@
 /*
- basicmqtt.hpp - ESP32GreenHouseDIY MQTT library
+ basicMqtt.hpp - ESP32GreenHouseDIY MQTT library
  Copyright (c) 2021 ZanzyTHEbar
  */
 #pragma once
@@ -11,20 +11,20 @@
 #include <iostream>
 #include <functional>
 #include <memory>
-#include "mqtt/base.hpp"
+#include "mqtt/mqttbase.hpp"
 
-class BASICMQTT : public BaseMQTT, IPAddress
+class BasicMqtt
 {
 public:
     // Constructor
-    BASICMQTT();
-    virtual ~BASICMQTT();
+    BasicMqtt();
+    virtual ~BasicMqtt();
 
     bool begin();
-    void loadMQTTConfig();
-    void checkState();
-    void mqttReconnect();
     void mqttLoop();
+    void checkState();
+
+    void mqttReconnect();
 
 private:
     // Private functions
@@ -39,5 +39,5 @@ private:
     const PHSENSOR::ph_Data_t &phData = phsensor.ph_data.at("id");
 };
 
-extern BASICMQTT basicmqtt;
+extern BasicMqtt basicmqtt;
 #endif // HAMQTT_HPP

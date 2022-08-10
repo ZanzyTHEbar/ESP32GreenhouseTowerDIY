@@ -182,7 +182,6 @@ bool Config::loadConfig()
 bool Config::setConfigChanged()
 {
     _last_config_change = true;
-    saveConfig();
     log_i("[Set Config Changed]: Config save set to true");
     return true;
 }
