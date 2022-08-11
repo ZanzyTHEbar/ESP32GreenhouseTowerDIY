@@ -13,5 +13,4 @@ private:
     const float _GAMMA;
     const float _RL10;
 };
-extern LDR ldr;
 #endif

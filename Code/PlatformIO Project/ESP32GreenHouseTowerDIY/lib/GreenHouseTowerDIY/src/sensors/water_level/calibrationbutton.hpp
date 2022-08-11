@@ -5,23 +5,23 @@
 
 #define DEF_HOLD_MS 10000     // How many ms we'll call a "long" button press.
 #define __DEF_HOLD_MS__ 5000 // How many ms we'll call a "long" button press.
-
+#define NUM_CHECKS 4         // Number of conflicting checks in a row that tells us to change.
 class CalibrationButton : public mechButton,
                           public timeObj
 {
 public:
-    CalibrationButton(int inPin);
+    CalibrationButton(uint8_t inPin);
     virtual ~CalibrationButton(void);
 
-    void setLongCallback(void (*funct)(void));
-    void setCalibrationCallback(void (*funct)(void));
+    void setLongCallback(funct_callback_t funct);
+    void setCalibrationCallback(funct_callback_t funct);
     virtual void idle(void);
+    virtual bool trueFalse(void);
 
 private:
     timeObj _calibrationTimer; // The timer for the long button press.
     void setCalibrationTimer(void);
-    void (*_longCallback)(void);
-    void (*_calibrationCallback)(void);
+    funct_callback_t _longCallback;
+    funct_callback_t _calibrationCallback;
 };
-extern CalibrationButton calibrationButton;
 #endif // CALIBRATIONBUTTON_HPP

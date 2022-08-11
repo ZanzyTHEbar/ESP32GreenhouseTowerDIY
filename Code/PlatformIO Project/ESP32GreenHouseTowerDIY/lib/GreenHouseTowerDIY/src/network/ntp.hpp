@@ -51,6 +51,4 @@ private:
     std::unique_ptr<WiFiUDP> ntpUDP;
     std::unique_ptr<NTPClient> timeClient;
 };
-
-extern NetworkNTP networkntp;
 #endif

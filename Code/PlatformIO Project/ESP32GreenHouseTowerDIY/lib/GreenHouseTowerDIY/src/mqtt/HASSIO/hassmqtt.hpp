@@ -12,7 +12,17 @@ class HASSMQTT
 {
 public:
   // Constructor
-  HASSMQTT();
+  HASSMQTT(Network *network,
+           Config *deviceConfig,
+           PUMP *pump,
+           Relays *relays,
+           AccumulateData *accumulateData,
+           PHSENSOR *phsensor,
+           NetworkNTP *ntp,
+           XMqttBaseClass *baseMQTT,
+           Humidity *humidity,
+           TowerTemp *tower_temp,
+           LDR *ldr);
   virtual ~HASSMQTT();
 
   bool begin();
@@ -29,8 +39,19 @@ private:
   unsigned long lastAvailabilityToggleAt;
   bool lastInputState;
   unsigned long lastSentAt;
+  long lastReconnectAttempt;
 
-  const PHSENSOR::ph_Data_t &phData = phsensor.ph_data.at("id");
+  Network *network;
+  Config *deviceConfig;
+  PUMP *pump;
+  Relays *relays;
+  AccumulateData *accumulateData;
+  PHSENSOR *phsensor;
+  NetworkNTP *ntp;
+  XMqttBaseClass *baseMQTT;
+  Humidity *humidity;
+  TowerTemp *tower_temp;
+  LDR *ldr;
 };
 
 extern HASSMQTT hassmqtt;

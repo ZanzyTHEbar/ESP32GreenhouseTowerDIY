@@ -7,6 +7,7 @@
 #define WATERLEVELSENSOR_HPP
 #include <defines.hpp>
 #include <memory>
+#include <functional>
 #include <HCSR04.h>
 #if USE_CAP
 #include "calibrationbutton.hpp"
@@ -18,7 +19,7 @@ class WaterLevelSensor
 {
 public:
     // Constructor
-    WaterLevelSensor();
+    WaterLevelSensor(CalibrationButton *_calibrationButton, TowerTemp *_towerTemp);
     virtual ~WaterLevelSensor();
     void begin();
     double readSensor();
@@ -51,13 +52,13 @@ private:
     void setCapSensorRange();
     int convertToQNumber(int readings);
     void convertToQNumber(int *readings, int *depth);
-    // Private Friends
-    friend void holdCallback(void);
-    friend void quickCallback(void);
-    friend void longholdCallback(void);
+
+    void holdCallback(void);
+    void quickCallback(void);
+    void longholdCallback(void);
 
     std::shared_ptr<UltraSonicDistanceSensor> _distanceSensor; // Initialize sensor that uses digital pins 13 and 12.
+    CalibrationButton *_calibrationButton;
+    TowerTemp *_towerTemp;
 };
-
-extern WaterLevelSensor waterlevelSensor;
 #endif

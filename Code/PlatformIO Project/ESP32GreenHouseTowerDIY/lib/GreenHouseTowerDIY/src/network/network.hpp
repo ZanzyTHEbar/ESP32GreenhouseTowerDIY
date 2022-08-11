@@ -48,6 +48,4 @@ private:
     std::shared_ptr<AsyncWebServer> server;
     wifi_config_t conf;
 };
-
-extern Network network;
 #endif

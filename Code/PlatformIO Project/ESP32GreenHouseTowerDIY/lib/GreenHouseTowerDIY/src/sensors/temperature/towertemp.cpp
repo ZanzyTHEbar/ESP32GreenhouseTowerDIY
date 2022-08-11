@@ -138,5 +138,3 @@ TowerTemp::Temp TowerTemp::getTempF()
     }
     return temp_sensor_results;
 }
-
-TowerTemp tower_temp;

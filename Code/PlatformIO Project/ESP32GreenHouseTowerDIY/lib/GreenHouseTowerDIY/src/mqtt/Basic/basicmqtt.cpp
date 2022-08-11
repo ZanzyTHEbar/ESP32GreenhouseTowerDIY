@@ -10,25 +10,46 @@ void basicCallback(char *topic, byte *payload, unsigned int length);
 #if MQTT_SECURE
 PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_SECURE_PORT, callback, *network.espClient); // Local Mosquitto Connection
 #else
-PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_PORT, basicCallback, *network.espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(BasicMqtt::XMqttBaseClass->getBrokerAddress()), MQTT_PORT, basicCallback, BasicMqtt::network->espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
 void basicCallback(char *topic, byte *payload, unsigned int length)
 {
-    baseMQTT.callback(topic, payload, length);
+    BasicMqtt::baseMQTT.callback(topic, payload, length);
 }
 
-BasicMqtt::BasicMqtt() : _interval(60000),
-                         _interval_reconnect(5000),
-                         _user_data{0},
-                         _previousMillis(0),
-                         _user_bytes_received(0) {}
+BasicMqtt::BasicMqtt(Network *network,
+                     Config *deviceConfig,
+                     PUMP *pump,
+                     Relays *relays,
+                     AccumulateData *accumulateData,
+                     PHSENSOR *phsensor,
+                     NetworkNTP *ntp,
+                     XMqttBaseClass *baseMQTT,
+                     Humidity *humidity,
+                     TowerTemp *tower_temp,
+                     LDR *ldr) : network(network),
+                                 deviceConfig(deviceConfig),
+                                 pump(pump),
+                                 relays(relays),
+                                 accumulateData(accumulateData),
+                                 phsensor(phsensor),
+                                 ntp(ntp),
+                                 baseMQTT(baseMQTT),
+                                 humidity(humidity),
+                                 tower_temp(tower_temp),
+                                 ldr(ldr),
+                                 _interval(60000),
+                                 _interval_reconnect(5000),
+                                 _user_data{0},
+                                 _previousMillis(0),
+                                 _user_bytes_received(0) {}
 
 BasicMqtt::~BasicMqtt() {}
 
 bool BasicMqtt::begin()
 {
-    baseMQTT.begin();
+    baseMQTT->begin();
     // Local Mosquitto Connection -- Start
     if (!mqttClient.connect(DEFAULT_HOSTNAME))
     {
@@ -43,15 +64,15 @@ bool BasicMqtt::begin()
     StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected);
 #if ENABLE_PH_SUPPORT
     // connection succeeded
-    if (phsensor.ph_data.find("id") != phsensor.ph_data.end())
+    if (phsensor->ph_data.find("id") != phsensor->ph_data.end())
     {
-
+        const PHSENSOR::ph_Data_t &phData = phsensor->ph_data.at("id");
         log_i("Connection succeeded. Subscribing to the topic [%s]", phData._pHTopic);
         mqttClient.subscribe(phData._pHTopic);
     }
 #endif // ENABLE_PH_SUPPORT
-    log_i("Subscribing to the topic [%s]", pump.pump_data._pumpTopic);
-    mqttClient.subscribe(pump.pump_data._pumpTopic);
+    log_i("Subscribing to the topic [%s]", pump->pump_data._pumpTopic);
+    mqttClient.subscribe(pump->pump_data._pumpTopic);
 
     log_i("Successfully subscribed to the topic.");
     /* _speakerTopic = SPEAKER_TOPIC;
@@ -71,7 +92,7 @@ void BasicMqtt::mqttReconnect()
             log_i("Connected to MQTT broker.");
             // Subscribe
 #if ENABLE_PH_SUPPORT
-            mqttClient.subscribe(phsensor._phData._pHTopic);
+            mqttClient.subscribe(phsensor->_phData._pHTopic);
 #endif // ENABLE_PH_SUPPORT
         }
         else
@@ -108,9 +129,9 @@ void BasicMqtt::mqttLoop()
 
             _previousMillis = currentMillis;
 
-            log_i("Sending message to topic: %s", phsensor._phData._pHOutTopic);
-            String timeStamp = networkntp.getTimeStamp();
-            mqttClient.publish(phsensor._phData._pHOutTopic, timeStamp.c_str(), true);
+            log_i("Sending message to topic: %s", phsensor->_phData._pHOutTopic);
+            String timeStamp = ntp->getTimeStamp();
+            mqttClient.publish(phsensor->_phData._pHOutTopic, timeStamp.c_str(), true);
         }
     }
 }

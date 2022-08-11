@@ -97,7 +97,6 @@ public:
         return !(*this == other);
     }
 };
-extern PHSENSOR phsensor;
 
 //! IMPORTANT: implement later
 namespace std

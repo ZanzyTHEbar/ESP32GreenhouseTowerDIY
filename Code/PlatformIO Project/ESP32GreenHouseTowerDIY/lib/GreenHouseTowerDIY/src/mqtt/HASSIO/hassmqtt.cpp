@@ -1,7 +1,5 @@
 #include "hassmqtt.hpp"
 
-long lastReconnectAttempt = 0;
-
 /**
  * @brief Initialize the MQTT client
  * @param clientId The client ID to use
@@ -23,7 +21,7 @@ long lastReconnectAttempt = 0;
 IPAddress broker_ip;
 
 HADevice device;
-HAMqtt mqtt(*network.espClient, device);
+HAMqtt mqtt(*HASSMQTT::network->espClient, device);
 HASwitch relay("pump_relay", false); // is unique ID.
 HASensor water_temp("water_temp");
 #if USE_DHT_SENSOR
@@ -55,13 +53,38 @@ void onRelayStateChanged(bool state, HASwitch *s);
 void onMqttConnectionFailed();
 void onPHStateChanged(bool state, HASwitch *s);
 
-HASSMQTT::HASSMQTT() : lastReadAt(millis()), lastAvailabilityToggleAt(millis()), lastInputState(digitalRead(pump.pump_data._pump_relay_pin)), lastSentAt(millis()) {}
+HASSMQTT::HASSMQTT(Network *network,
+                   Config *deviceConfig,
+                   PUMP *pump,
+                   Relays *relays,
+                   AccumulateData *accumulateData,
+                   PHSENSOR *phsensor,
+                   NetworkNTP *ntp,
+                   XMqttBaseClass *baseMQTT,
+                   Humidity *humidity,
+                   TowerTemp *tower_temp,
+                   LDR *ldr) : network(network),
+                               deviceConfig(deviceConfig),
+                               pump(pump),
+                               relays(relays),
+                               accumulateData(accumulateData),
+                               phsensor(phsensor),
+                               ntp(ntp),
+                               baseMQTT(baseMQTT),
+                               humidity(humidity),
+                               tower_temp(tower_temp),
+                               ldr(ldr),
+                               lastReadAt(millis()),
+                               lastAvailabilityToggleAt(millis()),
+                               lastInputState(digitalRead(pump->pump_data._pump_relay_pin)),
+                               lastSentAt(millis()),
+                               lastReconnectAttempt(0) {}
 
 HASSMQTT::~HASSMQTT() {}
 
 bool HASSMQTT::begin()
 {
-    baseMQTT.begin();
+    baseMQTT->begin();
     // Unique ID must be set!
     String mac = WiFi.macAddress();
     byte buf[100];
@@ -148,9 +171,9 @@ bool HASSMQTT::begin()
     mqtt.setDiscoveryPrefix("Greenhouse_Tower");
 
 #if MQTT_SECURE
-    bool success = mqtt.begin(broker_ip.fromString(baseMQTT.getBrokerAddress()), cfg.config.MQTTUser, cfg.config.MQTTPass);
+    bool success = mqtt.begin(broker_ip.fromString(baseMQTT->getBrokerAddress()), cfg.config.MQTTUser, cfg.config.MQTTPass);
 #else
-    bool success = mqtt.begin(broker_ip.fromString(baseMQTT.getBrokerAddress()));
+    bool success = mqtt.begin(broker_ip.fromString(baseMQTT->getBrokerAddress()));
 #endif // MQTT_SECURE
     return success;
 }
@@ -161,9 +184,12 @@ void onMqttConnected()
     log_i("Connected to the broker!");
     log_i("Subscribing to the topic: %s", pump.pump_data._pumpTopic);
     mqtt.subscribe(pump.pump_data._pumpTopic);
-
-    log_i("Subscribing to the topic: %s", hassmqtt.phData._pHTopic);
-    mqtt.subscribe(hassmqtt.phData._pHTopic);
+    if (phsensor->ph_data.find("id") != phsensor->ph_data.end())
+    {
+        const PHSENSOR::ph_Data_t &phData = phsensor->ph_data.at("id");
+        log_i("Subscribing to the topic: %s", phData._pHTopic);
+        mqtt.subscribe(phData._pHTopic);
+    }
 }
 
 void onMqttConnectionFailed()
@@ -202,7 +228,7 @@ void HASSMQTT::mqttLoop()
     if ((millis() - lastReadAt) > 30)
     { // read in 30ms interval
         // library produces MQTT message if a new state is different than the previous one
-        relay.setState(digitalRead(pump.pump_data._pump_relay_pin));
+        relay.setState(digitalRead(pump->pump_data._pump_relay_pin));
         lastInputState = relay.getState();
         lastReadAt = millis();
     }
@@ -216,10 +242,10 @@ void HASSMQTT::mqttLoop()
     if ((millis() - lastSentAt) >= 5000)
     {
         lastSentAt = millis();
-        tower_humidity_temp.setValue(humidity.result.temp);
-        tower_humidity.setValue(humidity.result.humidity);
-        water_temp.setValue(tower_temp.temp_sensor_results.temp[0]);
-        light.setValue(ldr.getLux());
+        tower_humidity_temp.setValue(humidity->result.temp);
+        tower_humidity.setValue(humidity->result.humidity);
+        water_temp.setValue(tower_temp->temp_sensor_results.temp[0]);
+        light.setValue(ldr->getLux());
 #if USE_SHT31_SENSOR
         sht31_humidity.setValue(lastValue);
         sht31_humidity_temp.setValue(lastValue);

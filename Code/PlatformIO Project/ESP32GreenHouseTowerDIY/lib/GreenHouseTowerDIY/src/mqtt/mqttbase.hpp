@@ -13,7 +13,7 @@ class XMqttBaseClass //: public Network
 {
 public:
     // Constructor
-    XMqttBaseClass();
+    XMqttBaseClass(PHSENSOR *_phSensor);
     virtual ~XMqttBaseClass();
 
     virtual bool begin();
@@ -69,6 +69,7 @@ public:
     static std::unordered_map<std::string, RelayEnum> s_relay_control_map;
     static std::unordered_map<std::string, PumpEnum> s_pump_control_map;
     static std::unordered_map<std::string, CallbackEnum> s_callback_map;
+
+    PHSENSOR* _phSensor;
 };
-extern XMqttBaseClass baseMQTT;
 #endif // XMQTTBASECLASS_HPP

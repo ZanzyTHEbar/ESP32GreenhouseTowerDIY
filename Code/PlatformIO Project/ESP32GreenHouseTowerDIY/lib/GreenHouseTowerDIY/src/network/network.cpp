@@ -464,5 +464,3 @@ void Network::setWiFiConf(const char *value, uint8_t *location)
     }
 #endif
 }
-
-Network network;

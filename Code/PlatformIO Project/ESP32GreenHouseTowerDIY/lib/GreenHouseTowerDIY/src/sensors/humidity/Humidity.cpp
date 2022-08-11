@@ -377,4 +377,3 @@ Humidity::Hum Humidity::ReadSensor()
 }
 #endif // USE_HUMIDITY_SENSOR
 
-Humidity humidity;

@@ -43,5 +43,3 @@ float BH1750::getLux()
     }
     return 0;
 }
-
-BH1750 bh1750; // create the sensor object

@@ -75,10 +75,6 @@ public:
   Hum ReadSensor();
 #endif // USE_SHT31_SENSOR
 
-  // Friends
-  friend class Config;
-  friend class AccumulateData;
-
   // Variables
 private:
   uint32_t _delayS;
@@ -97,5 +93,4 @@ private:
   std::shared_ptr<DHT_Unified> dht;
 #endif // USE_DHT_SENSOR
 };
-extern Humidity humidity;
 #endif

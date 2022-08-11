@@ -8,7 +8,7 @@
 class OTA
 {
 public:
-    OTA();
+    OTA(Config *_deviceConfig);
     virtual ~OTA();
 
     void SetupOTA();
@@ -18,7 +18,7 @@ public:
 private:
     unsigned long _bootTimestamp = 0;
     bool _isOtaEnabled = true;
-    
+    Config *_deviceConfig;
 };
 extern OTA ota;
 #endif // OTA_HPP

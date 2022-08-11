@@ -46,5 +46,4 @@ private:
     // variable to hold device addresses
     DeviceAddress temp_sensor_addresses;
 };
-extern TowerTemp tower_temp;
 #endif

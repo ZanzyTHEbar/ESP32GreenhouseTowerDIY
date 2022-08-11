@@ -72,7 +72,7 @@ void PHSENSOR::begin()
 void PHSENSOR::setPHPin(uint8_t *pin, int *time, bool state)
 {
     digitalWrite(*time, state);
-    phsensor.custom_delay(*time);
+    custom_delay(*time);
     digitalWrite(*pin, !state);
     float test = getPH();
 }
@@ -165,4 +165,3 @@ float PHSENSOR::getPH()
     }
 } */
 
-PHSENSOR phsensor;

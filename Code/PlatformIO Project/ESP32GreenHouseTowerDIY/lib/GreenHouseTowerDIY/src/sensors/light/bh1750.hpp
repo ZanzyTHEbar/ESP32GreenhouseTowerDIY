@@ -24,5 +24,4 @@ private:
     std::shared_ptr<hp_BH1750> BH1750_sensor;
 };
 
-extern BH1750 bh1750;
 #endif

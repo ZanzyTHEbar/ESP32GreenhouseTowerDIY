@@ -4,7 +4,7 @@ std::unordered_map<std::string, XMqttBaseClass::RelayEnum> XMqttBaseClass::s_rel
 std::unordered_map<std::string, XMqttBaseClass::PumpEnum> XMqttBaseClass::s_pump_control_map(0);
 std::unordered_map<std::string, XMqttBaseClass::CallbackEnum> XMqttBaseClass::s_callback_map(0);
 
-XMqttBaseClass::XMqttBaseClass() : _menuTopic("menuControl/menu"), _infoTopic("user/info") {}
+XMqttBaseClass::XMqttBaseClass(PHSENSOR *_phSensor) : _phSensor(_phSensor), _menuTopic("menuControl/menu"), _infoTopic("user/info") {}
 
 XMqttBaseClass::~XMqttBaseClass() {}
 
@@ -15,9 +15,9 @@ bool XMqttBaseClass::begin()
     s_callback_map[pump.pump_data._pumpTopic] = Pump;
     s_callback_map["Relay"] = Relays;
 #if ENABLE_PH_SUPPORT
-    if (phsensor.ph_data.find("id") != phsensor.ph_data.end())
+    if (_phSensor->ph_data.find("id") != _phSensor->ph_data.end())
     {
-        const PHSENSOR::ph_Data_t &phData = phsensor.ph_data.at("id");
+        const PHSENSOR::ph_Data_t &phData = _phSensor->ph_data.at("id");
         s_callback_map[phData._pHTopic] = Ph;
     }
 #endif // ENABLE_PH_SUPPORT
@@ -118,7 +118,7 @@ void XMqttBaseClass::callback(const char *topic, byte *payload, unsigned int len
 #if ENABLE_PH_SUPPORT
     case Ph:
         log_i("Setting pH level to: [%s]", buffer);
-        phsensor.parse_cmd_lookup(result);
+        _phSensor->parse_cmd_lookup(result);
         break;
 #endif // ENABLE_PH_SUPPORT
     case Pump:
@@ -169,7 +169,7 @@ void XMqttBaseClass::callback(const char *topic, const uint8_t *payload, uint16_
 #if ENABLE_PH_SUPPORT
     case Ph:
         log_i("Setting pH level to: [%s]", result.c_str());
-        phsensor.parse_cmd_lookup(result);
+        _phSensor->parse_cmd_lookup(result);
         break;
 #endif // ENABLE_PH_SUPPORT
     case Pump:
@@ -195,5 +195,3 @@ void XMqttBaseClass::callback(const char *topic, const uint8_t *payload, uint16_
         break;
     }
 }
-
-XMqttBaseClass baseMQTT;

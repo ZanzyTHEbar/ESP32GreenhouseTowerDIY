@@ -20,5 +20,3 @@ float LDR::getLux()
     my_delay(0.1L);
     return lux;
 }
-
-LDR ldr;

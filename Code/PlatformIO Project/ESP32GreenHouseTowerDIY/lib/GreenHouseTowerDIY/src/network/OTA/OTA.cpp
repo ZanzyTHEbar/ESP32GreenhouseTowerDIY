@@ -1,12 +1,11 @@
 #include "OTA.hpp"
 
-OTA::OTA() {}
+OTA::OTA(Config *_deviceConfig) : _deviceConfig(_deviceConfig) {}
 
 OTA::~OTA() {}
 
 void OTA::SetupOTA()
 {
-    std::unique_ptr<Config> _deviceConfig(new Config());
     log_e("Setting up OTA updates");
     auto localConfig = _deviceConfig->getOTAConfig();
 

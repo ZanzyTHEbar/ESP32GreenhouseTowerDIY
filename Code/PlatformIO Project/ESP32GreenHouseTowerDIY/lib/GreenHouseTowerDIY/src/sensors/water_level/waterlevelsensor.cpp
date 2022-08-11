@@ -7,54 +7,15 @@
 //! * Manual calibration is needed!!!
 //************************************************************************************************************************
 
-// This is the function that is called on a quick click.
-void quickCallback(void)
-{
-    if (waterlevelSensor._activateCalibration)
-    {
-        if (calibrationButton.trueFalse())
-        {
-            // the button is not being pressed..
-            return;
-        }
-
-        // the button is being pressed..
-        waterlevelSensor.calibrateSensor();
-    }
-}
-
-// This is the function that is called on a 10 second long click.
-void holdCallback(void)
-{
-    // Long press has happened.
-    my_delay(1L);
-    waterlevelSensor._activateCalibration = !waterlevelSensor._activateCalibration;
-}
-
-// This is the function that is called on a 5 second long click.
-void longholdCallback(void)
-{
-    // Long press has happened.
-    if (waterlevelSensor._activateCalibration)
-    {
-        if (calibrationButton.trueFalse())
-        {
-            // the button is not being pressed..
-            return;
-        }
-
-        // the button is being pressed..
-        waterlevelSensor.setCapSensorRange();
-    }
-}
-
-WaterLevelSensor::WaterLevelSensor() : _activateCalibration(false),
-                                       _depth(0),
-                                       _depthRange(0),
-                                       _qNumberReadings{0},
-                                       _depthArray{0},
-                                       _qNumberDepth{0},
-                                       _distanceSensor{std::make_shared<UltraSonicDistanceSensor>(ECHO_PIN, TRIG_PIN)} {}
+WaterLevelSensor::WaterLevelSensor(CalibrationButton *_calibrationButton, TowerTemp *_towerTemp) : _towerTemp(_towerTemp),
+                                                                                                   _calibrationButton(_calibrationButton),
+                                                                                                   _activateCalibration(false),
+                                                                                                   _depth(0),
+                                                                                                   _depthRange(0),
+                                                                                                   _qNumberReadings{0},
+                                                                                                   _depthArray{0},
+                                                                                                   _qNumberDepth{0},
+                                                                                                   _distanceSensor{std::make_shared<UltraSonicDistanceSensor>(ECHO_PIN, TRIG_PIN)} {}
 
 WaterLevelSensor::~WaterLevelSensor() {}
 
@@ -64,10 +25,54 @@ void WaterLevelSensor::begin()
     _height = RES_HEIGHT;
 #if USE_CAP
     _calibration = {CAP_MAX, CAP_MIN};
-    calibrationButton.setCallback(quickCallback);               // When the button gets clicked. Call this function.
-    calibrationButton.setLongCallback(holdCallback);            // If it's been held down for a "long" time call this.
-    calibrationButton.setCalibrationCallback(longholdCallback); // If it's been held down for a "long" time call this.
-#endif                                                          // USE_CAP
+    _calibrationButton->setCallback([this](void) -> void
+                                    { quickCallback(); }); // When the button gets clicked. Call this function.
+    _calibrationButton->setLongCallback([this](void) -> void
+                                        { holdCallback(); }); // If it's been held down for a "long" time call this.
+    _calibrationButton->setCalibrationCallback([this](void) -> void
+                                               { longholdCallback(); }); // If it's been held down for a "long" time call this.
+#endif                                                                   // USE_CAP
+}
+
+// This is the function that is called on a quick click.
+void WaterLevelSensor::quickCallback(void)
+{
+    if (_activateCalibration)
+    {
+        if (_calibrationButton->trueFalse())
+        {
+            // the button is not being pressed..
+            return;
+        }
+
+        // the button is being pressed..
+        calibrateSensor();
+    }
+}
+
+// This is the function that is called on a 10 second long click.
+void WaterLevelSensor::holdCallback(void)
+{
+    // Long press has happened.
+    my_delay(1L);
+    _activateCalibration = !_activateCalibration;
+}
+
+// This is the function that is called on a 5 second long click.
+void WaterLevelSensor::longholdCallback(void)
+{
+    // Long press has happened.
+    if (_activateCalibration)
+    {
+        if (_calibrationButton->trueFalse())
+        {
+            // the button is not being pressed..
+            return;
+        }
+
+        // the button is being pressed..
+        setCapSensorRange();
+    }
 }
 
 int WaterLevelSensor::readWaterLevelCapacitive()
@@ -198,7 +203,7 @@ int WaterLevelSensor::convertToQNumber(int readings)
 
 double WaterLevelSensor::readSensor()
 {
-    double distance = _distanceSensor->measureDistanceCm(tower_temp.temp_sensor_results.temp[0]);
+    double distance = _distanceSensor->measureDistanceCm(_towerTemp->temp_sensor_results.temp[0]);
     log_d("Distance: %.3f cm", distance, DEC);
     // Every 1 second, do a measurement using the sensor and print the distance in centimeters.
     my_delay(1L);
@@ -243,5 +248,3 @@ int WaterLevelSensor::getWaterLevel()
     return readWaterLevelUltraSonic();
 #endif // USE_CAP
 }
-
-WaterLevelSensor waterlevelSensor;

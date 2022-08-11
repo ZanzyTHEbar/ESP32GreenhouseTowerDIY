@@ -17,7 +17,17 @@ class BasicMqtt
 {
 public:
     // Constructor
-    BasicMqtt();
+    BasicMqtt(Network *network,
+              Config *deviceConfig,
+              PUMP *pump,
+              Relays *relays,
+              AccumulateData *accumulateData,
+              PHSENSOR *phsensor,
+              NetworkNTP *ntp,
+              XMqttBaseClass *baseMQTT,
+              Humidity *humidity,
+              TowerTemp *tower_temp,
+              LDR *ldr);
     virtual ~BasicMqtt();
 
     bool begin();
@@ -36,7 +46,18 @@ private:
     uint8_t _user_bytes_received;
     char _user_data[100];
 
-    const PHSENSOR::ph_Data_t &phData = phsensor.ph_data.at("id");
+    // 
+    Network *network;
+    Config *deviceConfig;
+    PUMP *pump;
+    Relays *relays;
+    AccumulateData *accumulateData;
+    PHSENSOR *phsensor;
+    NetworkNTP *ntp;
+    XMqttBaseClass *baseMQTT;
+    Humidity *humidity;
+    TowerTemp *tower_temp;
+    LDR *ldr;
 };
 
 extern BasicMqtt basicmqtt;

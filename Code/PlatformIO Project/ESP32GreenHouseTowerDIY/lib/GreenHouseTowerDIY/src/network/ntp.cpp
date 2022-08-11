@@ -190,5 +190,3 @@ String NetworkNTP::getDay()
     return timeClient->getFormattedDate().substring(8, 10);
 }
 #endif // NTP_MANUAL_ENABLED
-
-NetworkNTP networkntp;
