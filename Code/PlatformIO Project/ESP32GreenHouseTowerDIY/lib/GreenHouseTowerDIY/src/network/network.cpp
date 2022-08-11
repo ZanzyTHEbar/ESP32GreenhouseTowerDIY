@@ -132,7 +132,6 @@ void Network::networkRoutes()
 
     server->on("/wifimanager", HTTP_GET, [&](AsyncWebServerRequest *request)
                {
-                    wifi_config_t conf;
                     int params = request->params();
                     for(int i=0;i<params;i++)
                     {
@@ -146,7 +145,7 @@ void Network::networkRoutes()
                                 ssid = p->value().c_str();
                                 setWiFiConf(ssid, conf.sta.ssid);
                             }
-                            
+
                             if (p->name() == "password") 
                             {
                                 password = p->value().c_str();
@@ -155,7 +154,7 @@ void Network::networkRoutes()
                         }
                         log_i("GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
                     }
-                    request->send(200, MIMETYPE_JSON, "toggled"); });
+                    request->send(200); });
 
     server->on("/data.json", HTTP_GET, [&](AsyncWebServerRequest *request)
                {
@@ -190,7 +189,6 @@ void Network::networkRoutes()
  */
 bool Network::SetupNetworkStack()
 {
-    wifi_config_t conf;
     unsigned int ssid_length = sizeof(conf.sta.ssid);
     unsigned int password_length = sizeof(conf.sta.password);
 
@@ -456,7 +454,6 @@ void Network::setWiFiConf(const char *value, uint8_t *location)
 #if defined(ESP32)
     if (WiFiGenericClass::getMode() != WIFI_MODE_NULL)
     {
-        wifi_config_t conf;
         esp_wifi_get_config(WIFI_IF_STA, &conf);
 
         memset(location, 0, sizeof(location));

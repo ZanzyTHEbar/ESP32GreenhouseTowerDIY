@@ -48,6 +48,7 @@ private:
     const long _interval; // interval to wait for Wi-Fi connection (milliseconds)
     std::shared_ptr<AsyncWebServer> server;
     std::shared_ptr<WiFiClient> espClient;
+    wifi_config_t conf;
 };
 
 extern Network network;
