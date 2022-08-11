@@ -23,7 +23,7 @@ long lastReconnectAttempt = 0;
 IPAddress broker_ip;
 
 HADevice device;
-HAMqtt mqtt(espClient, device);
+HAMqtt mqtt(*network.espClient, device);
 HASwitch relay("pump_relay", false); // is unique ID.
 HASensor water_temp("water_temp");
 #if USE_DHT_SENSOR

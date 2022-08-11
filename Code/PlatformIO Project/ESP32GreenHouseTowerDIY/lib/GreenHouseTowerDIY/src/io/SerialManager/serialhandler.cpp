@@ -35,7 +35,6 @@ void SerialHandler::loop()
     - AT+COMMAND=1<CR>
     - AT+COMMAND=0<CR>
 */
-
 void pumpSerialHandler()
 {
     char *arg;
@@ -93,16 +92,7 @@ void pumpSerialHandler()
         }
         }
     }
-
-    if (ok)
-    {
-        log_i("[SerialHandler] : PUMPHandler - Data ok");
-    }
-    else
-    {
-        log_e("[SerialHandler] : \r\nPUMPHandler - ERROR\r\n");
-    }
-    // ok = false;
+    ok ? log_i("[SerialHandler] : PHHandler - Data ok") : log_e("[SerialHandler] : \r\nPHHandler - ERROR\r\n");
 }
 
 void pHSerialHandler()
@@ -117,13 +107,6 @@ void pHSerialHandler()
         phsensor.parse_cmd_lookup(temp);
     }
 
-    if (ok)
-    {
-        log_i("[SerialHandler] : PHHandler - Data ok");
-    }
-    else
-    {
-        log_e("[SerialHandler] : \r\nPHHandler - ERROR\r\n");
-    }
+    ok ? log_i("[SerialHandler] : PHHandler - Data ok") : log_e("[SerialHandler] : \r\nPHHandler - ERROR\r\n");
     // ok = false;
 }

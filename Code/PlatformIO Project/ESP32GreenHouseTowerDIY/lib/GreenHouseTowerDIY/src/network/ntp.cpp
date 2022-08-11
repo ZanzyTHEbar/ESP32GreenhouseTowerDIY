@@ -1,47 +1,38 @@
 #include "ntp.hpp"
 
+const char NetworkNTP::ntpServerName[] = "us.pool.ntp.org";
+// static const char ntpServerName[] = "time.nist.gov";
+// static const char ntpServerName[] = "time-a.timefreq.bldrdoc.gov";
+// static const char ntpServerName[] = "time-b.timefreq.bldrdoc.gov";
+// static const char ntpServerName[] = "time-c.timefreq.bldrdoc.gov";
+
 /**
  * @brief Get the current time automatically from the NTP server
  * @return String with the current time
  *
  */
 // Define NTP Client to get time
-WiFiUDP ntpUDP;
 
-#if NTP_MANUAL_ENABLED
 /**
  * @brief Get the current time MANUALLY
  *
  */
-// NTP Servers:
-static const char ntpServerName[] = "us.pool.ntp.org";
-// static const char ntpServerName[] = "time.nist.gov";
-// static const char ntpServerName[] = "time-a.timefreq.bldrdoc.gov";
-// static const char ntpServerName[] = "time-b.timefreq.bldrdoc.gov";
-// static const char ntpServerName[] = "time-c.timefreq.bldrdoc.gov";
-
-const int timeZone = 1; // Central European Time
-// const int timeZone = -5;  // Eastern Standard Time (USA)
-// const int timeZone = -4;  // Eastern Daylight Time (USA)
-// const int timeZone = -8;  // Pacific Standard Time (USA)
-// const int timeZone = -7;  // Pacific Daylight Time (USA)
-
-unsigned int localPort = 8888; // local port to listen for UDP packets
-
-time_t prevDisplay = 0; // when the digital clock was displayed
-
-NetworkNTP::NetworkNTP()
+NetworkNTP::NetworkNTP() : _formattedDate(""),
+                           _dayStamp(""),
+                           _timeStamp(""),
+                           ntpUDP(new WiFiUDP()),
+                           timeClient(new NTPClient(*ntpUDP)),
+                           timeZone(TIME_ZONE_OFFSET),
+                           localPort(8888),
+                           prevDisplay(0)
 {
-    // Variables to save date and time
-    _formattedDate = "";
-    _dayStamp = "";
-    _timeStamp = "";
+    timeClient->begin();
+    timeClient->setTimeOffset(timeZone);
 }
 
-NetworkNTP::~NetworkNTP()
-{
-}
+NetworkNTP::~NetworkNTP() {}
 
+#if NTP_MANUAL_ENABLED
 void NetworkNTP::NTPSetupManual()
 {
     log_i("Starting UDP");
@@ -148,29 +139,17 @@ void NetworkNTP::sendNTPpacket(IPAddress &address)
     ntpUDP.endPacket();
 }
 #else
-NTPClient timeClient(ntpUDP);
-
-NetworkNTP::NetworkNTP(): _formattedDate(""), _dayStamp(""), _timeStamp("")
-{
-    // Initialize a NTPClient to get time
-    timeClient.begin();
-    timeClient.setTimeOffset(TIME_ZONE_OFFSET);
-}
-
-NetworkNTP::~NetworkNTP()
-{
-}
 
 void NetworkNTP::NTPLoop()
 {
-    if (!timeClient.update())
+    if (!timeClient->update())
     {
-        timeClient.forceUpdate();
+        timeClient->forceUpdate();
     }
     // The _formattedDate comes with the following format:
     // 2022-05-28T16:00:13Z
     // We need to extract date and time
-    _formattedDate = timeClient.getFormattedDate();
+    _formattedDate = timeClient->getFormattedDate();
     log_d("Formatted Date: %s", _formattedDate.c_str());
 
     int splitT = _formattedDate.indexOf("T");
@@ -198,17 +177,17 @@ String NetworkNTP::getTimeStamp()
 
 String NetworkNTP::getYear()
 {
-    return timeClient.getFormattedDate().substring(0, 4);
+    return timeClient->getFormattedDate().substring(0, 4);
 }
 
 String NetworkNTP::getMonth()
 {
-    return timeClient.getFormattedDate().substring(5, 7);
+    return timeClient->getFormattedDate().substring(5, 7);
 }
 
 String NetworkNTP::getDay()
 {
-    return timeClient.getFormattedDate().substring(8, 10);
+    return timeClient->getFormattedDate().substring(8, 10);
 }
 #endif // NTP_MANUAL_ENABLED
 

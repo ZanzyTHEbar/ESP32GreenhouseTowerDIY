@@ -5,7 +5,7 @@
 #pragma once
 #ifndef NETWORKNTP_hpp
 #define NETWORKNTP_hpp
-
+#include <memory>
 #include <defines.hpp>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
@@ -38,6 +38,18 @@ private:
     String _formattedDate;
     String _dayStamp;
     String _timeStamp;
+
+    // NTP Servers:
+    static const char ntpServerName[16];
+    unsigned int localPort; // local port to listen for UDP packets
+    const int timeZone; 
+
+    
+
+
+    time_t prevDisplay; // when the digital clock was displayed
+    std::unique_ptr<WiFiUDP> ntpUDP;
+    std::unique_ptr<NTPClient> timeClient;
 };
 
 extern NetworkNTP networkntp;

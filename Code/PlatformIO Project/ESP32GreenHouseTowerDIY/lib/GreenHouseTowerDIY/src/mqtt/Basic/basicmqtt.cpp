@@ -8,9 +8,9 @@ IPAddress broker_ip;
 void basicCallback(char *topic, byte *payload, unsigned int length);
 
 #if MQTT_SECURE
-PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_SECURE_PORT, callback, *network.espClient); // Local Mosquitto Connection
 #else
-PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_PORT, basicCallback, espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_PORT, basicCallback, *network.espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
 void basicCallback(char *topic, byte *payload, unsigned int length)
@@ -107,18 +107,6 @@ void BasicMqtt::mqttLoop()
         {
 
             _previousMillis = currentMillis;
-            if (Serial.available() > 0)
-            {
-                _user_bytes_received = Serial.readBytesUntil(13, _user_data, sizeof(_user_data));
-            }
-
-            if (_user_bytes_received)
-            {
-                std::string temp = _user_data;
-                phsensor.parse_cmd_lookup(temp);
-                _user_bytes_received = 0;
-                memset(_user_data, 0, sizeof(_user_data));
-            }
 
             log_i("Sending message to topic: %s", phsensor._phData._pHOutTopic);
             String timeStamp = networkntp.getTimeStamp();

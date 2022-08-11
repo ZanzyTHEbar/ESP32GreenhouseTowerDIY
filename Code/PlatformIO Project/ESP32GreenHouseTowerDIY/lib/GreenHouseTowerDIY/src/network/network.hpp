@@ -22,8 +22,6 @@ extern "C"
 #include "data/Config/config.hpp"
 #include "data/StateManager/StateManager.hpp"
 
-extern WiFiClient espClient;
-
 class Network
 {
 public:
@@ -41,13 +39,13 @@ public:
     void setWiFiConf(const char *value, uint8_t *location);
 
     // variables
+    std::shared_ptr<WiFiClient> espClient;
 private:
     int CheckWifiState();
     // Timer variables
     unsigned long _previousMillis;
     const long _interval; // interval to wait for Wi-Fi connection (milliseconds)
     std::shared_ptr<AsyncWebServer> server;
-    std::shared_ptr<WiFiClient> espClient;
     wifi_config_t conf;
 };
 

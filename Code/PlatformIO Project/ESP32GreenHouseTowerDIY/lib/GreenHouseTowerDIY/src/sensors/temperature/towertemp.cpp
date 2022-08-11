@@ -2,7 +2,7 @@
 
 TowerTemp::Temp temp_sensor_results;
 
-TowerTemp::TowerTemp() : _sensors_count(0), oneWire{std::make_shared<OneWire>(ONE_WIRE_BUS)}, sensors{std::make_shared<DallasTemperature>(&oneWire)} {}
+TowerTemp::TowerTemp() : _sensors_count(0), oneWire{std::make_shared<OneWire>(ONE_WIRE_BUS)}, sensors{std::make_shared<DallasTemperature>(&*oneWire)} {}
 
 TowerTemp::~TowerTemp() {}
 

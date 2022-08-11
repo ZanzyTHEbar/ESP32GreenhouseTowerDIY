@@ -96,8 +96,6 @@ private:
 #if USE_DHT_SENSOR
   std::shared_ptr<DHT_Unified> dht;
 #endif // USE_DHT_SENSOR
-
-  Humidity::Hum result;
 };
 extern Humidity humidity;
 #endif
