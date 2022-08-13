@@ -46,7 +46,6 @@ private:
     uint8_t _user_bytes_received;
     char _user_data[100];
 
-    // 
     Network *network;
     Config *deviceConfig;
     PUMP *pump;
