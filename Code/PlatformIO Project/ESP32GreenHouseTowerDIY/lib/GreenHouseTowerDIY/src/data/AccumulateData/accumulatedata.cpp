@@ -1,8 +1,20 @@
 #include "accumulatedata.hpp"
 
-AccumulateData::AccumulateData() : _maxTemp(100), _numTempSensors(0)
-{
-}
+AccumulateData::AccumulateData(TowerTemp *tower_temp,
+                               Humidity *humidity,
+                               LDR *ldr,
+                               WaterLevelSensor *waterLevelSensor,
+                               PHSENSOR *phsensor,
+                               PUMP *pump,
+                               Relays *relays) : _maxTemp(100),
+                                                 _numTempSensors(0),
+                                                 tower_temp(tower_temp),
+                                                 humidity(humidity),
+                                                 ldr(ldr),
+                                                 waterLevelSensor(waterLevelSensor),
+                                                 phsensor(phsensor),
+                                                 pump(pump),
+                                                 relays(relays) {}
 
 AccumulateData::~AccumulateData() {}
 
@@ -16,19 +28,19 @@ void AccumulateData::begin() {}
 //******************************************************************************/
 void AccumulateData::InitAccumulateData()
 {
-    _numTempSensors = tower_temp.getSensorCount();
+    _numTempSensors = tower_temp->getSensorCount();
     cfg.config.numTempSensors = _numTempSensors;
 
     // Initialize the library
 #if USE_SHT31_SENSOR
-    humidity.ReadSensor();
+    humidity->ReadSensor();
 #endif // USE_SHT31_SENSOR
 
 #if USE_DHT_SENSOR
-    humidity.readDHT();
+    humidity->readDHT();
 #endif // USE_DHT_SENSOR
 
-    tower_temp.getTempC();
+    tower_temp->getTempC();
 
     // Relays
     for (int i = 0; i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]); i++)
@@ -48,10 +60,10 @@ bool AccumulateData::SendData()
     jsonDoc["num_temp_sensors"] = _numTempSensors;
     // jsonDoc["flow_rate"] = _config.flow_rate;
     // jsonDoc["flow_rate_sensor_temp"] = _config.flow_rate_sensor_temp;
-    jsonDoc["water_level_sensor"] = waterlevelSensor.getWaterLevel();
+    jsonDoc["water_level_sensor"] = waterLevelSensor->getWaterLevel();
 
 #if USE_SHT31_SENSOR
-    switch (humidity._HUMIDITY_SENSORS_ACTIVE)
+    switch (humidity->_HUMIDITY_SENSORS_ACTIVE)
     {
     case 0:
         break;
@@ -73,20 +85,20 @@ bool AccumulateData::SendData()
         break;
     }
 
-    jsonDoc["humidity_sht31_average"] = humidity.StackHumidity();
-    jsonDoc["humidity_temp_sht31_average"] = humidity.AverageStackTemp();
+    jsonDoc["humidity_sht31_average"] = humidity->StackHumidity();
+    jsonDoc["humidity_temp_sht31_average"] = humidity->AverageStackTemp();
 #endif // USE_SHT31_SENSOR
 #if USE_DHT_SENSOR
-    jsonDoc["humidity_dht"] = humidity.result.humidity;
-    jsonDoc["humidity_temp_dht"] = humidity.result.temp;
+    jsonDoc["humidity_dht"] = humidity->result.humidity;
+    jsonDoc["humidity_temp_dht"] = humidity->result.temp;
 #endif // USE_DHT_SENSOR
 #if ENABLE_PH_SUPPORT
-    jsonDoc["ph_sensor"] = phsensor.getPH();
+    jsonDoc["ph_sensor"] = phsensor->getPH();
 #endif // ENABLE_PH_SUPPORT
     JsonArray temp_sensor_data = jsonDoc.createNestedArray("temp_sensors");
     for (int i = 0; i < _numTempSensors; i++)
     {
-        temp_sensor_data.add(tower_temp.temp_sensor_results.temp[i]);
+        temp_sensor_data.add(tower_temp->temp_sensor_results.temp[i]);
     }
 
     // Relays
@@ -112,5 +124,3 @@ bool AccumulateData::SendData()
 
     return false;
 }
-
-AccumulateData accumulatedata;

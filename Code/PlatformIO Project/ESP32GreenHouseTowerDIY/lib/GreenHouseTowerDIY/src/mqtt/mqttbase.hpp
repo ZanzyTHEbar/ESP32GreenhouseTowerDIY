@@ -1,7 +1,7 @@
 #ifndef XMQTTBASECLASS_HPP
 #define XMQTTBASECLASS_HPP
 #include <defines.hpp>
-#include "network/network.hpp"
+#include "network/networkStack/network.hpp"
 #include "network/ntp.hpp"
 #include "io/Pump/pump.hpp"
 #include "io/Relays/Relays.hpp"

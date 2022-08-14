@@ -117,4 +117,12 @@ extern StateManager<ProgramStates::DeviceStates::MQTTState_e> StateManager_MQTT;
 extern StateManager<ProgramStates::DeviceStates::ButtonState_e> StateManager_Buttons;
 extern StateManager<ProgramStates::DeviceStates::PumpState_e> StateManager_Pump;
 
+typedef ProgramStates::DeviceStates::State_e State_e;
+typedef ProgramStates::DeviceStates::WiFiState_e WiFiState_e;
+typedef ProgramStates::DeviceStates::WebServerState_e WebServerState_e;
+typedef ProgramStates::DeviceStates::MDNSState_e MDNSState_e;
+typedef ProgramStates::DeviceStates::MQTTState_e MQTTState_e;
+typedef ProgramStates::DeviceStates::ButtonState_e ButtonState_e;
+typedef ProgramStates::DeviceStates::PumpState_e PumpState_e;
+
 #endif // STATEMANAGER_HPP

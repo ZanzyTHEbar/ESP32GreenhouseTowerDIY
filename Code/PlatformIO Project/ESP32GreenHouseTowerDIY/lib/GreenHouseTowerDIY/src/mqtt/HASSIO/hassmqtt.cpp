@@ -261,5 +261,3 @@ void HASSMQTT::mqttLoop()
         // const char*
     }
 }
-
-HASSMQTT hassmqtt;

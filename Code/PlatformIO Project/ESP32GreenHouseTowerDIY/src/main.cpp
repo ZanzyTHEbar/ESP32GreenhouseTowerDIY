@@ -1,64 +1,22 @@
 #include <defines.hpp>
-// data Struct
-#include "data/Config/config.hpp"
-#include "data/StateManager/StateManager.hpp"
-#include "network/mDNSManager/mDNSManager.hpp"
-#include "io/LEDManager/LEDManager.hpp"
 #include "io/SerialManager/serialhandler.hpp"
-
-// IO
-#include <Wire.h>
-#if ENABLE_I2C_SCANNER
-#include "io/i2cScanner/i2cscan.hpp"
-#endif // ENABLE_I2C_SCANNER
-
-// Light Sensors
-#if USE_BH1750
-#include "sensors/light/bh1750.hpp"
-#else
-#include "sensors/light/ldr.hpp"
-#endif // USE_BH1750
-
-// Temp Sensors
-#include "sensors/temperature/towertemp.hpp"
-
-// Humidity Sensors
-#include "sensors/humidity/Humidity.hpp"
-
-// Water Level Sensors
-#include "sensors/water_level/waterlevelsensor.hpp"
-
-// PH Sensors
-#if ENABLE_PH_SUPPORT
-#include "sensors/pH/pHsensor.hpp"
-#endif // ENABLE_PH_SUPPORT
-
-// Network definitions
-#include "network/network.hpp"
-#include "network/ntp.hpp"
-#include "network/OTA/OTA.hpp"
-
-// Accumulate Data
-#include "data/AccumulateData/accumulatedata.hpp"
-
-// Timed tasks
+#include "io/LEDManager/LEDManager.hpp"
 #include "data/BackgroundTasks/timedtasks.hpp"
+#include "network/OTA/OTA.hpp"
+#include "network/api/webServerHandler.hpp"
 
 /*######################## MQTT Configuration ########################*/
 // MQTT includes
+#include "mqtt/mqttbase.hpp"
 #if ENABLE_MDNS_SUPPORT
 #include "network/mDNSManager/mDNSManager.hpp"
 #endif // ENABLE_MDNS_SUPPORT
 #if ENABLE_HASS
-#include "mqtt/HASSIO/hassmqtt.hpp"
+#include "mqtt/HASSIO/hassMqtt.hpp"
 #else
-#include "mqtt/BASIC/basicmqtt.hpp"
+#include "mqtt/Basic/basicmqtt.hpp"
 #endif // ENABLE_HASS
 /*###################### MQTT Configuration END ######################*/
-
-// Relays and other IO
-#include "io/Relays/Relays.hpp"
-#include "io/Pump/pump.hpp"
 
 //******************************************************************************
 //* Function: Main program entry point.
@@ -78,8 +36,29 @@
 #endif
 
 SerialHandler serialHandler;
+Config config;
+APIServer apiServer;
+Network network;
+LDR ldr;
+TowerTemp tower_temp;
+Humidity humidity;
+WaterLevelSensor waterLevelSensor;
+PUMP pump;
+Relays relays;
+PHSENSOR phsensor;
+AccumulateData accumulateData;
+NetworkNTP ntp;
 
+#if ENABLE_MDNS_SUPPORT
 mDNSManager::MDNSHandler mdnsHandler(&StateManager_MDNS, &cfg);
+#endif // ENABLE_MDNS_SUPPORT
+
+XMqttBaseClass baseMQTT;
+#if ENABLE_HASS
+HASSMQTT hassMqtt(&network, &config, &pump, &relays, &accumulateData, &phsensor, &ntp, &baseMQTT, &humidity, &tower_temp, &ldr);
+#else
+BasicMqtt basicMqtt(&network, &config, &pump, &relays, &accumulateData, &phsensor, &ntp, &baseMQTT, &humidity, &tower_temp, &ldr);
+#endif // ENABLE_HASS
 
 void setup()
 {
@@ -102,54 +81,40 @@ void setup()
 
   Serial.println(F("Beginning the Setup up of your GreenHouse Tower, standby..."));
   // Setup the main loop
-  Wire.begin() ? Serial.println(F("I2C initialized")) : Serial.println(F("I2C failed"));
-
+  Serial.println(F(Wire.begin() ? "I2C initialized" : "I2C failed to initialize"));
   tower_temp.SetupSensors();
 #if USE_UC
-  waterlevel.begin();
+  waterLevelSensor.begin();
 #endif // USE_UC
 
-  switch (humidity.begin())
-  {
-  case 0:
-    Serial.println(F("Humidity Sensor Setup Failed - No sensors present"));
-    break;
-  case 1:
-    Serial.println(F("Humidity Sensor Setup Failed - initialised sensor one"));
-    break;
-  case 2:
-    Serial.println(F("Humidity Sensor Setup Failed - initialised sensor two"));
-    break;
-  case 3:
-    Serial.println(F("Humidity Sensor Setup Successful"));
-    break;
-  default:
-    Serial.println(F("Humidity Sensor Setup Failed - Unknown Error"));
-    break;
-  }
+  humidity.setup();
 
   Serial.println("");
   // Relay.SetupPID();
   // Setup the network stack
   Serial.println(F("Setting up WiFi"));
   Serial.println(F("Starting Webserver"));
-  network.SetupWebServer();
+  network.setCallback([&](void) -> void
+                      { apiServer.begin(); });
+  network.begin();
+#if ENABLE_MDNS_SUPPORT
   cfg.attach(&mdnsHandler);
+#endif // ENABLE_MDNS_SUPPORT
   network.SetupServer();
   Serial.println(F("Setting up MQTT"));
   baseMQTT.loadMQTTConfig();
 
 #if ENABLE_MDNS_SUPPORT
   mDNSManager::mdnsHandler.startMDNS();
-  mdnsHandler.DiscovermDNSBroker() ? log_d("[mDNS responder started] Setting up Broker...") : log_e("[mDNS responder]: failed");
+  log_d(mdnsHandler.DiscovermDNSBroker() ? "[mDNS responder started] Setting up Broker..." : "[mDNS responder]: failed");
 #endif // ENABLE_MDNS_SUPPORT
 
 #if ENABLE_HASS
-  hassmqtt.begin();
+  hassMqtt.begin();
 #else
-  basicmqtt.begin();
+  basicMqtt.begin();
 #endif // ENABLE_HASS
-  if (network.SetupNetworkStack())
+  if (network.setup())
   {
     Serial.println(F("Network Stack Setup Successful"));
     Serial.println(F("INFO: HTTP web server started"));
@@ -173,7 +138,7 @@ void loop()
   timedTasks.checkNetwork();
   ota.HandleOTAUpdate();
   ledManager.displayStatus();
-  ledManager.indicateWaterLevel(waterlevelSensor.getWaterLevel());
+  ledManager.indicateWaterLevel(waterLevelSensor.getWaterLevel());
   serialHandler.loop();
 
 #if ENABLE_I2C_SCANNER
@@ -185,20 +150,20 @@ void loop()
   if (cfg.config.data_json)
   {
     cfg.config.data_json = false;
-    if (!accumulatedata.SendData())
+    if (!accumulateData.SendData())
     {
       Serial.println(F("Data Sent"));
       log_e("Data Not Sent");
     }
   }
 
-  if (StateManager_WiFi.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected)
+  if (StateManager_WiFi.getCurrentState() == WiFiState_e::WiFiState_Connected)
   {
     timedTasks.NTPService();
 #if ENABLE_HASS
-    hassmqtt.mqttLoop();
+    hassMqtt.mqttLoop();
 #else
-    basicmqtt.mqttLoop();
+    basicMqtt.mqttLoop();
 #endif // ENABLE_HASS
   }
   else

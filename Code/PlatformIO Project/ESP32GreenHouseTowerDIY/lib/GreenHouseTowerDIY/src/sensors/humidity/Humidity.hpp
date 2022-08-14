@@ -8,6 +8,8 @@
 #include <defines.hpp>
 #include <Wire.h>
 #include <memory>
+#include <unordered_map>
+#include <functional>
 #if USE_SHT31_SENSOR
 #include <Adafruit_SHT31.h>
 #endif // USE_SHT31_SENSOR
@@ -37,6 +39,8 @@ public:
   // Constructor
   Humidity();
   virtual ~Humidity();
+
+  void setup();
   // Initialize the library
   enum _HUMIDITY_SENSORS_ACTIVE
   {
@@ -76,6 +80,8 @@ public:
 #endif // USE_SHT31_SENSOR
 
   // Variables
+  static std::unordered_map<_HUMIDITY_SENSORS_ACTIVE, std::function<void(void)>> humidity_sensors_map;
+
 private:
   uint32_t _delayS;
 #if USE_SHT31_SENSOR

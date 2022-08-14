@@ -8,14 +8,14 @@ IPAddress broker_ip;
 void basicCallback(char *topic, byte *payload, unsigned int length);
 
 #if MQTT_SECURE
-PubSubClient mqttClient(broker_ip.fromString(baseMQTT.getBrokerAddress()), MQTT_SECURE_PORT, callback, *network.espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(getBrokerAddress()), MQTT_SECURE_PORT, callback, *network.espClient); // Local Mosquitto Connection
 #else
-PubSubClient mqttClient(broker_ip.fromString(BasicMqtt::XMqttBaseClass->getBrokerAddress()), MQTT_PORT, basicCallback, BasicMqtt::network->espClient); // Local Mosquitto Connection
+PubSubClient mqttClient(broker_ip.fromString(getBrokerAddress()), MQTT_PORT, basicCallback, network->espClient); // Local Mosquitto Connection
 #endif // MQTT_SECURE
 
 void basicCallback(char *topic, byte *payload, unsigned int length)
 {
-    BasicMqtt::baseMQTT.callback(topic, payload, length);
+    callback(topic, payload, length);
 }
 
 BasicMqtt::BasicMqtt(Network *network,
@@ -143,5 +143,3 @@ void BasicMqtt::checkState()
     cfg.config.MQTTConnectedState ? StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Connected) : StateManager_MQTT.setState(ProgramStates::DeviceStates::MQTTState_e::MQTT_Disconnected);
     log_i("MQTT client state is: %d", mqttClient.state());
 }
-
-BasicMqtt basicmqtt;

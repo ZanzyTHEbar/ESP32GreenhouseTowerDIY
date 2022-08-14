@@ -31,14 +31,12 @@
 #endif // ENABLE_PH_SUPPORT
 
 #include "io/Relays/relays.hpp"
-
-// Timed tasks
-#include "data/BackgroundTasks/timedtasks.hpp"
+#include "io/Pump/pump.hpp"
 
 class AccumulateData
 {
 public:
-    AccumulateData();
+    AccumulateData(TowerTemp *tower_temp, Humidity *humidity, LDR *ldr, WaterLevelSensor *waterLevelSensor, PHSENSOR *phsensor, PUMP *pump, Relays *relays);
     virtual ~AccumulateData();
 
     void begin();
@@ -50,8 +48,12 @@ private:
     // Stack Data to send
     int _maxTemp;
     int _numTempSensors;
+    TowerTemp *tower_temp;
+    Humidity *humidity;
+    LDR *ldr;
+    WaterLevelSensor *waterLevelSensor;
+    PHSENSOR *phsensor;
+    PUMP *pump;
+    Relays *relays;
 };
-
-extern AccumulateData accumulatedata;
-
 #endif

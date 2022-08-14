@@ -58,6 +58,4 @@ private:
     TowerTemp *tower_temp;
     LDR *ldr;
 };
-
-extern BasicMqtt basicmqtt;
 #endif // HAMQTT_HPP
