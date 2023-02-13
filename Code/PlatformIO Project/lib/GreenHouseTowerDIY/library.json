@@ -1,6 +1,6 @@
 {
     "name": "GreenHouseTowerDIY",
-    "keywords": "GreenHouseTowerDIY, network, mqtt, config",
+    "keywords": "GreenHouseTowerDIY, network, mqtt, config, gardening",
     "description": "The complete GreenHouseTowerDIY library",
     "authors": [
         {
@@ -11,21 +11,6 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/Prometheon-Technologies/ESP32GreenHouseTowerDIY"
-    },
-    "export": {
-        "include": "/lib/GreenHouseTowerDIY"
-    },
-    "dependencies": {
-        "ArduinoJson": "^6.19.1",
-        "Wire": "^",
-        "SPIFFS": "^",
-        "LC_baseTools": "^1.4",
-        "OneWire": "^",
-        "DallasTemperature": "^3.9.1",
-        "PubSubClient": "^2.8",
-        "EspSoftwareSerial": "^6.13.2",
-        "Adafruit SHT31 Library": "^2.0.0",
-        "PID": "^1.2.1"
     },
     "version": "0.0.1",
     "frameworks": "arduino",

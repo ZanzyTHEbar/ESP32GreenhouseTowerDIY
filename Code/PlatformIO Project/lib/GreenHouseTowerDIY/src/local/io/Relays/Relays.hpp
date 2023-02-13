@@ -1,0 +1,25 @@
+#ifndef RELAYS_HPP
+#define RELAYS_HPP
+#include <Arduino.h>
+
+class Relays
+{
+public:
+    Relays();
+    virtual ~Relays();
+    void RelayOnOff(int relay, bool on, long double delay = 0.1L);
+    void SetupPID();
+#if USE_SHT31_SENSOR
+    void HumRelayOnOff();
+#endif // USE_SHT31_SENSOR
+
+private:
+
+#if USE_PID
+    double _Setpoint, _Input, _Output;
+    int _WindowSize;
+    unsigned long _windowStartTime;
+    PID myPID;
+#endif // USE_PID
+};
+#endif

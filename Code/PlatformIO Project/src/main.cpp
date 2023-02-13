@@ -1,133 +1,124 @@
 #include <Arduino.h>
-#include <defines.hpp>
+// Utilities
+#include <utilities/network_utilities.hpp>
+// Config
+#include <data/StateManager/StateManager.hpp>
+#include <data/config/project_config.hpp>
 
-/******************************************************************************
- * Function: Setup Main Loop
- * Description: This is the setup function for the main loop of the whole program. Use this to setup the main loop.
- * Parameters: None
- * Return: None
- ******************************************************************************/
+// Network
+#include <EasyNetworkManager.hpp>
+#include <network/mDNS/MDNSManager.hpp>
+#include <network/ota/OTA.hpp>
+// Data
+#include <local/data/AccumulateData/accumulatedata.hpp>
 
-#ifdef DEFAULT_HOSTNAME
-#pragma message(Reminder DEFAULT_HOSTNAME " is defined as the default hostname.")
-#endif
+// Sensors
+// Temp local/io/Sensors
+#include "local/io/sensors/temperature/towertemp.hpp"
+// Humidity local/io/Sensors
+#include "local/io/sensors/humidity/Humidity.hpp"
+// Water Level local/io/Sensors
+#include "local/io/sensors/water_level/waterlevelsensor.hpp"
+// Time stamp
+#include "local/network/ntp/ntp.hpp"
+// Background tasks
+#include "local/data/BackgroundTasks/timedtasks.hpp"
 
-#if PRODUCTION
-#pragma message(Reminder "This is a production build.")
-#else
-#pragma message(Reminder "This is a development build.")
-#endif
+std::string hostname = "waterchamber";
 
-void setup()
-{
-  Serial.begin(115200);
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
+// Objects
+ProjectConfig configManager(std::string(), hostname);
+WiFiHandler network(&configManager, &wifiStateManager, WIFI_SSID, WIFI_PASS, 1);
 
-  timedTasks.setupTimers();
+APIServer server(80,
+                 &configManager,
+                 "/control",
+                 "/wifimanager",
+                 "/userCommands");
+OTA ota(&configManager);
+MDNSHandler mDNS(&mdnsStateManager,
+                 &configManager,
+                 ("_" + hostname),
+                 "data",
+                 "_tcp",
+                 "api_port",
+                 "80");
 
-  Serial.println(F("Setting up the program, standby..."));
-  // Setup the main loop
-  // Initialize the relay pins
-  int temp[5] = {45, 38, 36, 35, 48};
-  // initialize the Relay pins and set them to off state
-  std::copy(temp, temp + sizeof(temp) / sizeof(temp[0]), cfg.config.relays_pin);
+NetworkNTP ntp;
+TowerTemp tower_temp;
+Humidity humidity;
+WaterLevelSensor waterLevelSensor(&tower_temp);
+AccumulateData data(&configManager,
+                    &ntp,
+                    &tower_temp,
+                    &humidity,
+                    &waterLevelSensor);
+TimedTasks timedTasks(&data);
 
-  Wire.begin();
-
-  Serial.println(F("Green House Tower booting - please wait"));
-  Serial.println(F("Starting..."));
-  tower_temp.SetupSensors();
-
-  switch (humidity.setupSensor())
-  {
-  case 0:
-    Serial.println(F("Humidity Sensor Setup Failed - No sensors present"));
-    break;
-  case 1:
-    Serial.println(F("Humidity Sensor Setup Failed - initialised sensor one"));
-    break;
-  case 2:
-    Serial.println(F("Humidity Sensor Setup Failed - initialised sensor two"));
-    break;
-  case 3:
-    Serial.println(F("Humidity Sensor Setup Successful"));
-    break;
-  default:
-    Serial.println(F("Humidity Sensor Setup Failed - Unknown Error"));
-    break;
-  }
-
-  Serial.println("");
-  Relay.SetupPID();
-  // Setup the network stack
-#if ENABLE_HASS
-  hassmqtt.loadMQTTConfig();
-#else
-  basemqtt.loadMQTTConfig();
-#endif // ENABLE_HASS
-  Serial.println(F("Setting up WiFi"));
-  Serial.println(F("Starting Webserver"));
-  network.SetupWebServer();
-  network.SetupServer();
-  Serial.println(F("Setting up MQTT"));
-
-#if ENABLE_MDNS_SUPPORT
-  if (mDNSDiscovery::DiscovermDNSBroker())
-  {
-    Serial.println(F("[mDNS responder started] Setting up Broker..."));
-  }
-  else
-  {
-    Serial.println(F("[mDNS responder failed]"));
-  }
-#endif // ENABLE_MDNS_SUPPORT
-
-  Serial.println("");
-  if (network.SetupNetworkStack())
-  {
-    Serial.println(F("Network Stack Setup Successful"));
-    Serial.println(F("INFO: HTTP web server started"));
-  }
-  else
-  {
-    Serial.println(F("Network Stack Setup Failed - Activating Access-Point Mode"));
-  }
-
-  Serial.print(F("\n===================================\n"));
-  Serial.println(F("Setup Complete"));
-  my_delay(1L);
+void printHelloWorld() {
+  Serial.println("Hello World");
 }
 
-void loop()
-{
-#if ENABLE_I2C_SCANNER
-  timedTasks.ScanI2CBus();
-#endif // ENABLE_I2C_SCANNER
+void setup() {
+  Serial.begin(115200);
+
+  Serial.setDebugOutput(true);
+  configManager.attach(&mDNS);
+  configManager.initConfig();  // call before load to initialise the structs
+  configManager.load();        // load the config from flash
+
+  network.begin();
+  mDNS.startMDNS();
+
+  // handle the WiFi connection state changes
+  switch (wifiStateManager.getCurrentState()) {
+    case WiFiState_e::WiFiState_Disconnected: {
+      break;
+    }
+    case WiFiState_e::WiFiState_Disconnecting: {
+      break;
+    }
+    case WiFiState_e::WiFiState_ADHOC: {
+      // only start the API server if we have wifi connection
+      // server.updateCommandHandlers("blink", blink);                // add a
+      // command handler to the API server - you can add as many as you want -
+      // you can also add methods. server.updateCommandHandlers("helloWorld",
+      // printHelloWorld); // add a command handler to the API server - you can
+      // add as many as you want - you can also add methods.
+      server.begin();
+      log_d("[SETUP]: Starting API Server");
+      break;
+    }
+    case WiFiState_e::WiFiState_Connected: {
+      // only start the API server if we have wifi connection
+      // server.updateCommandHandlers("blink", blink);                // add a
+      // command handler to the API server - you can add as many as you want -
+      // you can also add methods.
+      server.updateCommandHandlers(
+          "helloWorld",
+          printHelloWorld);  // add a command handler to the API server - you
+                             // can add as many as you want - you can also add
+                             // methods.
+      server.begin();
+      log_d("[SETUP]: Starting API Server");
+      break;
+    }
+    case WiFiState_e::WiFiState_Connecting: {
+      break;
+    }
+    case WiFiState_e::WiFiState_Error: {
+      break;
+    }
+  }
+  ntp.begin();
+  ota.SetupOTA();
+  humidity.begin();
+  tower_temp.begin();
+  waterLevelSensor.begin();
+}
+
+void loop() {
+  ota.HandleOTAUpdate();
+  data.loop();
   timedTasks.accumulateSensorData();
-  timedTasks.updateCurrentData();
-  timedTasks.checkNetwork();
-
-  if (cfg.config.data_json)
-  {
-    cfg.config.data_json = false;
-    if (accumulatedata.SendData())
-    {
-      Serial.println(F("Data Sent"));
-    }
-    else
-    {
-      Serial.println(F("Data Not Sent"));
-    }
-  }
-
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    timedTasks.NTPService();
-#if ENABLE_HASS
-    hassmqtt.mqttLoop();
-#else
-    basemqtt.mqttLoop();
-#endif // ENABLE_HASS
-  }
 }
