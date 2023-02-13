@@ -1,9 +1,11 @@
 {
-  "folders": [
-	{
-		"name": "PlatformIO Project",
-		"path": "."
+	"folders": [
+		{
+			"name": "PlatformIO Project",
+			"path": "."
+		}
+	],
+	"settings": {
+		"todo-tree.tree.scanMode": "workspace only"
 	}
-],
-  "settings": {}
 }
