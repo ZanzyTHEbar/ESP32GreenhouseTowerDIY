@@ -5,7 +5,7 @@
 #pragma once
 #ifndef BASEMQTT_HPP
 #define BASEMQTT_HPP
-#include <defines.hpp>
+#include <Arduino.h>
 #include <PubSubClient.h>
 
 class BASEMQTT : public IPAddress

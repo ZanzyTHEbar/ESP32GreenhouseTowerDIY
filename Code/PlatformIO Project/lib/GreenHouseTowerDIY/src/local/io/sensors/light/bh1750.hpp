@@ -5,24 +5,21 @@
 #pragma once
 #ifndef BH1750_HPP
 #define BH1750_HPP
-#include <defines.hpp>
+#include <Arduino.h>
 #include <hp_BH1750.h>
 
-class BH1750
-{
-public:
-    // Constructor
-    BH1750();
-    virtual ~BH1750();
+class BH1750 {
+ public:
+  // Constructor
+  BH1750();
+  virtual ~BH1750();
 
+  // Initialize the library
+  void begin();
+  float getLux();
 
-    // Initialize the library
-    void begin();
-    float getLux();
-
-private:
-    // Private variables
+ private:
+  hp_BH1750 BH1750_sensor;  // create the sensor object
+  // Private variables
 };
-
-extern BH1750 bh1750;
 #endif

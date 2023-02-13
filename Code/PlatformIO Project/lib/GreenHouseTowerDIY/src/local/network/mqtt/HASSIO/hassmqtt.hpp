@@ -5,12 +5,11 @@
 #pragma once
 #ifndef HAMQTT_HPP
 #define HAMQTT_HPP
-#include <defines.hpp>
+#include <Arduino.h>
 #include <ArduinoHA.h>
 
-class HASSMQTT
-{
-public:
+class HASSMQTT {
+ public:
   // Constructor
   HASSMQTT();
   virtual ~HASSMQTT();
@@ -20,10 +19,12 @@ public:
 
   // Friends
   friend class LDR;
-  friend void onMqttMessage(const char *topic, const uint8_t *payload, uint16_t length);
+  friend void onMqttMessage(const char* topic,
+                            const uint8_t* payload,
+                            uint16_t length);
   friend void onMqttConnected();
 
-private:
+ private:
   // Private functions
 
   // Private variables
@@ -32,6 +33,4 @@ private:
   bool lastInputState;
   unsigned long lastSentAt;
 };
-
-extern HASSMQTT hassmqtt;
-#endif // HAMQTT_HPP
+#endif  // HAMQTT_HPP

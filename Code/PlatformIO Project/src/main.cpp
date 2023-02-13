@@ -1,5 +1,7 @@
 #include <Arduino.h>
+
 // Utilities
+#include <local/network/networkState.hpp>
 #include <utilities/network_utilities.hpp>
 // Config
 #include <data/StateManager/StateManager.hpp>
@@ -118,6 +120,7 @@ void setup() {
 }
 
 void loop() {
+  mapWifiStateToState();
   ota.HandleOTAUpdate();
   data.loop();
   timedTasks.accumulateSensorData();
