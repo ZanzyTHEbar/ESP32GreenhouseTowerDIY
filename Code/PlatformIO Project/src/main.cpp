@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // Utilities
-#include <local/network/networkState.hpp>
+#include <local/logo/logo.hpp>
 #include <utilities/network_utilities.hpp>
 // Config
 #include <data/StateManager/StateManager.hpp>
@@ -63,8 +63,8 @@ void printHelloWorld() {
 
 void setup() {
   Serial.begin(115200);
-
-  Serial.setDebugOutput(true);
+  Serial.setDebugOutput(DEBUG_MODE);
+  Logo::printASCII();
   configManager.attach(&mDNS);
   configManager.initConfig();  // call before load to initialise the structs
   configManager.load();        // load the config from flash
@@ -120,7 +120,7 @@ void setup() {
 }
 
 void loop() {
-  mapWifiStateToState();
+  Network_Utilities::checkWiFiState();
   ota.HandleOTAUpdate();
   data.loop();
   timedTasks.accumulateSensorData();
