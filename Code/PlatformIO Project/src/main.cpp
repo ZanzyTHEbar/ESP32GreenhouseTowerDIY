@@ -13,6 +13,7 @@
 #include <network/ota/OTA.hpp>
 // Data
 #include <local/data/AccumulateData/accumulatedata.hpp>
+#include <local/data/config/config.hpp>
 
 // Sensors
 // Temp local/io/Sensors
@@ -26,10 +27,8 @@
 // Background tasks
 #include "local/data/BackgroundTasks/timedtasks.hpp"
 
-std::string hostname = "waterchamber";
-
 // Objects
-ProjectConfig configManager(std::string(), hostname);
+GreenHouseConfig configManager("greenhouse");
 WiFiHandler network(&configManager, &wifiStateManager, WIFI_SSID, WIFI_PASS, 1);
 
 APIServer server(80,
@@ -40,7 +39,7 @@ APIServer server(80,
 OTA ota(&configManager);
 MDNSHandler mDNS(&mdnsStateManager,
                  &configManager,
-                 ("_" + hostname),
+                 ("_" + configManager.getHostname()),
                  "data",
                  "_tcp",
                  "api_port",
