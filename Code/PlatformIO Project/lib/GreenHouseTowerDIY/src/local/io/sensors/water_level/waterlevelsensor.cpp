@@ -54,3 +54,7 @@ WaterLevelSensor::Data_t WaterLevelSensor::readWaterLevelUltraSonic() {
   result = {stock, p};
   return result;
 }
+
+// TODO: Add Infrared sensor - bounce off of styrofoam material in tube inside
+// of reservoir
+// TODO: Add LPS33/35  - pressure sensor - measure water level based on pressure -1ml = 1g

@@ -7,7 +7,6 @@ GreenHouseConfig::~GreenHouseConfig() {}
 
 void GreenHouseConfig::initConfig() {
   ProjectConfig::initConfig();
-
   this->config.mqtt = {"", 0, "", ""};
 }
 
@@ -17,10 +16,6 @@ void GreenHouseConfig::load() {
 
 void GreenHouseConfig::save() {
   ProjectConfig::save();
-}
-
-std::string GreenHouseConfig::getHostname() const {
-  return this->hostname;
 }
 
 std::string Project_Config::MQTTConfig_t::toRepresentation() {
@@ -40,4 +35,8 @@ std::string Project_Config::MQTTConfig_t::toRepresentation() {
 
 Project_Config::MQTTConfig_t* GreenHouseConfig::getMQTTConfig() {
   return &this->config.mqtt;
+}
+
+std::string GreenHouseConfig::getHostname() const {
+  return this->hostname;
 }
