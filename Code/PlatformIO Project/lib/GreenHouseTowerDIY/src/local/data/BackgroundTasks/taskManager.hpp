@@ -26,6 +26,8 @@ class TaskManager : public ISubject<ObserverEvent::CustomEvents> {
   /* Set Methods */
   void setRelaysConfig(const std::string& name,
                        uint8_t port,
+                       bool start_state,
+                       timeObj* timer,
                        bool shouldNotify = true);
 
   void setMQTTConfig(const std::string& broker,

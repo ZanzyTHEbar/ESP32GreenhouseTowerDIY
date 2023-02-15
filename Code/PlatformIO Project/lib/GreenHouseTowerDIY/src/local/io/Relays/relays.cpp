@@ -16,6 +16,15 @@ void I2C_RelayBoard::setRelay(uint8_t port, bool state) {
   relay.digitalWrite(port, state);
 }
 
+void I2C_RelayBoard::handleRelayTimer() {
+  for (auto device : deviceConfig->config.relays) {
+    if (device.timer->ding()) {
+      this->setRelay(device.port, !this->getRelay(device.port));
+      device.timer->start();
+    }
+  }
+}
+
 bool I2C_RelayBoard::getRelay(uint8_t port) {
   return relay.digitalRead(port);
 }
@@ -29,3 +38,5 @@ void I2C_RelayBoard::update(ObserverEvent::CustomEvents event) {
       break;
   }
 }
+
+// TODO: add and remove relays will be handled in the api

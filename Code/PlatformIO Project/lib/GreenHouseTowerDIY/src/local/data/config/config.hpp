@@ -1,6 +1,7 @@
 #ifndef GREENHOUSE_CONFIG_HPP
 #define GREENHOUSE_CONFIG_HPP
 #include <Arduino.h>
+#include <timeObj.h>
 #include <data/config/project_config.hpp>
 
 namespace Project_Config {
@@ -13,10 +14,18 @@ namespace Project_Config {
   };
 
   struct RelaysConfig_t {
-    RelaysConfig_t(const std::string& name, uint8_t port)
-        : name(std::move(name)), port(port) {}
+    RelaysConfig_t(const std::string& name,
+                   uint8_t port,
+                   bool start_state,
+                   timeObj* timer)
+        : name(std::move(name)),
+          port(port),
+          start_state(start_state),
+          timer(timer) {}
     std::string name;
     uint8_t port;
+    bool start_state;
+    timeObj* timer;
     std::string toRepresentation();
   };
 

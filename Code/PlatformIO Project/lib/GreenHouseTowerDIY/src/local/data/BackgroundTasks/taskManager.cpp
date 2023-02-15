@@ -37,11 +37,13 @@ void TaskManager::eraseTask(ObserverEvent::CustomEvents task,
 
 void TaskManager::setRelaysConfig(const std::string& name,
                                   uint8_t port,
-                                  bool shouldNotify) {
+                                  bool start_state,
+                                  timeObj* timer,
+                                  bool shouldNotify = true) {
   size_t size = deviceConfig->config.relays.size();
   if (size == 0) {
     log_i("No Relays found, adding new one");
-    deviceConfig->config.relays.emplace_back(name, port);
+    deviceConfig->config.relays.emplace_back(name, port, time);
   }
   int relayToUpdate = -1;
   for (size_t i = 0; i < size; i++) {
@@ -54,9 +56,10 @@ void TaskManager::setRelaysConfig(const std::string& name,
   if (relayToUpdate >= 0) {
     log_i("Relay found, updating");
     deviceConfig->config.relays[relayToUpdate].port = port;
+    deviceConfig->config.relays[relayToUpdate].timer = timer;
   } else if (size < 100) {
     log_i("Relay not found, adding new one");
-    deviceConfig->config.relays.emplace_back(name, port);
+    deviceConfig->config.relays.emplace_back(name, port, time);
   } else {
     log_e("Relay not found, max amount of relays (100) reached");
   }
