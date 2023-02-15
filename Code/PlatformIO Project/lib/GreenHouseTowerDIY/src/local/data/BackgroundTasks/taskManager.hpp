@@ -4,7 +4,12 @@
 #include <utilities/Observer.hpp>
 
 namespace ObserverEvent {
-  enum CustomEvents { relaysConfigChanged };
+  enum CustomEvents {
+    relaysConfigChanged,
+    relaysActivated,
+    accumulateData,
+    mqttConfigChanged
+  };
 }
 /**
  * @brief: This is a task handler for the background tasks
@@ -22,7 +27,7 @@ class TaskManager : public ISubject<ObserverEvent::CustomEvents> {
   void eraseTask(ObserverEvent::CustomEvents task,
                  IObserver<ObserverEvent::CustomEvents>* observer);
   void update(ObserverEvent::CustomEvents event);
-
+  void detachAll() override;
   /* Set Methods */
   void setRelaysConfig(const std::string& name,
                        uint8_t port,

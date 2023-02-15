@@ -2,7 +2,9 @@
 
 TaskManager::TaskManager(GreenHouseConfig* config) : deviceConfig(config) {}
 
-TaskManager::~TaskManager() {}
+TaskManager::~TaskManager() {
+  this->detachAll();
+}
 
 void TaskManager::update(ObserverEvent::CustomEvents event) {}
 
@@ -11,12 +13,23 @@ void TaskManager::update(ObserverEvent::CustomEvents event) {}
 //!                                                TaskHandler
 //*
 //**********************************************************************************************************************
+
+/**
+ * @brief Handles the tasks that are set by the user
+ * @note This function is to be called in the main loop
+ */
 void TaskManager::taskHandler() {
   for (auto itr = tasks.begin(); itr != tasks.end(); ++itr) {
     this->notify(*itr);
   }
 }
 
+/**
+ * @brief Sets a task to be handled by the task manager
+ * @note This function is to be called in the setup
+ * @param task The task to be handled
+ * @param observer The observer that will handle the task
+ */
 void TaskManager::setTask(ObserverEvent::CustomEvents task,
                           IObserver<ObserverEvent::CustomEvents>* observer) {
   tasks.insert(task);
@@ -74,3 +87,8 @@ void TaskManager::setMQTTConfig(const std::string& broker,
                                 const std::string& username,
                                 const std::string& password,
                                 bool shouldNotify) {}
+
+void TaskManager::detachAll() {
+  ISubject::detachAll();
+  tasks.clear();
+}

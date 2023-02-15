@@ -37,6 +37,15 @@ std::string Project_Config::MQTTConfig_t::toRepresentation() {
   return json;
 }
 
+std::string Project_Config::RelaysConfig_t::toRepresentation() {
+  std::string json = Helpers::format_string(
+      "\"deviceData\": {\"name\": \"%s\", \"port\": \"%d\", \"start_state\": "
+      "\"%s\", \"timer\": \"%.3f\"}",
+      this->name.c_str(), this->port, this->start_state ? "on" : "off",
+      this->timer->getTime());
+  return json;
+}
+
 //**********************************************************************************************************************
 //*
 //!                                                GetMethods

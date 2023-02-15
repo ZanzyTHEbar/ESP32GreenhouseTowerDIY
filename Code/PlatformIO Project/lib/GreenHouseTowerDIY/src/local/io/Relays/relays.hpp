@@ -14,7 +14,6 @@ class I2C_RelayBoard : public IObserver<ObserverEvent::CustomEvents>,
 
   void begin();
   void setRelay(uint8_t port, bool state);
-  void addRelay(int port, int time);
   bool getRelay(uint8_t port);
   void update(ObserverEvent::CustomEvents event);
   void handleRelayTimer();

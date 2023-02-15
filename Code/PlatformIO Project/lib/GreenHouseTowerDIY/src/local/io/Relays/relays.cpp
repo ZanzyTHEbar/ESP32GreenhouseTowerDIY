@@ -17,6 +17,10 @@ void I2C_RelayBoard::setRelay(uint8_t port, bool state) {
   relay.digitalWrite(port, state);
 }
 
+/**
+ * @brief Handles the relay actions based on the attached timer
+ * @note This function is called by the task manager
+ */
 void I2C_RelayBoard::handleRelayTimer() {
   for (auto device : deviceConfig->config.relays) {
     if (device.timer->ding()) {
@@ -34,6 +38,9 @@ void I2C_RelayBoard::update(ObserverEvent::CustomEvents event) {
   switch (event) {
     case ObserverEvent::CustomEvents::relaysConfigChanged:
       this->begin();
+      break;
+    case ObserverEvent::CustomEvents::relaysActivated:
+      this->handleRelayTimer();
       break;
     default:
       break;

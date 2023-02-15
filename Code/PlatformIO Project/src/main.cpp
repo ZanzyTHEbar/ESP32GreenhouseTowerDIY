@@ -25,7 +25,10 @@
 // Time stamp
 #include "local/network/ntp/ntp.hpp"
 // Background tasks
-#include "local/data/BackgroundTasks/timedtasks.hpp"
+#include "local/data/BackgroundTasks/taskManager.hpp"
+
+// IO
+#include "local/io/Relays/relays.hpp"
 
 // Objects
 GreenHouseConfig configManager("greenhouse");
@@ -54,7 +57,9 @@ AccumulateData data(&configManager,
                     &tower_temp,
                     &humidity,
                     &waterLevelSensor);
-TimedTasks timedTasks(&data);
+TaskManager timedTasks(&configManager);
+
+I2C_RelayBoard relays(&configManager);
 
 void printHelloWorld() {
   Serial.println("Hello World");
@@ -64,7 +69,15 @@ void setup() {
   Serial.begin(115200);
   Serial.setDebugOutput(DEBUG_MODE);
   Logo::printASCII();
-  configManager.attach(&mDNS);
+
+  /* Setup Events and Background Tasks */
+  configManager.attach(&mDNS);  // attach the mDNS to the config manager
+  timedTasks.setTask(ObserverEvent::CustomEvents::relaysActivated,
+                     &relays);  // attach the relays to the timed tasks
+  timedTasks.setTask(ObserverEvent::CustomEvents::accumulateData,
+                     &data);  // attach the data to the timed tasks
+
+  /* Load Config from memory */
   configManager.initConfig();  // call before load to initialise the structs
   configManager.load();        // load the config from flash
 
@@ -119,8 +132,8 @@ void setup() {
 }
 
 void loop() {
-  Network_Utilities::checkWiFiState();
-  ota.HandleOTAUpdate();
-  data.loop();
-  timedTasks.accumulateSensorData();
+  Network_Utilities::checkWiFiState();  // check the WiFi state
+  ota.HandleOTAUpdate();                // handle OTA updates
+  data.loop();                          // accumulate sensor data
+  timedTasks.taskHandler();             // handle background tasks
 }

@@ -4,8 +4,8 @@
 #include <vector>
 
 // data Struct
-#include <data/StateManager/StateManager.hpp>
-#include <data/config/project_config.hpp>
+#include <local/data/BackgroundTasks/taskManager.hpp>
+#include <local/data/config/config.hpp>
 // Temp local/io/Sensors
 #include <local/io/sensors/temperature/towertemp.hpp>
 // Humidity local/io/Sensors
@@ -15,19 +15,18 @@
 // Time stamp
 #include <local/network/ntp/ntp.hpp>
 
-class AccumulateData {
+class AccumulateData : public IObserver<ObserverEvent::CustomEvents>,
+                       public timeObj {
  public:
-  AccumulateData(ProjectConfig* configManager,
+  AccumulateData(GreenHouseConfig* configManager,
                  NetworkNTP* ntp,
-#if USE_GOOGLE_SHEETS
-                 NetworkHTTP* http,
-#endif  // USE_GOOGLE_SHEETS
                  TowerTemp* tower_temp,
                  Humidity* humidity,
                  WaterLevelSensor* waterLevelSensor);
   virtual ~AccumulateData();
 
   void loop();
+  void update(ObserverEvent::CustomEvents event);
   bool accumulateData();
 
  private:
@@ -35,11 +34,8 @@ class AccumulateData {
   int _maxTemp;
   int _numTempSensors;
 
-  ProjectConfig* configManager;
+  GreenHouseConfig* configManager;
   NetworkNTP* ntp;
-#if USE_GOOGLE_SHEETS
-  NetworkHTTP* http;
-#endif  // USE_GOOGLE_SHEETS
   TowerTemp* tower_temp;
   Humidity* humidity;
   WaterLevelSensor* waterLevelSensor;
