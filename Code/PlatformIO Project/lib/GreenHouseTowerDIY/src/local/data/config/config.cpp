@@ -12,11 +12,21 @@ void GreenHouseConfig::initConfig() {
 
 void GreenHouseConfig::load() {
   ProjectConfig::load();
+  // TODO: Load relays
+  // TODO: Load MQTT
 }
 
 void GreenHouseConfig::save() {
   ProjectConfig::save();
+  // TODO: Save relays
+  // TODO: Save MQTT
 }
+
+//**********************************************************************************************************************
+//*
+//!                                                ToRepresentation
+//*
+//**********************************************************************************************************************
 
 std::string Project_Config::MQTTConfig_t::toRepresentation() {
   std::string json = Helpers::format_string(
@@ -35,6 +45,11 @@ std::string Project_Config::MQTTConfig_t::toRepresentation() {
 
 Project_Config::MQTTConfig_t* GreenHouseConfig::getMQTTConfig() {
   return &this->config.mqtt;
+}
+
+std::vector<Project_Config::RelaysConfig_t>*
+GreenHouseConfig::getRelaysConfig() {
+  return &this->config.relays;
 }
 
 std::string GreenHouseConfig::getHostname() const {

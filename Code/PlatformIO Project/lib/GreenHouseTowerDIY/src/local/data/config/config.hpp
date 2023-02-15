@@ -12,8 +12,17 @@ namespace Project_Config {
     std::string toRepresentation();
   };
 
+  struct RelaysConfig_t {
+    RelaysConfig_t(const std::string& name, uint8_t port)
+        : name(std::move(name)), port(port) {}
+    std::string name;
+    uint8_t port;
+    std::string toRepresentation();
+  };
+
   struct GreenHouseConfig_t : ProjectConfig_t {
     MQTTConfig_t mqtt;
+    std::vector<RelaysConfig_t> relays;
   };
 }  // namespace Project_Config
 
@@ -29,6 +38,7 @@ class GreenHouseConfig : public ProjectConfig {
   std::string getHostname() const;
 
   Project_Config::MQTTConfig_t* getMQTTConfig();
+  std::vector<Project_Config::RelaysConfig_t>* getRelaysConfig();
 
   Project_Config::GreenHouseConfig_t config;
 
