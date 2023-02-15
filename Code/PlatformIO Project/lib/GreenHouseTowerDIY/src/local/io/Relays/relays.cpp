@@ -9,6 +9,7 @@ void I2C_RelayBoard::begin() {
   relay.begin(0x20);  // use default address
   for (auto device : deviceConfig->config.relays) {
     relay.pinMode(device.port, OUTPUT);
+    relay.digitalWrite(device.port, device.start_state);
   }
 }
 
