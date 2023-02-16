@@ -4,18 +4,21 @@
 #include <data/statemanager/StateManager.hpp>
 #include <functional>
 #include <local/data/config/config.hpp>
-class API {
+class API
+{
 private:
   StateManager<WiFiState_e> *stateManager;
   GreenHouseConfig *configManager;
   APIServer *server;
 
 public:
-  API(StateManager<WiFiState_e> *stateManager, APIServer *server,
+  API(StateManager<WiFiState_e> *stateManager,
+      APIServer *server,
       GreenHouseConfig *configManager);
   virtual ~API();
   void begin();
   void printHelloWorld();
+  void addRelay();
 };
 
 #endif // API_HPP
