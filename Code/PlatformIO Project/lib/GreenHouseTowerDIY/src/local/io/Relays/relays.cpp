@@ -37,7 +37,8 @@ bool I2C_RelayBoard::getRelay(uint8_t port) {
 void I2C_RelayBoard::update(ObserverEvent::CustomEvents event) {
   switch (event) {
     case ObserverEvent::CustomEvents::relaysConfigChanged:
-      this->begin();
+      //this->begin();
+      log_i("Relays config changed");
       break;
     case ObserverEvent::CustomEvents::relaysActivated:
       this->handleRelayTimer();

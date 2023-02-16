@@ -40,18 +40,19 @@ OTA ota(&configManager);
 MDNSHandler mDNS(&mdnsStateManager, &configManager,
                  ("_" + configManager.getHostname()), "data", "_tcp",
                  "api_port", "80");
-API api(&wifiStateManager, &server, &configManager);
+TaskManager timedTasks(&configManager);
+API api(&wifiStateManager, &server, &configManager, &timedTasks);
 NetworkNTP ntp;
 TowerTemp tower_temp;
 Humidity humidity;
 WaterLevelSensor waterLevelSensor(&tower_temp);
 AccumulateData data(&configManager, &ntp, &tower_temp, &humidity,
                     &waterLevelSensor);
-TaskManager timedTasks(&configManager);
 
 I2C_RelayBoard relays(&configManager);
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   Serial.setDebugOutput(DEBUG_MODE);
   Logo::printASCII();
@@ -77,7 +78,8 @@ void setup() {
   waterLevelSensor.begin();
 }
 
-void loop() {
+void loop()
+{
   Network_Utilities::checkWiFiState(); // check the WiFi state
   ota.HandleOTAUpdate();               // handle OTA updates
   data.loop();                         // accumulate sensor data

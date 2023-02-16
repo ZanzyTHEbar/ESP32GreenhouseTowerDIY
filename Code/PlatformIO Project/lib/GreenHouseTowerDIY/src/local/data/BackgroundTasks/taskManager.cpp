@@ -4,7 +4,7 @@ TaskManager::TaskManager(GreenHouseConfig *config) : deviceConfig(config) {}
 
 TaskManager::~TaskManager()
 {
-  this->detachAll();
+    this->detachAll();
 }
 
 void TaskManager::update(ObserverEvent::CustomEvents event) {}
@@ -21,10 +21,10 @@ void TaskManager::update(ObserverEvent::CustomEvents event) {}
  */
 void TaskManager::taskHandler()
 {
-  for (auto itr = tasks.begin(); itr != tasks.end(); ++itr)
-  {
-    this->notify(*itr);
-  }
+    for (auto itr = tasks.begin(); itr != tasks.end(); ++itr)
+    {
+        this->notify(*itr);
+    }
 }
 
 /**
@@ -36,15 +36,15 @@ void TaskManager::taskHandler()
 void TaskManager::setTask(ObserverEvent::CustomEvents task,
                           IObserver<ObserverEvent::CustomEvents> *observer)
 {
-  tasks.insert(task);
-  this->attach(observer);
+    tasks.insert(task);
+    this->attach(observer);
 }
 
 void TaskManager::eraseTask(ObserverEvent::CustomEvents task,
                             IObserver<ObserverEvent::CustomEvents> *observer)
 {
-  tasks.erase(task);
-  this->detach(observer);
+    tasks.erase(task);
+    this->detach(observer);
 }
 
 //**********************************************************************************************************************
@@ -59,42 +59,45 @@ void TaskManager::setRelaysConfig(const std::string &name,
                                   timeObj *timer,
                                   bool shouldNotify)
 {
-  size_t size = deviceConfig->config.relays.size();
-  if (size == 0)
-  {
-    log_i("No Relays found, adding new one");
-    deviceConfig->config.relays.emplace_back(name, port, start_state, time);
-  }
-  int relayToUpdate = -1;
-  for (size_t i = 0; i < size; i++)
-  {
-    if (strcmp(deviceConfig->config.relays[i].name.c_str(), name.c_str()) ==
-        0)
+    size_t size = deviceConfig->config.relays.size();
+    if (size == 0)
     {
-      relayToUpdate = i;
-      break;
+        log_i("No Relays found, adding new one");
+        deviceConfig->config.relays.emplace_back(name, port, start_state, time);
     }
-  }
-  if (relayToUpdate >= 0)
-  {
-    log_i("Relay found, updating");
-    deviceConfig->config.relays[relayToUpdate].port = port;
-    deviceConfig->config.relays[relayToUpdate].start_state = start_state;
-    deviceConfig->config.relays[relayToUpdate].timer = timer;
-  }
-  else if (size < 100)
-  {
-    log_i("Relay not found, adding new one");
-    deviceConfig->config.relays.emplace_back(name, port, start_state, time);
-  }
-  else
-  {
-    log_e("Relay not found, max amount of relays (100) reached");
-  }
-  if (shouldNotify)
-  {
-    this->notify(ObserverEvent::relaysConfigChanged);
-  }
+    else
+    {
+        int relayToUpdate = -1;
+        for (size_t i = 0; i < size; i++)
+        {
+            if (deviceConfig->config.relays[i].name == name)
+            {
+                relayToUpdate = i;
+                break;
+            }
+        }
+        if (relayToUpdate >= 0)
+        {
+            log_i("Relay found, updating");
+            deviceConfig->config.relays[relayToUpdate].port = port;
+            deviceConfig->config.relays[relayToUpdate].start_state = start_state;
+            deviceConfig->config.relays[relayToUpdate].timer = timer;
+        }
+        else if (size < 100)
+        {
+            log_i("Relay not found, adding new one");
+            deviceConfig->config.relays.emplace_back(name, port, start_state, time);
+        }
+        else
+        {
+            log_e("Relay not found, max amount of relays (100) reached");
+        }
+    }
+
+    if (shouldNotify)
+    {
+        this->notify(ObserverEvent::relaysConfigChanged);
+    }
 }
 
 void TaskManager::setMQTTConfig(const std::string &broker,
@@ -105,6 +108,6 @@ void TaskManager::setMQTTConfig(const std::string &broker,
 
 void TaskManager::detachAll()
 {
-  ISubject::detachAll();
-  tasks.clear();
+    ISubject::detachAll();
+    tasks.clear();
 }
