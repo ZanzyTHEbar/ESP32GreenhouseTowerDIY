@@ -8,7 +8,7 @@
 #include <data/config/project_config.hpp>
 
 // Network
-#include <EasyNetworkManager.hpp>
+#include <local/network/api/api.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/ota/OTA.hpp>
 // Data
@@ -32,38 +32,24 @@
 
 // Objects
 GreenHouseConfig configManager("greenhouse");
-WiFiHandler network(&configManager, &wifiStateManager, WIFI_SSID, WIFI_PASS, 1);
-
-APIServer server(80,
-                 &configManager,
-                 "/control",
-                 "/wifimanager",
+APIServer server(80, &configManager, "/control", "/wifimanager",
                  "/userCommands");
-OTA ota(&configManager);
-MDNSHandler mDNS(&mdnsStateManager,
-                 &configManager,
-                 ("_" + configManager.getHostname()),
-                 "data",
-                 "_tcp",
-                 "api_port",
-                 "80");
 
+WiFiHandler network(&configManager, &wifiStateManager, WIFI_SSID, WIFI_PASS, 1);
+OTA ota(&configManager);
+MDNSHandler mDNS(&mdnsStateManager, &configManager,
+                 ("_" + configManager.getHostname()), "data", "_tcp",
+                 "api_port", "80");
+API api(&wifiStateManager, &server, &configManager);
 NetworkNTP ntp;
 TowerTemp tower_temp;
 Humidity humidity;
 WaterLevelSensor waterLevelSensor(&tower_temp);
-AccumulateData data(&configManager,
-                    &ntp,
-                    &tower_temp,
-                    &humidity,
+AccumulateData data(&configManager, &ntp, &tower_temp, &humidity,
                     &waterLevelSensor);
 TaskManager timedTasks(&configManager);
 
 I2C_RelayBoard relays(&configManager);
-
-void printHelloWorld() {
-  Serial.println("Hello World");
-}
 
 void setup() {
   Serial.begin(115200);
@@ -71,59 +57,19 @@ void setup() {
   Logo::printASCII();
 
   /* Setup Events and Background Tasks */
-  configManager.attach(&mDNS);  // attach the mDNS to the config manager
+  configManager.attach(&mDNS); // attach the mDNS to the config manager
   timedTasks.setTask(ObserverEvent::CustomEvents::relaysActivated,
-                     &relays);  // attach the relays to the timed tasks
+                     &relays); // attach the relays to the timed tasks
   timedTasks.setTask(ObserverEvent::CustomEvents::accumulateData,
-                     &data);  // attach the data to the timed tasks
+                     &data); // attach the data to the timed tasks
 
   /* Load Config from memory */
-  configManager.initConfig();  // call before load to initialise the structs
-  configManager.load();        // load the config from flash
+  configManager.initConfig(); // call before load to initialise the structs
+  configManager.load();       // load the config from flash
 
   network.begin();
   mDNS.startMDNS();
-
-  // handle the WiFi connection state changes
-  switch (wifiStateManager.getCurrentState()) {
-    case WiFiState_e::WiFiState_Disconnected: {
-      break;
-    }
-    case WiFiState_e::WiFiState_Disconnecting: {
-      break;
-    }
-    case WiFiState_e::WiFiState_ADHOC: {
-      // only start the API server if we have wifi connection
-      // server.updateCommandHandlers("blink", blink);                // add a
-      // command handler to the API server - you can add as many as you want -
-      // you can also add methods. server.updateCommandHandlers("helloWorld",
-      // printHelloWorld); // add a command handler to the API server - you can
-      // add as many as you want - you can also add methods.
-      server.begin();
-      log_d("[SETUP]: Starting API Server");
-      break;
-    }
-    case WiFiState_e::WiFiState_Connected: {
-      // only start the API server if we have wifi connection
-      // server.updateCommandHandlers("blink", blink);                // add a
-      // command handler to the API server - you can add as many as you want -
-      // you can also add methods.
-      server.updateCommandHandlers(
-          "helloWorld",
-          printHelloWorld);  // add a command handler to the API server - you
-                             // can add as many as you want - you can also add
-                             // methods.
-      server.begin();
-      log_d("[SETUP]: Starting API Server");
-      break;
-    }
-    case WiFiState_e::WiFiState_Connecting: {
-      break;
-    }
-    case WiFiState_e::WiFiState_Error: {
-      break;
-    }
-  }
+  api.begin();
   ntp.begin();
   ota.SetupOTA();
   humidity.begin();
@@ -132,8 +78,8 @@ void setup() {
 }
 
 void loop() {
-  Network_Utilities::checkWiFiState();  // check the WiFi state
-  ota.HandleOTAUpdate();                // handle OTA updates
-  data.loop();                          // accumulate sensor data
-  timedTasks.taskHandler();             // handle background tasks
+  Network_Utilities::checkWiFiState(); // check the WiFi state
+  ota.HandleOTAUpdate();               // handle OTA updates
+  data.loop();                         // accumulate sensor data
+  timedTasks.taskHandler();            // handle background tasks
 }

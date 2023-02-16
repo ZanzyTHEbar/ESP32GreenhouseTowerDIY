@@ -1,16 +1,10 @@
 #include "accumulatedata.hpp"
 
-AccumulateData::AccumulateData(GreenHouseConfig* configManager,
-                               NetworkNTP* ntp,
-                               TowerTemp* tower_temp,
-                               Humidity* humidity,
-                               WaterLevelSensor* waterLevelSensor)
-    : _maxTemp(100),
-      _numTempSensors(0),
-      configManager(configManager),
-      ntp(ntp),
-      tower_temp(tower_temp),
-      humidity(humidity),
+AccumulateData::AccumulateData(GreenHouseConfig *configManager, NetworkNTP *ntp,
+                               TowerTemp *tower_temp, Humidity *humidity,
+                               WaterLevelSensor *waterLevelSensor)
+    : _maxTemp(100), _numTempSensors(0), configManager(configManager), ntp(ntp),
+      tower_temp(tower_temp), humidity(humidity),
       waterLevelSensor(waterLevelSensor) {}
 
 AccumulateData::~AccumulateData() {}
@@ -20,11 +14,11 @@ void AccumulateData::loop() {
 // Initialize the libraries and collect the data
 #if USE_SHT31_SENSOR
   humidity->ReadSensor();
-#endif  // USE_SHT31_SENSOR
+#endif // USE_SHT31_SENSOR
 
 #if USE_DHT_SENSOR
   humidity->readDHT();
-#endif  // USE_DHT_SENSOR
+#endif // USE_DHT_SENSOR
   log_i("Reading Tower Temp");
   if (tower_temp->getSensorCount() > 0) {
     log_i("Inside of Temp Sensor Check");
@@ -56,32 +50,32 @@ bool AccumulateData::accumulateData() {
       waterLevelSensor->result.water_level_percentage;
 #if USE_SHT31_SENSOR
   switch (humidity->_HUMIDITY_SENSORS_ACTIVE) {
-    case 0:
-      break;
-    case 1:
-      jsonDoc["humidity_sht31"] = humidity.result.humidity_sht31;
-      jsonDoc["humidity_temp_sht31"] = humidity.result.temp_sht31;
-      break;
-    case 2:
-      jsonDoc["humidity_sht31_2"] = humidity.result.humidity_sht31_2;
-      jsonDoc["humidity_temp_sht31_2"] = humidity.result.temp_sht31_2;
-      break;
-    case 3:
-      jsonDoc["humidity_sht31"] = humidity.result.humidity_sht31;
-      jsonDoc["humidity_temp_sht31"] = humidity.result.temp_sht31;
-      jsonDoc["humidity_sht31_2"] = humidity.result.humidity_sht31_2;
-      jsonDoc["humidity_temp_sht31_2"] = humidity.result.temp_sht31_2;
-      break;
-    default:
-      break;
+  case 0:
+    break;
+  case 1:
+    jsonDoc["humidity_sht31"] = humidity.result.humidity_sht31;
+    jsonDoc["humidity_temp_sht31"] = humidity.result.temp_sht31;
+    break;
+  case 2:
+    jsonDoc["humidity_sht31_2"] = humidity.result.humidity_sht31_2;
+    jsonDoc["humidity_temp_sht31_2"] = humidity.result.temp_sht31_2;
+    break;
+  case 3:
+    jsonDoc["humidity_sht31"] = humidity.result.humidity_sht31;
+    jsonDoc["humidity_temp_sht31"] = humidity.result.temp_sht31;
+    jsonDoc["humidity_sht31_2"] = humidity.result.humidity_sht31_2;
+    jsonDoc["humidity_temp_sht31_2"] = humidity.result.temp_sht31_2;
+    break;
+  default:
+    break;
   }
   jsonDoc["humidity_sht31_average"] = humidity->StackHumidity();
   jsonDoc["humidity_temp_sht31_average"] = humidity->AverageStackTemp();
-#endif  // USE_SHT31_SENSOR
+#endif // USE_SHT31_SENSOR
 #if USE_DHT_SENSOR
   jsonDoc["humidity_dht"] = humidity->result.humidity;
   jsonDoc["humidity_temp_dht"] = humidity->result.temp;
-#endif  // USE_DHT_SENSOR
+#endif // USE_DHT_SENSOR
   JsonArray temp_sensor_data = jsonDoc.createNestedArray("temp_sensors");
   for (int i = 0; i < _numTempSensors; i++) {
     temp_sensor_data.add(tower_temp->temp_sensor_results.temp[i]);
@@ -101,10 +95,10 @@ bool AccumulateData::accumulateData() {
 
 void AccumulateData::update(ObserverEvent::CustomEvents event) {
   switch (event) {
-    case ObserverEvent::CustomEvents::accumulateData:
-      accumulateData();
-      break;
-    default:
-      break;
+  case ObserverEvent::CustomEvents::accumulateData:
+    accumulateData();
+    break;
+  default:
+    break;
   }
 }
