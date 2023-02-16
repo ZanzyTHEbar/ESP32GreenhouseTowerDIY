@@ -15,7 +15,7 @@ public:
       GreenHouseConfig *configManager);
   virtual ~API();
   void begin();
-  static void printHelloWorld();
+  void printHelloWorld();
 };
 
 #endif // API_HPP
