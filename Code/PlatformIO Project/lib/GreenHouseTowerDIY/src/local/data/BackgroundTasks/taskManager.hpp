@@ -27,7 +27,7 @@ class TaskManager : public ISubject<ObserverEvent::CustomEvents> {
   void eraseTask(ObserverEvent::CustomEvents task,
                  IObserver<ObserverEvent::CustomEvents>* observer);
   void update(ObserverEvent::CustomEvents event);
-  void detachAll() override;
+  void detachAll();
   /* Set Methods */
   void setRelaysConfig(const std::string& name,
                        uint8_t port,

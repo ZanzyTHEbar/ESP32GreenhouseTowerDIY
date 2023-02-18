@@ -53,35 +53,35 @@ I2C_RelayBoard relays(&configManager);
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial.setDebugOutput(DEBUG_MODE);
-  Logo::printASCII();
+    Serial.begin(115200);
+    Serial.setDebugOutput(DEBUG_MODE);
+    Logo::printASCII();
 
-  /* Setup Events and Background Tasks */
-  configManager.attach(&mDNS); // attach the mDNS to the config manager
-  timedTasks.setTask(ObserverEvent::CustomEvents::relaysActivated,
-                     &relays); // attach the relays to the timed tasks
-  timedTasks.setTask(ObserverEvent::CustomEvents::accumulateData,
-                     &data); // attach the data to the timed tasks
+    /* Setup Events and Background Tasks */
+    configManager.attach(&mDNS); // attach the mDNS to the config manager
+    timedTasks.setTask(ObserverEvent::CustomEvents::relaysActivated,
+                       &relays); // attach the relays to the timed tasks
+    timedTasks.setTask(ObserverEvent::CustomEvents::accumulateData,
+                       &data); // attach the data to the timed tasks
 
-  /* Load Config from memory */
-  configManager.initConfig(); // call before load to initialise the structs
-  configManager.load();       // load the config from flash
+    /* Load Config from memory */
+    configManager.initConfig(); // call before load to initialise the structs
+    configManager.load();       // load the config from flash
 
-  network.begin();
-  mDNS.startMDNS();
-  api.begin();
-  ntp.begin();
-  ota.SetupOTA();
-  humidity.begin();
-  tower_temp.begin();
-  waterLevelSensor.begin();
+    network.begin();
+    mDNS.startMDNS();
+    api.begin();
+    ntp.begin();
+    ota.SetupOTA();
+    humidity.begin();
+    tower_temp.begin();
+    waterLevelSensor.begin();
 }
 
 void loop()
 {
-  Network_Utilities::checkWiFiState(); // check the WiFi state
-  ota.HandleOTAUpdate();               // handle OTA updates
-  data.loop();                         // accumulate sensor data
-  timedTasks.taskHandler();            // handle background tasks
+    Network_Utilities::checkWiFiState(); // check the WiFi state
+    ota.HandleOTAUpdate();               // handle OTA updates
+    data.loop();                         // accumulate sensor data
+    timedTasks.taskHandler();            // handle background tasks
 }

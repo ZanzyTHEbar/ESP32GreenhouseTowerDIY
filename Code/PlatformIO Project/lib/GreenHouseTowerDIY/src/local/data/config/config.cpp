@@ -5,7 +5,8 @@ GreenHouseConfig::GreenHouseConfig(const std::string &hostname)
 
 GreenHouseConfig::~GreenHouseConfig() {}
 
-void GreenHouseConfig::initConfig() {
+void GreenHouseConfig::initConfig()
+{
   ProjectConfig::initConfig();
   this->config.mqtt = {"", 0, "", ""};
 }
@@ -16,14 +17,16 @@ void GreenHouseConfig::initConfig() {
 //*
 //**********************************************************************************************************************
 
-void GreenHouseConfig::load() {
+void GreenHouseConfig::load()
+{
   // TODO: Load MQTT
 
   loadRelays();
   ProjectConfig::load();
 }
 
-void GreenHouseConfig::loadRelays() {
+void GreenHouseConfig::loadRelays()
+{
   int relays_count = getInt("relays_count", 0);
 
   //*! Note: The name must be less than 15 chars in size
@@ -32,7 +35,8 @@ void GreenHouseConfig::loadRelays() {
   std::string start_state = "start_state_";
   std::string timer = "timer_";
 
-  for (int i = 0; i < relays_count; i++) {
+  for (int i = 0; i < relays_count; i++)
+  {
     char buffer[2];
 
     std::string iter_str = Helpers::itoa(i, buffer, 10);
@@ -59,13 +63,15 @@ void GreenHouseConfig::loadRelays() {
 //*
 //**********************************************************************************************************************
 
-void GreenHouseConfig::save() {
+void GreenHouseConfig::save()
+{
   ProjectConfig::save();
   saveRelays();
   // TODO: Save MQTT
 }
 
-void GreenHouseConfig::saveRelays() {
+void GreenHouseConfig::saveRelays()
+{
   putInt("relays_count", this->config.relays.size());
 
   //*! Note: The name must be less than 15 chars in size
@@ -74,7 +80,8 @@ void GreenHouseConfig::saveRelays() {
   std::string start_state = "start_state_";
   std::string timer = "timer_";
 
-  for (int i = 0; i < this->config.relays.size(); i++) {
+  for (int i = 0; i < this->config.relays.size(); i++)
+  {
     char buffer[2];
 
     std::string iter_str = Helpers::itoa(i, buffer, 10);
@@ -97,7 +104,8 @@ void GreenHouseConfig::saveRelays() {
 //*
 //**********************************************************************************************************************
 
-std::string Project_Config::MQTTConfig_t::toRepresentation() {
+std::string Project_Config::MQTTConfig_t::toRepresentation()
+{
   std::string json = Helpers::format_string(
       "\"deviceData\": {\"broker\": \"%s\", \"port\": \"%d\", \"username\": "
       "\"%s\", \"password\": \"%s\"}",
@@ -106,7 +114,8 @@ std::string Project_Config::MQTTConfig_t::toRepresentation() {
   return json;
 }
 
-std::string Project_Config::RelaysConfig_t::toRepresentation() {
+std::string Project_Config::RelaysConfig_t::toRepresentation()
+{
   std::string json = Helpers::format_string(
       "\"deviceData\": {\"name\": \"%s\", \"port\": \"%d\", \"start_state\": "
       "\"%s\", \"timer\": \"%.3f\"}",
@@ -121,12 +130,14 @@ std::string Project_Config::RelaysConfig_t::toRepresentation() {
 //*
 //**********************************************************************************************************************
 
-Project_Config::MQTTConfig_t *GreenHouseConfig::getMQTTConfig() {
+Project_Config::MQTTConfig_t *GreenHouseConfig::getMQTTConfig()
+{
   return &this->config.mqtt;
 }
 
 std::vector<Project_Config::RelaysConfig_t> *
-GreenHouseConfig::getRelaysConfig() {
+GreenHouseConfig::getRelaysConfig()
+{
   return &this->config.relays;
 }
 

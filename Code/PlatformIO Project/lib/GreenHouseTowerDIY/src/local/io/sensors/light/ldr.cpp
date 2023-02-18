@@ -1,12 +1,14 @@
 #include "ldr.hpp"
 
-LDR::LDR() : _GAMMA(0.7), _RL10(50) {
+LDR::LDR() : _GAMMA(0.7), _RL10(50)
+{
   pinMode(LDR_PIN, INPUT);
 }
 
 LDR::~LDR() {}
 
-float LDR::getLux() {
+float LDR::getLux()
+{
   // Convert the analog value into lux value:
   float readLDR = analogRead(LDR_PIN);
   float voltage = readLDR / 4096.0 * 3.3;

@@ -1,5 +1,7 @@
 #include "accumulatedata.hpp"
 
+// TODO: Add all the sensors here
+
 AccumulateData::AccumulateData(GreenHouseConfig *configManager, NetworkNTP *ntp,
                                TowerTemp *tower_temp, Humidity *humidity,
                                WaterLevelSensor *waterLevelSensor)
@@ -9,7 +11,8 @@ AccumulateData::AccumulateData(GreenHouseConfig *configManager, NetworkNTP *ntp,
 
 AccumulateData::~AccumulateData() {}
 
-void AccumulateData::loop() {
+void AccumulateData::loop()
+{
   ntp->NTPLoop();
 // Initialize the libraries and collect the data
 #if USE_SHT31_SENSOR
@@ -20,7 +23,8 @@ void AccumulateData::loop() {
   humidity->readDHT();
 #endif // USE_DHT_SENSOR
   log_i("Reading Tower Temp");
-  if (tower_temp->getSensorCount() > 0) {
+  if (tower_temp->getSensorCount() > 0)
+  {
     log_i("Inside of Temp Sensor Check");
     tower_temp->getTempC();
     waterLevelSensor->readWaterLevelUltraSonic();
@@ -34,7 +38,9 @@ void AccumulateData::loop() {
 // * Parameters: None
 // * Return: bool - true if data was accumulated, false if not
 //******************************************************************************/
-bool AccumulateData::accumulateData() {
+bool AccumulateData::accumulateData()
+{
+  // TODO: add a timer to this fucntion to make sure it doesn't run too often
   _numTempSensors = tower_temp->getSensorCount();
   // assign the data to the data structure
   std::string json = "";
@@ -49,7 +55,8 @@ bool AccumulateData::accumulateData() {
   jsonDoc["water_level_percentage"] =
       waterLevelSensor->result.water_level_percentage;
 #if USE_SHT31_SENSOR
-  switch (humidity->_HUMIDITY_SENSORS_ACTIVE) {
+  switch (humidity->_HUMIDITY_SENSORS_ACTIVE)
+  {
   case 0:
     break;
   case 1:
@@ -77,14 +84,17 @@ bool AccumulateData::accumulateData() {
   jsonDoc["humidity_temp_dht"] = humidity->result.temp;
 #endif // USE_DHT_SENSOR
   JsonArray temp_sensor_data = jsonDoc.createNestedArray("temp_sensors");
-  for (int i = 0; i < _numTempSensors; i++) {
+  for (int i = 0; i < _numTempSensors; i++)
+  {
     temp_sensor_data.add(tower_temp->temp_sensor_results.temp[i]);
   }
-  if (serializeJson(jsonDoc, json) == 0) {
+  if (serializeJson(jsonDoc, json) == 0)
+  {
     log_e("[Data Json Document]: Failed to write to file");
     return false;
   }
-  if (json.length() > 0) {
+  if (json.length() > 0)
+  {
     configManager->getDeviceDataJson()->deviceJson.assign(json);
     serializeJsonPretty(jsonDoc, json);
     log_d("[Data Json Document]: %s", json.c_str());
@@ -93,8 +103,10 @@ bool AccumulateData::accumulateData() {
   return false;
 }
 
-void AccumulateData::update(ObserverEvent::CustomEvents event) {
-  switch (event) {
+void AccumulateData::update(ObserverEvent::CustomEvents event)
+{
+  switch (event)
+  {
   case ObserverEvent::CustomEvents::accumulateData:
     accumulateData();
     break;

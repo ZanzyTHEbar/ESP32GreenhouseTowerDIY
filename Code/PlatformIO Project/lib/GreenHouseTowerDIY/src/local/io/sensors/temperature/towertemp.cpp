@@ -9,12 +9,14 @@ TowerTemp::TowerTemp()
 
 TowerTemp::~TowerTemp() {}
 
-void TowerTemp::setSensorCount() {
+void TowerTemp::setSensorCount()
+{
   _sensors_count =
-      sensors->getDeviceCount();  // returns the number of sensors found
+      sensors->getDeviceCount(); // returns the number of sensors found
 }
 
-int TowerTemp::getSensorCount() {
+int TowerTemp::getSensorCount()
+{
   return _sensors_count;
 }
 
@@ -25,7 +27,8 @@ int TowerTemp::getSensorCount() {
 // * Parameters: None
 // * Return: None
 //******************************************************************************
-bool TowerTemp::begin() {
+bool TowerTemp::begin()
+{
   // Start up the ds18b20 library
   sensors->begin();
   setSensorCount();
@@ -40,7 +43,8 @@ bool TowerTemp::begin() {
 
   // handle the case where no sensors are connected
   log_i("Locating devices...");
-  if (_sensors_count == 0) {
+  if (_sensors_count == 0)
+  {
     log_e(
         "No temperature sensors found - please connect them and restart the "
         "device");
@@ -53,12 +57,16 @@ bool TowerTemp::begin() {
   temp_sensor_results.temp.reserve(_sensors_count);
 
   // Loop through each device, print out address
-  for (int i = 0; i < _sensors_count; i++) {
+  for (int i = 0; i < _sensors_count; i++)
+  {
     // Search the wire for address
-    if (sensors->getAddress(temp_sensor_addresses, i)) {
+    if (sensors->getAddress(temp_sensor_addresses, i))
+    {
       log_i("Found device index %d with address: %s", i,
             printAddress(temp_sensor_addresses, size).c_str(), DEC);
-    } else {
+    }
+    else
+    {
       log_w(
           "Found ghost device at %d but could not detect address. Check power "
           "and cabling",
@@ -75,12 +83,15 @@ bool TowerTemp::begin() {
 // * Return: None
 //******************************************************************************
 // function to print a device address
-std::string TowerTemp::printAddress(DeviceAddress deviceAddress, size_t size) {
+std::string TowerTemp::printAddress(DeviceAddress deviceAddress, size_t size)
+{
   char hexstr[size * 2 + 1];
-  for (uint8_t i = 0; i < _sensors_count; i++) {
+  for (uint8_t i = 0; i < _sensors_count; i++)
+  {
     if (deviceAddress[i] < 16)
       log_d("0");
-    for (uint8_t j = 0; j < size; j++) {
+    for (uint8_t j = 0; j < size; j++)
+    {
       snprintf(hexstr + j * 2, sizeof(hexstr), "%02x", deviceAddress[j]);
     }
     log_i("%s", hexstr);
@@ -89,10 +100,13 @@ std::string TowerTemp::printAddress(DeviceAddress deviceAddress, size_t size) {
   return str;
 }
 
-void TowerTemp::checkSensors() {
-  if (_sensors_count == 0) {
+void TowerTemp::checkSensors()
+{
+  if (_sensors_count == 0)
+  {
     float no_sensors[] = {0};
-    for (int i = 0; i < _sensors_count; i++) {
+    for (int i = 0; i < _sensors_count; i++)
+    {
       temp_sensor_results.temp.push_back(no_sensors[i]);
     }
     log_i(
@@ -108,17 +122,22 @@ void TowerTemp::checkSensors() {
 // * Parameters: None
 // * Return: float array - Temperature of the sensors
 //******************************************************************************
-TowerTemp::Temp TowerTemp::getTempC() {
+TowerTemp::Temp TowerTemp::getTempC()
+{
   // handle the case where no sensors are connected
   checkSensors();
   sensors->requestTemperatures();
-  for (int i = 0; i < _sensors_count; i++) {
+  for (int i = 0; i < _sensors_count; i++)
+  {
     // Search the wire for address
-    if (sensors->getAddress(temp_sensor_addresses, i)) {
+    if (sensors->getAddress(temp_sensor_addresses, i))
+    {
       temp_sensor_results.temp.push_back(
           sensors->getTempC(temp_sensor_addresses));
       printAddress(temp_sensor_addresses, size);
-    } else {
+    }
+    else
+    {
       log_w(
           "Found ghost device at %d but could not detect address. Check power "
           "and cabling",
@@ -135,17 +154,22 @@ TowerTemp::Temp TowerTemp::getTempC() {
 // * Parameters: None
 // * Return: float array - Temperature of the sensors in fahrenheit
 //******************************************************************************
-TowerTemp::Temp TowerTemp::getTempF() {
+TowerTemp::Temp TowerTemp::getTempF()
+{
   // handle the case where no sensors are connected
   checkSensors();
   sensors->requestTemperatures();
-  for (int i = 0; i < _sensors_count; i++) {
+  for (int i = 0; i < _sensors_count; i++)
+  {
     // Search the wire for address
-    if (sensors->getAddress(temp_sensor_addresses, i)) {
+    if (sensors->getAddress(temp_sensor_addresses, i))
+    {
       temp_sensor_results.temp.push_back(
           sensors->getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0);
       printAddress(temp_sensor_addresses, size);
-    } else {
+    }
+    else
+    {
       log_w(
           "Found ghost device at %d but could not detect address. Check power "
           "and cabling",

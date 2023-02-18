@@ -16,28 +16,29 @@
 #include <local/network/ntp/ntp.hpp>
 
 class AccumulateData : public IObserver<ObserverEvent::CustomEvents>,
-                       public timeObj {
- public:
-  AccumulateData(GreenHouseConfig* configManager,
-                 NetworkNTP* ntp,
-                 TowerTemp* tower_temp,
-                 Humidity* humidity,
-                 WaterLevelSensor* waterLevelSensor);
+                       public timeObj
+{
+public:
+  AccumulateData(GreenHouseConfig *configManager,
+                 NetworkNTP *ntp,
+                 TowerTemp *tower_temp,
+                 Humidity *humidity,
+                 WaterLevelSensor *waterLevelSensor);
   virtual ~AccumulateData();
 
   void loop();
   void update(ObserverEvent::CustomEvents event);
   bool accumulateData();
 
- private:
+private:
   // Stack Data to send
   int _maxTemp;
   int _numTempSensors;
 
-  GreenHouseConfig* configManager;
-  NetworkNTP* ntp;
-  TowerTemp* tower_temp;
-  Humidity* humidity;
-  WaterLevelSensor* waterLevelSensor;
+  GreenHouseConfig *configManager;
+  NetworkNTP *ntp;
+  TowerTemp *tower_temp;
+  Humidity *humidity;
+  WaterLevelSensor *waterLevelSensor;
 };
 #endif

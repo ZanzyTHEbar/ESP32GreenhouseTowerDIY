@@ -102,6 +102,7 @@ void API::addRelay(AsyncWebServerRequest *request)
         if (name.empty() || port == 0 || timer == nullptr)
         {
             request->send(400, APIServer::MIMETYPE_JSON, "{\"msg\":\"Invalid Request - please provide values for all parameters\"}");
+            Network_Utilities::my_delay(0.5L);
             request->redirect("/");
             return;
         }

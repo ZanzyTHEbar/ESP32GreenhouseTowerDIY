@@ -3,10 +3,12 @@
 // ***********************************************************
 //                Buttons class code
 // ***********************************************************
-Buttons* Buttons::_instance = nullptr;
+Buttons *Buttons::_instance = nullptr;
 
-void onStateReceived() {
-  if (Buttons::instance() == nullptr) {
+void onStateReceived()
+{
+  if (Buttons::instance() == nullptr)
+  {
     return;
   }
 
@@ -21,11 +23,15 @@ Buttons::Buttons(byte inPin, bool input)
       _connectedCallback(nullptr),
       _connectionFailedCallback(nullptr),
       _inPin(inPin),
-      _input(input) {
+      _input(input)
+{
   _instance = this;
-  if (!input) {
+  if (!input)
+  {
     pinMode(inPin, OUTPUT);
-  } else {
+  }
+  else
+  {
     pinMode(inPin, INPUT);
   }
 }
@@ -34,16 +40,19 @@ Buttons::Buttons(byte inPin, bool input)
 Buttons::~Buttons(void) {}
 
 // begin, Needed somewhere to place the hookup() call. begin is traditional.
-bool Buttons::begin(void) {
+bool Buttons::begin(void)
+{
   log_d("Initializing Buttons");
   Serial.println();
 
-  if (!getPin(_inPin)) {
+  if (!getPin(_inPin))
+  {
     log_e("Failed to initialize Buttons. Missing the buttons Pin number.");
     return false;
   }
 
-  if (_initialized) {
+  if (_initialized)
+  {
     log_e("Buttons is already initialized");
     return false;
   }
@@ -55,15 +64,19 @@ bool Buttons::begin(void) {
 }
 
 // takeAction, this is what's called when there is no callback set.
-void Buttons::takeAction(void) {
-  if (!setAs) {
+void Buttons::takeAction(void)
+{
+  if (!setAs)
+  {
     log_d("Button is pressed");
   }
   return;
 }
 
-void Buttons::processState(void) {
-  if (_messageCallback == nullptr) {
+void Buttons::processState(void)
+{
+  if (_messageCallback == nullptr)
+  {
     takeAction();
     return;
   }
@@ -72,11 +85,12 @@ void Buttons::processState(void) {
 }
 
 // Your standard sketch loop()
-void Buttons::ButtonLoop(void) {
+void Buttons::ButtonLoop(void)
+{
   bool Buttonstate;
-  idle();  // Let all the idlers have time to do their thing.
+  idle(); // Let all the idlers have time to do their thing.
   Buttonstate =
-      trueFalse();  // Have a look at what the current Buttons state is.
-  digitalWrite(_inPin, !Buttonstate);  // Since the Buttons ground when pushed,
-                                       // invert logic with !
+      trueFalse();                    // Have a look at what the current Buttons state is.
+  digitalWrite(_inPin, !Buttonstate); // Since the Buttons ground when pushed,
+                                      // invert logic with !
 }

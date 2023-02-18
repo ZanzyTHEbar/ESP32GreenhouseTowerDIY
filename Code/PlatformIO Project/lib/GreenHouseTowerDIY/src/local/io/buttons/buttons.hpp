@@ -14,9 +14,10 @@
 //    Inherit from mechButton and create a class that does
 //                  our custom bidding.
 // ***********************************************************
-class Buttons : public mechButton {
- public:
-  inline static Buttons* instance() { return _instance; }
+class Buttons : public mechButton
+{
+public:
+  inline static Buttons *instance() { return _instance; }
 
   Buttons(byte inPin, bool input = false);
   virtual ~Buttons(void);
@@ -31,7 +32,8 @@ class Buttons : public mechButton {
    *
    * @param callback
    */
-  inline void onMessage(BUTTON_MESSAGE_CALLBACK(callback)) {
+  inline void onMessage(BUTTON_MESSAGE_CALLBACK(callback))
+  {
     _messageCallback = callback;
   }
 
@@ -41,7 +43,8 @@ class Buttons : public mechButton {
    *
    * @param callback
    */
-  inline void onConnected(BUTTON_CALLBACK(callback)) {
+  inline void onConnected(BUTTON_CALLBACK(callback))
+  {
     _connectedCallback = callback;
   }
 
@@ -51,21 +54,26 @@ class Buttons : public mechButton {
    *
    * @param callback
    */
-  inline void onConnectionFailed(BUTTON_CALLBACK(callback)) {
+  inline void onConnectionFailed(BUTTON_CALLBACK(callback))
+  {
     _connectionFailedCallback = callback;
   }
 
-  inline bool getPin(byte& _pin) {
-    if (_pin > 0) {
+  inline bool getPin(byte &_pin)
+  {
+    if (_pin > 0)
+    {
       _inPin = _pin;
       return true;
-    } else {
+    }
+    else
+    {
       return false;
     }
   }
 
- private:
-  static Buttons* _instance;
+private:
+  static Buttons *_instance;
   BUTTON_MESSAGE_CALLBACK(_messageCallback);
   BUTTON_CALLBACK(_connectedCallback);
   BUTTON_CALLBACK(_connectionFailedCallback);
@@ -73,4 +81,4 @@ class Buttons : public mechButton {
   bool _input;
   bool _initialized;
 };
-#endif  // BUTTONS_HPP
+#endif // BUTTONS_HPP

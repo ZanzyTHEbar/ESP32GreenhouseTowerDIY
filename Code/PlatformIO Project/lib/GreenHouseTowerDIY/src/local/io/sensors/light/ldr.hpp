@@ -3,13 +3,14 @@
 #include <Arduino.h>
 #include <utilities/network_utilities.hpp>
 #define LDR_PIN 33
-class LDR {
- public:
+class LDR
+{
+public:
   LDR();
   virtual ~LDR();
   float getLux();
 
- private:
+private:
   const float _GAMMA;
   const float _RL10;
 };
