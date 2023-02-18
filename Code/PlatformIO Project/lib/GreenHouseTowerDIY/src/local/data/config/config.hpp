@@ -41,21 +41,21 @@ public:
   GreenHouseConfig(const std::string &hostname);
   ~GreenHouseConfig() override = default;
 
-  void load() override;
+  void load();
   void loadRelays();
-  void save() override;
+  void loadMQTT();
+  void save();
   void saveRelays();
-  void initConfig() override;
-
-  std::string getHostname() const;
+  void saveMQTT();
+  void initConfig();
 
   Project_Config::MQTTConfig_t *getMQTTConfig();
+  IPAddress getBroker();
   std::vector<Project_Config::RelaysConfig_t> *getRelaysConfig();
-
+  bool isValidHostname(char *hostname_to_check, long size);
   Project_Config::GreenHouseConfig_t config;
 
 private:
-  std::string hostname;
 };
 
 #endif

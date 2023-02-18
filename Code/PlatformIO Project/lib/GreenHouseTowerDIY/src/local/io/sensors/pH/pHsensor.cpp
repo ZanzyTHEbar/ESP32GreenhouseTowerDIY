@@ -39,36 +39,46 @@ void PHSENSOR::serialEvent()
                                      // received a completed string from the PC
 }
 
-void PHSENSOR::parse_cmd(const char *string)
+/**
+ * @brief Parse the command from the serial monitor
+ * @note This function is used to parse the command from the serial monitor. The command is used to calibrate the pH sensor.
+ */
+void PHSENSOR::parse_cmd(const std::string &string)
 {
-  strupr((char *)string);
-  if (strcmp(string, "CAL,7") == 0)
+  std::string result = string;
+
+  // Convert to lower case using lambda
+  std::for_each(result.begin(), result.end(),
+                [](char &c)
+                { c = ::tolower(c); });
+
+  if (result == "cal,7")
   {
     pH.cal_mid();
     log_i("MID CALIBRATED");
   }
-  else if (strcmp(string, "CAL,4") == 0)
+  else if (result == "cal,4")
   {
     pH.cal_low();
     log_i("LOW CALIBRATED");
   }
-  else if (strcmp(string, "CAL,10") == 0)
+  else if (result == "cal,10")
   {
     pH.cal_high();
     log_i("HIGH CALIBRATED");
   }
-  else if (strcmp(string, "CAL,CLEAR") == 0)
+  else if (result == "cal,clear")
   {
     pH.cal_clear();
     log_i("CALIBRATION CLEARED");
   }
-  else if (strcmp(string, "PHUP") == 0)
+  else if (string == "phup")
   {
     digitalWrite(_phUpPIN, HIGH);
     Network_Utilities::my_delay(_doseTimeSm);
     digitalWrite(_phUpPIN, LOW); // Dose of pH up
   }
-  else if (strcmp(string, "PHDN") == 0)
+  else if (string == "phdn")
   {
     digitalWrite(_phDnPIN, HIGH);
     Network_Utilities::my_delay(_doseTimeSm);
@@ -76,6 +86,10 @@ void PHSENSOR::parse_cmd(const char *string)
   }
 }
 
+/**
+ * @brief Set the PH object from the pH sensor
+ * @note This function is used to set the pH value from the pH sensor. Called in the accumulate data class.
+ */
 void PHSENSOR::setPH()
 {
   phContainer.ph = pH.read_ph();
@@ -91,19 +105,28 @@ const PHSENSOR::PH_t *PHSENSOR::getPH()
   return phContainer;
 }
 
+/**
+ * @brief Handle the entire pH sensor loop
+ * @note This function is used to handle the entire pH sensor loop. This function is called in the main loop.
+ */
 void PHSENSOR::phSensorLoop()
 {
+  serialEvent();
   if (_input_string_complete == true)
   {                                  // check if data received
-    parse_cmd(_inputstring.c_str()); // send data to pars_cmd function
+    parse_cmd(_inputstring.c_str()); // send data to parse_cmd function
     _input_string_complete = false;  // reset the flag used to tell if we have
                                      // received a completed string from the PC
     _inputstring = "";               // clear the string
   }
-  getPH();
+  setPH();
   log_i("%.3f", pH.read_ph());
 }
 
+/**
+ * @brief Event listener for the pH sensor
+ * @note This function is used to listen for events from the MQTT broker. Inorder to adjust the pH of the water, the pH sensor must be calibrated.
+ */
 void PHSENSOR::eventListener(const char *topic,
                              const uint8_t *payload,
                              uint16_t length)
@@ -124,42 +147,42 @@ void PHSENSOR::eventListener(const char *topic,
                 { c = ::tolower(c); });
 
   // Act on the message
-  if (result == "up med")
+  if (result == "up:med")
   {
     log_i("Adjust pH UP a medium amount!");
     digitalWrite(_phUpPIN, HIGH);
     Network_Utilities::my_delay(_doseTimeMed);
     digitalWrite(_phUpPIN, LOW);
   }
-  else if (result == "down med")
+  else if (result == "down:med")
   {
     log_i("Adjusting pH DOWN a medium amount!");
     digitalWrite(_phDnPIN, HIGH);
     Network_Utilities::my_delay(_doseTimeMed);
     digitalWrite(_phDnPIN, LOW);
   }
-  else if (result == "up sm")
+  else if (result == "up:sm")
   {
     log_i("Adjust pH UP a small amount!");
     digitalWrite(_phUpPIN, HIGH);
     Network_Utilities::my_delay(_doseTimeSm);
     digitalWrite(_phUpPIN, LOW);
   }
-  else if (result == "down sm")
+  else if (result == "down:sm")
   {
     log_i("Adjusting pH DOWN a small amount!");
     digitalWrite(_phDnPIN, HIGH);
     Network_Utilities::my_delay(_doseTimeSm);
     digitalWrite(_phDnPIN, LOW);
   }
-  else if (result == "up lg")
+  else if (result == "up:lg")
   {
     log_i("Adjust pH UP a large amount!");
     digitalWrite(_phUpPIN, HIGH);
     Network_Utilities::my_delay(_doseTimeLg);
     digitalWrite(_phUpPIN, LOW);
   }
-  else if (result == "down lg")
+  else if (result == "down:lg")
   {
     log_i("Adjusting pH DOWN a large amount!");
     digitalWrite(_phDnPIN, HIGH);
@@ -167,5 +190,3 @@ void PHSENSOR::eventListener(const char *topic,
     digitalWrite(_phDnPIN, LOW);
   }
 }
-
-PHSENSOR phsensor;

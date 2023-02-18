@@ -3,12 +3,19 @@
 #include <Arduino.h>
 #include <ESPmDNS.h>
 #include <data/statemanager/StateManager.hpp>
+#include <local/data/BackgroundTasks/taskManager.hpp>
 #include <utilities/helpers.hpp>
 
 /**
  * @brief Namespace for mDNS Discovery
  */
-namespace mDNSDiscovery {
+class mDNSDiscovery
+{
+  TaskManager *taskManager;
+
+public:
+  mDNSDiscovery(TaskManager *taskManager);
+  virtual ~mDNSDiscovery();
   //******************************************************************************
   // * Function: Discover mDNS Broker
   // * Description: Find the mDNS broker and and port and write them to the
@@ -16,14 +23,7 @@ namespace mDNSDiscovery {
   // * Parameters: None
   // * Return: int - 1 if success, 0 if fail
   //******************************************************************************
-  int discovermDNSBroker();
-  void setMQTTBroker(const std::string& broker, int port);
-  struct MQTTBroker {
-    std::string broker;
-    int port;
-  };
-  MQTTBroker brokerConfig;
-  const MQTTBroker* getMQTTBroker();
-}  // namespace mDNSDiscovery
+  bool discovermDNSBroker();
+}; // namespace mDNSDiscovery
 
-#endif  // MDNS_DISCOVERY_HPP
+#endif // MDNS_DISCOVERY_HPP

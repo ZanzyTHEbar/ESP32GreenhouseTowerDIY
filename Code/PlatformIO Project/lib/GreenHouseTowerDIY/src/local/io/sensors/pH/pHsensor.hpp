@@ -20,7 +20,7 @@ public:
   void eventListener(const char *topic,
                      const uint8_t *payload,
                      uint16_t length);
-  void parse_cmd(const char *string);
+  void parse_cmd(const std::string &string);
 
   struct PH_t
   {
@@ -32,24 +32,15 @@ public:
   const PH_t *getPH();
   void setPH();
 
-  // Friends
-  friend class BASEMQTT;
-  friend void onMqttMessage(const char *topic,
-                            const uint8_t *payload,
-                            uint16_t length);
-  friend void callback(char *topic, uint8_t *payload, unsigned int length);
-  friend void onMqttConnected();
-  friend class HASSMQTT;
-
   Gravity_pH pH;
+  // Variables
+  std::string _pHTopic;
+  std::string _pHOutTopic;
 
 private:
   // Private functions
   void serialEvent();
 
-  // Private variables
-  const char *_pHTopic;
-  const char *_pHOutTopic;
   int _phDnPIN;
   int _phUpPIN;
   int _doseTimeSm;

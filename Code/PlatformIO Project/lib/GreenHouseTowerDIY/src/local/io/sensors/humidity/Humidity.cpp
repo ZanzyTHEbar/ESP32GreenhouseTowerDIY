@@ -138,9 +138,8 @@ Humidity::_HUMIDITY_SENSORS_ACTIVE Humidity::setup()
 Humidity::Hum Humidity::readDHT()
 {
   // Delay between measurements.
-  // TODO: This is a blocking delay, which is not ideal.  We should be able to
-  // use the millis() function to check if the delay has passed.
-  delay(_delayS);
+
+  Network_Utilities::my_delay(_delayS);
   // Get temperature event and print its value.
   sensors_event_t event;
   dht->temperature().getEvent(&event);

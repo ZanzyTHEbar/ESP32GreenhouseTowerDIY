@@ -42,8 +42,8 @@ public:
 
   void setMQTTConfig(const std::string &broker,
                      uint16_t port,
-                     const std::string &username,
-                     const std::string &password,
+                     const std::string &username = std::string(),
+                     const std::string &password = std::string(),
                      bool shouldNotify = true);
 
 private:

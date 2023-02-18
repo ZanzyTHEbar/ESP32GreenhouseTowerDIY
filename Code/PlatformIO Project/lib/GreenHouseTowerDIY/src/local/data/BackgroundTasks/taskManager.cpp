@@ -142,7 +142,23 @@ void TaskManager::setMQTTConfig(const std::string &broker,
                                 uint16_t port,
                                 const std::string &username,
                                 const std::string &password,
-                                bool shouldNotify) {}
+                                bool shouldNotify)
+{
+    deviceConfig->config.mqtt.broker.assign(broker);
+    deviceConfig->config.mqtt.port = port;
+
+    if ((username.length() || password.length()) > 0)
+    {
+
+        deviceConfig->config.mqtt.username.assign(username);
+        deviceConfig->config.mqtt.password.assign(password);
+    }
+
+    if (shouldNotify)
+    {
+        this->notify(ObserverEvent::mqttConfigChanged);
+    }
+}
 
 void TaskManager::detachAll()
 {

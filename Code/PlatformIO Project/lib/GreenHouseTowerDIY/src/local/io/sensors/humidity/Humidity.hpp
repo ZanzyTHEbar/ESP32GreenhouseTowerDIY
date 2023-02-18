@@ -5,11 +5,12 @@
 
 #ifndef HUMIDITY_HPP
 #define HUMIDITY_HPP
-
+#include <Arduino.h>
 #include <Wire.h>
 #include <memory>
 #include <unordered_map>
 #include <functional>
+#include <utilities/network_utilities.hpp>
 #if USE_SHT31_SENSOR
 #include <Adafruit_SHT31.h>
 #endif // USE_SHT31_SENSOR

@@ -151,3 +151,37 @@ void API::removeRelay(AsyncWebServerRequest *request)
     }
     }
 }
+
+// parse and set a new hostname to config
+void API::setHostname(AsyncWebServerRequest *request)
+{
+    switch (server->_networkMethodsMap_enum[request->method()])
+    {
+    case APIServer::POST:
+    {
+        std::string new_hostname = request->getParam("hostname")->value().c_str();
+        int j = 0;
+        for (unsigned int i = 0; i < new_hostname.length() && i < sizeof(configManager->getHostname()); i++)
+        {
+            String temp = new_hostname.c_str();
+            if (temp.charAt(i) == '-' or
+                (temp.charAt(i) >= '0' && temp.charAt(i) <= '9') or
+                (temp.charAt(i) >= 'A' && temp.charAt(i) <= 'Z') or
+                (temp.charAt(i) >= 'a' && temp.charAt(i) <= 'z'))
+            {
+                configManager->hostname[j] = temp.charAt(i);
+                j++;
+            }
+        }
+        configManager->hostname[j] = '\0';
+        request->send(200, APIServer::MIMETYPE_JSON, "{\"msg\":\"Successfully set new hostname\"}");
+        break;
+    }
+    default:
+    {
+        request->send(400, APIServer::MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+        request->redirect("/");
+        break;
+    }
+    }
+}

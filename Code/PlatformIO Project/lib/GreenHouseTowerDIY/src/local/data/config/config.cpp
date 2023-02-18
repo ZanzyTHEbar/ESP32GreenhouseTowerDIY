@@ -1,7 +1,7 @@
 #include "config.hpp"
 
 GreenHouseConfig::GreenHouseConfig(const std::string &hostname)
-    : hostname(hostname), ProjectConfig(std::string(), hostname) {}
+    : ProjectConfig(std::string(), hostname) {}
 
 GreenHouseConfig::~GreenHouseConfig() {}
 
@@ -22,6 +22,7 @@ void GreenHouseConfig::load()
   // TODO: Load MQTT
 
   loadRelays();
+  loadMQTT();
   ProjectConfig::load();
 }
 
@@ -57,6 +58,14 @@ void GreenHouseConfig::loadRelays()
   }
 }
 
+void GreenHouseConfig::loadMQTT()
+{
+  this->config.mqtt.broker.assign(getString("mqtt_broker").c_str());
+  this->config.mqtt.port = getInt("mqtt_port", 1886);
+  this->config.mqtt.username.assign(getString("mqtt_username", "").c_str());
+  this->config.mqtt.password.assign(getString("mqtt_password", "").c_str());
+}
+
 //**********************************************************************************************************************
 //*
 //!                                                Save
@@ -67,7 +76,7 @@ void GreenHouseConfig::save()
 {
   ProjectConfig::save();
   saveRelays();
-  // TODO: Save MQTT
+  saveMQTT();
 }
 
 void GreenHouseConfig::saveRelays()
@@ -96,6 +105,14 @@ void GreenHouseConfig::saveRelays()
     putBool(start_state.c_str(), this->config.relays[i].start_state);
     putFloat(timer.c_str(), this->config.relays[i].timer->getTime());
   }
+}
+
+void GreenHouseConfig::saveMQTT()
+{
+  putString("mqtt_broker", this->config.mqtt.broker.c_str());
+  putInt("mqtt_port", this->config.mqtt.port);
+  putString("mqtt_username", this->config.mqtt.username.c_str());
+  putString("mqtt_password", this->config.mqtt.password.c_str());
 }
 
 //**********************************************************************************************************************
@@ -135,10 +152,49 @@ Project_Config::MQTTConfig_t *GreenHouseConfig::getMQTTConfig()
   return &this->config.mqtt;
 }
 
+/**
+ * @brief Get the MQTT Broker IP object
+ */
+IPAddress GreenHouseConfig::getBroker()
+{
+  IPAddress broker_ip;
+  Project_Config::MQTTConfig_t *mqttConfig = getMQTTConfig();
+  if (!mqttConfig->broker.empty())
+  {
+    log_d("[mDNS responder started] Setting up Broker...");
+    return broker_ip.fromString(mqttConfig->broker.c_str());
+  }
+  log_d("[mDNS responder failed]");
+  return broker_ip.fromString(MQTT_BROKER);
+}
+
 std::vector<Project_Config::RelaysConfig_t> *
 GreenHouseConfig::getRelaysConfig()
 {
   return &this->config.relays;
 }
 
-std::string GreenHouseConfig::getHostname() const { return this->hostname; }
+//**********************************************************************************************************************
+//*
+//!                                                Misc
+//*
+//**********************************************************************************************************************
+
+bool GreenHouseConfig::isValidHostname(char *hostname_to_check, long size)
+{
+  for (int i = 0; i < size; i++)
+  {
+    if (hostname_to_check[i] == '-' || hostname_to_check[i] == '.')
+      continue;
+    else if (hostname_to_check[i] >= '0' && hostname_to_check[i] <= '9')
+      continue;
+    else if (hostname_to_check[i] >= 'A' && hostname_to_check[i] <= 'Z')
+      continue;
+    else if (hostname_to_check[i] >= 'a' && hostname_to_check[i] <= 'z')
+      continue;
+    else if (hostname_to_check[i] == 0 && i > 0)
+      break;
+    return false;
+  }
+  return true;
+}

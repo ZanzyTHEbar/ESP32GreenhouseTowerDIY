@@ -6,25 +6,49 @@
 #ifndef BASEMQTT_HPP
 #define BASEMQTT_HPP
 #include <Arduino.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 
-class BASEMQTT : public IPAddress
+//*  Sensor Includes
+#include <local/io/sensors/humidity/Humidity.hpp>
+#include <local/io/sensors/light/bh1750.hpp>
+#include <local/io/sensors/light/ldr.hpp>
+#include <local/io/sensors/pH/pHsensor.hpp>
+#include <local/io/sensors/temperature/towertemp.hpp>
+#include <local/io/sensors/water_level/waterlevelsensor.hpp>
+
+/**
+ * @brief MQTT Class
+ */
+class BASEMQTT : public IPAddress, public PubSubClient
 {
 public:
     // Constructor
-    BASEMQTT();
+    BASEMQTT(WiFiClient *espClient,
+             PHSENSOR *phsensor,
+             BH1750 *bh1750,
+             LDR *ldr,
+             TowerTemp *towertemp,
+             Humidity *humidity,
+             WaterLevelSensor *waterlevelsensor,
+             IPAddress *broker_ip);
     virtual ~BASEMQTT();
 
-    void loadMQTTConfig();
+    void begin();
     void mqttLoop();
     void mqttReconnect();
+    void mqttCallback(char *topic, byte *payload, unsigned int length);
 
     // Friends
     friend class LDR;
-    friend void callback(char *topic, byte *payload, unsigned int length);
 
 private:
-    // Private functions
+    PHSENSOR *phsensor;
+    BH1750 *bh1750;
+    LDR *ldr;
+    TowerTemp *towertemp;
+    Humidity *humidity;
+    WaterLevelSensor *waterlevelsensor;
 
     // Private variables
     const long _interval;
@@ -32,6 +56,4 @@ private:
     uint8_t _user_bytes_received;
     char _user_data[100];
 };
-
-extern BASEMQTT basemqtt;
 #endif // HAMQTT_HPP

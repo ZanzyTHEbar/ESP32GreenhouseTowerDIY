@@ -24,6 +24,7 @@ public:
   void printHelloWorld();
   void addRelay(AsyncWebServerRequest *request);
   void removeRelay(AsyncWebServerRequest *request);
+  void setHostname(AsyncWebServerRequest *request);
 };
 
 #endif // API_HPP

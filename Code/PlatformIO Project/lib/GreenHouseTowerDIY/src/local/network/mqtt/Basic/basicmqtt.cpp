@@ -1,41 +1,43 @@
 #include "basicmqtt.hpp"
 
-IPAddress broker_ip;
-
-void callback(char *topic, byte *payload, unsigned int length);
-String getBroker();
-
-#if MQTT_SECURE
-PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_SECURE_PORT, callback, espClient); // Local Mosquitto Connection
-#else
-PubSubClient mqttClient(broker_ip.fromString(getBroker()), MQTT_PORT, callback, espClient); // Local Mosquitto Connection
-#endif // MQTT_SECURE
-
 //***********************************************************************************************************************
 // * Class Global Variables
 // * Please only make changes to the following class variables within the ini file. Do not change them here.
 //************************************************************************************************************************
 
-BASEMQTT::BASEMQTT() : _interval(60000), _user_data{0}, _previousMillis(0), _user_bytes_received(0)
+BASEMQTT::BASEMQTT(WiFiClient *espClient,
+                   PHSENSOR *phsensor,
+                   BH1750 *bh1750,
+                   LDR *ldr,
+                   TowerTemp *towertemp,
+                   Humidity *humidity,
+                   WaterLevelSensor *waterlevelsensor,
+                   IPAddress *broker_ip) : phsensor(phsensor),
+                                           bh1750(bh1750),
+                                           ldr(ldr),
+                                           towertemp(towertemp),
+                                           humidity(humidity),
+                                           waterlevelsensor(waterlevelsensor),
+#if MQTT_SECURE
+                                           PubSubClient(
+                                               *broker_ip, MQTT_SECURE_PORT, [&](char *topic, byte *payload, unsigned int length)
+                                               {
+                                                    log_i("MQTT Callback");
+                                                    mqttCallback(topic, payload, length); },
+                                               *espClient),
+#else
+                                           PubSubClient(
+                                               *broker_ip, MQTT_PORT, [&](char *topic, byte *payload, unsigned int length)
+                                               {
+                                                    log_i("MQTT Callback");
+                                                    mqttCallback(topic, payload, length); },
+                                               *espClient),
+#endif // MQTT_SECURE
+                                           _interval(60000),
+                                           _user_data{0},
+                                           _previousMillis(0),
+                                           _user_bytes_received(0)
 {
-    log_i("Setting up MQTT...");
-
-    // Local Mosquitto Connection -- Start
-    if (mqttClient.connect(DEFAULT_HOSTNAME))
-    {
-#if ENABLE_PH_SUPPORT
-        // connection succeeded
-        log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor._pHTopic);
-        mqttClient.subscribe(phsensor._pHTopic);
-#endif // ENABLE_PH_SUPPORT
-        log_i("Successfully subscribed to the topic.");
-    }
-    else
-    {
-        // connection failed
-        log_i("Connection failed. MQTT client state is: %d", mqttClient.state());
-    }
-    // Local Mosquitto Connection -- End
 }
 
 BASEMQTT::~BASEMQTT()
@@ -43,31 +45,27 @@ BASEMQTT::~BASEMQTT()
     // Destructor
 }
 
-String getBroker()
+void BASEMQTT::begin()
 {
-#if ENABLE_MDNS_SUPPORT
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - Yes"))
-    if (mDNSDiscovery::DiscovermDNSBroker())
+    log_i("Setting up MQTT...");
+
+    // Local Mosquitto Connection -- Start
+    if (connect(DEFAULT_HOSTNAME))
     {
-        Serial.println(F("[mDNS responder started] Setting up Broker..."));
-        String BROKER_ADDR = cfg.config.MQTTBroker; // IP address of the MQTT broker - change to your broker IP address or enable MDNS support
-        return BROKER_ADDR;
+#if ENABLE_PH_SUPPORT
+        // connection succeeded
+        log_i("Connection succeeded. Subscribing to the topic [%s]", phsensor->_pHTopic.c_str());
+        subscribe(phsensor->_pHTopic.c_str());
+#endif // ENABLE_PH_SUPPORT
+        log_i("Successfully subscribed to the topic.");
+        return;
     }
-    else
-    {
-        Serial.println(F("[mDNS responder failed]"));
-        String BROKER_ADDR = MQTT_BROKER;
-        return BROKER_ADDR;
-    }
-    return String(MQTT_BROKER);
-#else
-#pragma message(Feature "mDNS Enabled: " STR(ENABLE_MDNS_SUPPORT " - No"))
-    return String(MQTT_BROKER);
-#endif // ENABLE_MDNS_SUPPORT
+    log_i("Connection failed. MQTT client state is: %d", state());
+    // Local Mosquitto Connection -- End
 }
 
 // Handles messages arrived on subscribed topic(s)
-void callback(char *topic, byte *payload, unsigned int length)
+void BASEMQTT::mqttCallback(char *topic, byte *payload, unsigned int length)
 {
     String result;
     log_i("Message arrived on topic: [%s] ", topic);
@@ -93,10 +91,10 @@ void callback(char *topic, byte *payload, unsigned int length)
         }
     }
 #if ENABLE_PH_SUPPORT
-    else if (strcmp(topic, phsensor._pHTopic) == 0)
+    else if (phsensor->_pHTopic == topic)
     {
         log_i("Setting pH level to: [%s]", result.c_str());
-        phsensor.eventListener(topic, payload, length);
+        phsensor->eventListener(topic, payload, length);
     }
 #endif // ENABLE_PH_SUPPORT
 }
@@ -136,40 +134,39 @@ void BASEMQTT::loadMQTTConfig()
 void BASEMQTT::mqttReconnect()
 {
     // Loop until we're reconnected
-    while (!mqttClient.connected())
+    while (!connected())
     {
         log_i("Attempting MQTT connection...");
         // Attempt to connect
-        if (mqttClient.connect(DEFAULT_HOSTNAME))
+        if (connect(DEFAULT_HOSTNAME))
         {
             log_i("Connected to MQTT broker.");
             // Subscribe
 #if ENABLE_PH_SUPPORT
-            mqttClient.subscribe(phsensor._pHTopic);
+            subscribe(phsensor->_pHTopic.c_str());
 #endif // ENABLE_PH_SUPPORT
         }
         else
         {
-            log_i("failed, rc= %d", mqttClient.state());
+            log_i("failed, rc= %d", state());
             log_i(" try again in 5 seconds");
             // Wait 15 seconds before retrying
-            my_delay(15L);
+            Network_Utilities::my_delay(15L);
         }
     }
 }
 
 void BASEMQTT::mqttLoop()
 {
-    my_delay(1L);
-
-    if (!mqttClient.connected())
+    Network_Utilities::my_delay(1L);
+    if (!connected())
     {
         mqttReconnect();
     }
     else
     {
-        mqttClient.loop();
-        callback;
+        loop();
+        mqttCallback;
 
         unsigned long currentMillis = millis();
         if (currentMillis - _previousMillis >= _interval)
@@ -183,22 +180,20 @@ void BASEMQTT::mqttLoop()
 
             if (_user_bytes_received)
             {
-                phsensor.parse_cmd(_user_data);
+                phsensor->parse_cmd(_user_data);
                 _user_bytes_received = 0;
                 memset(_user_data, 0, sizeof(_user_data));
             }
 #if ENABLE_PH_SUPPORT
-            log_i("Sending message to topic: %s", phsensor._pHOutTopic);
+            log_i("Sending message to topic: %s", phsensor->_pHOutTopic.c_str());
 #endif // ENABLE_PH_SUPPORT
             float newpH = cfg.config.pH;
             String timeStamp = networkntp.getTimeStamp();
             log_i("pH: %s", String(newpH).c_str());
 #if ENABLE_PH_SUPPORT
-            mqttClient.publish(phsensor._pHOutTopic, String(newpH).c_str(), true);
-            mqttClient.publish(phsensor._pHOutTopic, timeStamp.c_str(), true);
+            publish(phsensor->_pHOutTopic.c_str(), String(newpH).c_str(), true);
+            publish(phsensor->_pHOutTopic.c_str(), timeStamp.c_str(), true);
 #endif // ENABLE_PH_SUPPORT
         }
     }
 }
-
-BASEMQTT basemqtt;
