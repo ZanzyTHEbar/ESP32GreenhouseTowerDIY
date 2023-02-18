@@ -56,5 +56,3 @@ void I2C_RelayBoard::update(ObserverEvent::CustomEvents event)
     break;
   }
 }
-
-// TODO: add and remove relays will be handled in the api

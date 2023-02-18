@@ -100,6 +100,44 @@ void TaskManager::setRelaysConfig(const std::string &name,
     }
 }
 
+void TaskManager::removeRelay(const std::string &name, bool shouldNotify)
+{
+    size_t size = deviceConfig->config.relays.size();
+    if (size == 0)
+    {
+        log_i("No Relays found, nothing to remove");
+    }
+    else
+    {
+        int relayToRemove = -1;
+        for (size_t i = 0; i < size; i++)
+        {
+            if (deviceConfig->config.relays[i].name == name)
+            {
+                relayToRemove = i;
+                break;
+            }
+        }
+        if (relayToRemove >= 0)
+        {
+            log_i("Relay found, removing");
+            // set the relay to off
+            digitalWrite(deviceConfig->config.relays[relayToRemove].port, LOW);
+            // remove the relay from the vector
+            deviceConfig->config.relays.erase(deviceConfig->config.relays.begin() + relayToRemove);
+        }
+        else
+        {
+            log_e("Relay not found, nothing to remove");
+        }
+    }
+
+    if (shouldNotify)
+    {
+        this->notify(ObserverEvent::relaysConfigChanged);
+    }
+}
+
 void TaskManager::setMQTTConfig(const std::string &broker,
                                 uint16_t port,
                                 const std::string &username,

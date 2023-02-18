@@ -118,3 +118,33 @@ void API::addRelay(AsyncWebServerRequest *request)
     }
     }
 }
+
+void API::removeRelay(AsyncWebServerRequest *request)
+{
+    switch (server->_networkMethodsMap_enum[request->method()])
+    {
+    case APIServer::POST:
+    {
+        size_t size = configManager->config.relays.size();
+        std::string name = request->getParam("name")->value().c_str();
+        for (size_t i = 0; i < size; i++)
+        {
+            if (configManager->config.relays[i].name == name)
+            {
+                char buffer[100];
+                snprintf(buffer, sizeof(buffer), "{\"msg\":\"Successfully removing: %s\"}", name.c_str());
+                taskManager->removeRelay(name);
+                request->send(200, APIServer::MIMETYPE_JSON, buffer);
+                break;
+            }
+        }
+        break;
+    }
+    default:
+    {
+        request->send(400, APIServer::MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+        request->redirect("/");
+        break;
+    }
+    }
+}

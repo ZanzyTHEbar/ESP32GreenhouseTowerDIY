@@ -23,6 +23,7 @@ public:
   void begin();
   void printHelloWorld();
   void addRelay(AsyncWebServerRequest *request);
+  void removeRelay(AsyncWebServerRequest *request);
 };
 
 #endif // API_HPP
