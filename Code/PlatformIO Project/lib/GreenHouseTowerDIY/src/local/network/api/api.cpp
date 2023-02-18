@@ -22,6 +22,9 @@ void API::setupServer()
     server->updateCommandHandlers(
         "addRelay", [&](AsyncWebServerRequest *request)
         { addRelay(request); });
+    server->updateCommandHandlers(
+        "removeRelay", [&](AsyncWebServerRequest *request)
+        { removeRelay(request); });
     server->begin();
 }
 
