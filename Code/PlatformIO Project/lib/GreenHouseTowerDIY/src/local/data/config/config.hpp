@@ -6,56 +6,98 @@
 
 namespace Project_Config
 {
-  struct MQTTConfig_t
-  {
-    std::string broker;
-    uint16_t port;
-    std::string username;
-    std::string password;
-    std::string toRepresentation();
-  };
+    struct MQTTConfig_t
+    {
+        std::string broker;
+        uint16_t port;
+        std::string username;
+        std::string password;
+    };
 
-  struct RelaysConfig_t
-  {
-    RelaysConfig_t(const std::string &name, uint8_t port, bool start_state,
-                   timeObj *timer)
-        : name(std::move(name)), port(port), start_state(start_state),
-          timer(timer) {}
-    std::string name;
-    uint8_t port;
-    bool start_state;
-    timeObj *timer;
-    std::string toRepresentation();
-  };
+    struct RelaysConfig_t
+    {
+        RelaysConfig_t(const std::string &name, uint8_t port, bool start_state,
+                       timeObj *timer)
+            : name(std::move(name)), port(port), start_state(start_state),
+              timer(timer) {}
+        std::string name;
+        uint8_t port;
+        bool start_state;
+        timeObj *timer;
+    };
 
-  struct GreenHouseConfig_t : ProjectConfig_t
-  {
-    MQTTConfig_t mqtt;
-    std::vector<RelaysConfig_t> relays;
-  };
+    struct EnabledFeatures_t
+    {
+        enum Humidity_Features_e
+        {
+            NONE,
+            SHT31,
+            SHT31x2,
+            DHT11,
+            DHT22,
+            DHT21,
+            ALL_HUMIDITY
+        };
+        enum LDR_Features_e
+        {
+            NONE,
+            LDR,
+            BH1750,
+            BH1750_FAST,
+            BH1750_GND,
+            BH1750_VCC,
+            ALL_LDR
+        };
+        enum Water_Level_Features_e
+        {
+            NONE,
+            WATER_LEVEL_UC,
+            WATER_LEVEL_PRESSURE,
+            WATER_LEVEL_IR,
+            ALL_WATER_LEVEL
+        };
+
+        Humidity_Features_e humidity_Features;
+        LDR_Features_e ldr_Features;
+        Water_Level_Features_e water_Level_Features;
+    };
+    struct GreenHouseConfig_t : ProjectConfig_t
+    {
+        MQTTConfig_t mqtt;
+        std::vector<RelaysConfig_t> relays;
+        EnabledFeatures_t enabled_features;
+    };
 } // namespace Project_Config
 
 class GreenHouseConfig : public ProjectConfig
 {
 public:
-  GreenHouseConfig(const std::string &hostname);
-  ~GreenHouseConfig() override = default;
+    GreenHouseConfig(const std::string &hostname);
+    ~GreenHouseConfig();
 
-  void load();
-  void loadRelays();
-  void loadMQTT();
-  void save();
-  void saveRelays();
-  void saveMQTT();
-  void initConfig();
+    void load();
+    void loadRelays();
+    void loadMQTT();
+    void save();
+    void saveRelays();
+    void saveMQTT();
+    void initConfig();
 
-  Project_Config::MQTTConfig_t *getMQTTConfig();
-  IPAddress getBroker();
-  std::vector<Project_Config::RelaysConfig_t> *getRelaysConfig();
-  bool isValidHostname(char *hostname_to_check, long size);
-  Project_Config::GreenHouseConfig_t config;
+    std::string toRepresentation();
 
-private:
+    Project_Config::MQTTConfig_t *getMQTTConfig();
+    std::vector<Project_Config::RelaysConfig_t> *getRelaysConfig();
+    Project_Config::RelaysConfig_t *GreenHouseConfig::getRelayConfig(int index);
+    Project_Config::EnabledFeatures_t *getEnabledFeatures();
+
+    IPAddress getBroker();
+
+    Project_Config::GreenHouseConfig_t config;
+
+    /* Types */
+    typedef Project_Config::EnabledFeatures_t::Humidity_Features_e HumidityFeatures_t;
+    typedef Project_Config::EnabledFeatures_t::LDR_Features_e LDRFeatures_t;
+    typedef Project_Config::EnabledFeatures_t::Water_Level_Features_e WaterLevelFeatures_t;
 };
 
 #endif

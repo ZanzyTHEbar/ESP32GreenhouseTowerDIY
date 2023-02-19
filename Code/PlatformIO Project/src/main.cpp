@@ -38,7 +38,7 @@ APIServer server(80, &configManager, "/control", "/wifimanager",
 WiFiHandler network(&configManager, &wifiStateManager, WIFI_SSID, WIFI_PASS, 1);
 OTA ota(&configManager);
 MDNSHandler mDNS(&mdnsStateManager, &configManager,
-                 ("_" + configManager.getHostname()), "data", "_tcp",
+                 ("_esp32tower"), "data", "_tcp",
                  "api_port", "80");
 TaskManager timedTasks(&configManager);
 API api(&wifiStateManager, &server, &configManager, &timedTasks);
