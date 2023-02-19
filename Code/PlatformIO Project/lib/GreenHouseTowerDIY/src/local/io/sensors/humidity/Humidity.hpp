@@ -18,10 +18,6 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
-#define DHTTYPE DHT11 // DHT 11
-#define DHTTYPE DHT22 // DHT 22 (AM2302)
-#define DHTTYPE DHT21 // DHT 22 (AM2302)
-
 class Humidity
 {
 private:
@@ -78,5 +74,6 @@ public:
 
     // Variables
     static std::unordered_map<HUMIDITY_SENSORS_ACTIVE_e, std::string> humidity_sensors_map;
+    static std::unordered_map<std::string, uint8_t> dht_types;
 };
 #endif

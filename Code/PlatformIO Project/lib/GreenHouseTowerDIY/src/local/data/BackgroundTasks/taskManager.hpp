@@ -10,7 +10,8 @@ namespace ObserverEvent
     relaysConfigChanged,
     relaysActivated,
     accumulateData,
-    mqttConfigChanged
+    mqttConfigChanged,
+    dhtConfigChanged,
   };
 }
 /**
@@ -45,6 +46,7 @@ public:
                      const std::string &username = std::string(),
                      const std::string &password = std::string(),
                      bool shouldNotify = true);
+  void setDHT(const std::string &type, const uint8_t pin, bool shouldNotify);
 
 private:
   Tasks_t tasks;

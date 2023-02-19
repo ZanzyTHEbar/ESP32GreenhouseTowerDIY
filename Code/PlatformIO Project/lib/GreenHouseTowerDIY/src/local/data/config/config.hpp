@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <data/config/project_config.hpp>
 #include <timeObj.h>
+#include <unordered_map>
 
 namespace Project_Config
 {
@@ -60,7 +61,10 @@ namespace Project_Config
         Humidity_Features_e humidity_Features;
         LDR_Features_e ldr_Features;
         Water_Level_Features_e water_Level_Features;
+        std::string dht_type;
+        uint8_t dht_pin;
     };
+
     struct GreenHouseConfig_t : ProjectConfig_t
     {
         MQTTConfig_t mqtt;
@@ -75,12 +79,17 @@ public:
     GreenHouseConfig(const std::string &hostname);
     ~GreenHouseConfig();
 
+    //* Load
     void load();
     void loadRelays();
     void loadMQTT();
+    void loadFeatures();
+
+    //* Save
     void save();
     void saveRelays();
     void saveMQTT();
+    void saveFeatures();
     void initConfig();
 
     std::string toRepresentation();

@@ -18,16 +18,19 @@ std::unordered_map<Humidity::HUMIDITY_SENSORS_ACTIVE_e, std::string>
          "Humidity Sensor Setup - initialised to DHT_SHT31_2"},
 }; // end of map
 
-Humidity::Humidity(GreenHouseConfig *config)
-    : configManager(config),
-      _delayS(0),
-      _enableHeater(false),
-      _loopCnt(0),
-      dht{std::make_shared<DHT_Unified>(DHTPIN, DHTTYPE)},
-      sht31{std::make_shared<Adafruit_SHT31>()},
-      sht31_2{std::make_shared<Adafruit_SHT31>()},
-      humiditySensorsActive(HUMIDITY_SENSORS_ACTIVE_NONE)
+std::unordered_map<std::string, uint8_t> Humidity::dht_types = {
+    {"DHT11", DHT11},
+    {"DHT22", DHT22},
+    {"DHT21", DHT21},
+};
+
+Humidity::Humidity(GreenHouseConfig *config) : configManager(config),
+                                               _delayS(0), _enableHeater(false), _loopCnt(0),
+                                               sht31{std::make_shared<Adafruit_SHT31>()},
+                                               sht31_2{std::make_shared<Adafruit_SHT31>()},
+                                               humiditySensorsActive(HUMIDITY_SENSORS_ACTIVE_NONE)
 {
+    dht = std::make_shared<DHT_Unified>(configManager->getEnabledFeatures()->dht_pin, dht_types[configManager->getEnabledFeatures()->dht_type]);
 }
 
 Humidity::~Humidity() {}

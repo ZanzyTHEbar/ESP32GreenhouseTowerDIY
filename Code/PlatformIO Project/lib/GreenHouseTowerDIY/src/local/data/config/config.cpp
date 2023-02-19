@@ -23,6 +23,7 @@ void GreenHouseConfig::load()
 
 	loadRelays();
 	loadMQTT();
+	loadFeatures();
 	ProjectConfig::load();
 }
 
@@ -66,6 +67,15 @@ void GreenHouseConfig::loadMQTT()
 	this->config.mqtt.password.assign(getString("mqtt_password", "").c_str());
 }
 
+void GreenHouseConfig::loadFeatures()
+{
+	this->config.enabled_features.humidity_Features = (HumidityFeatures_t)getInt("humidity_features", 0);
+	this->config.enabled_features.ldr_Features = (LDRFeatures_t)getInt("ldr_features", 0);
+	this->config.enabled_features.water_Level_Features = (WaterLevelFeatures_t)getInt("water_level_features", 0);
+	this->config.enabled_features.dht_type.assign(getString("dht_type", "").c_str());
+	this->config.enabled_features.dht_pin = getInt("dht_pin");
+}
+
 //**********************************************************************************************************************
 //*
 //!                                                Save
@@ -77,6 +87,7 @@ void GreenHouseConfig::save()
 	ProjectConfig::save();
 	saveRelays();
 	saveMQTT();
+	saveFeatures();
 }
 
 void GreenHouseConfig::saveRelays()
@@ -113,6 +124,16 @@ void GreenHouseConfig::saveMQTT()
 	putInt("mqtt_port", this->config.mqtt.port);
 	putString("mqtt_username", this->config.mqtt.username.c_str());
 	putString("mqtt_password", this->config.mqtt.password.c_str());
+}
+
+void GreenHouseConfig::saveFeatures()
+{
+	putInt("humidity_features", this->config.enabled_features.humidity_Features);
+	putInt("ldr_features", this->config.enabled_features.ldr_Features);
+	putInt("water_features", this->config.enabled_features.water_Level_Features);
+
+	putInt("dht_pin", this->config.enabled_features.dht_pin);
+	putString("dht_type", this->config.enabled_features.dht_type.c_str());
 }
 
 //**********************************************************************************************************************

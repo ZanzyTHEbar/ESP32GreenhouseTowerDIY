@@ -160,6 +160,17 @@ void TaskManager::setMQTTConfig(const std::string &broker,
     }
 }
 
+void TaskManager::setDHT(const std::string &type, const uint8_t pin, bool shouldNotify)
+{
+    deviceConfig->config.enabled_features.dht_type.assign(type);
+    deviceConfig->config.enabled_features.dht_pin = pin;
+
+    if (shouldNotify)
+    {
+        this->notify(ObserverEvent::dhtConfigChanged);
+    }
+}
+
 void TaskManager::detachAll()
 {
     ISubject::detachAll();

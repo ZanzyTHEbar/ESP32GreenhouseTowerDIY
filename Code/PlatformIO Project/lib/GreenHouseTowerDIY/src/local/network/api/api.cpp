@@ -28,6 +28,10 @@ void API::setupServer()
     server->begin();
 }
 
+void API::handleDHTType(uint8_t type)
+{
+}
+
 void API::begin()
 {
     // handle the WiFi connection state changes
@@ -152,30 +156,42 @@ void API::removeRelay(AsyncWebServerRequest *request)
     }
 }
 
-// parse and set a new hostname to config
-void API::setHostname(AsyncWebServerRequest *request)
+void API::setDHT(AsyncWebServerRequest *request)
 {
     switch (server->_networkMethodsMap_enum[request->method()])
     {
     case APIServer::POST:
     {
-        std::string new_hostname = request->getParam("hostname")->value().c_str();
-        int j = 0;
-        for (unsigned int i = 0; i < new_hostname.length() && i < sizeof(configManager->getHostname()); i++)
+        std::string type;
+        uint8_t pin;
+
+        int params = request->params();
+        log_d("Number of Params: %d", params);
+        for (int i = 0; i < params; i++)
         {
-            String temp = new_hostname.c_str();
-            if (temp.charAt(i) == '-' or
-                (temp.charAt(i) >= '0' && temp.charAt(i) <= '9') or
-                (temp.charAt(i) >= 'A' && temp.charAt(i) <= 'Z') or
-                (temp.charAt(i) >= 'a' && temp.charAt(i) <= 'z'))
+            AsyncWebParameter *param = request->getParam(i);
+            log_i("%s[%s]: %s\n",
+                  server->_networkMethodsMap[request->method()].c_str(),
+                  param->name().c_str(), param->value().c_str());
+            if (param->name() == "type")
             {
-                configManager->hostname[j] = temp.charAt(i);
-                j++;
+                type.assign(param->value().c_str());
+            }
+            else if (param->name() == "pin")
+            {
+                pin = atoi(param->value().c_str());
             }
         }
-        configManager->hostname[j] = '\0';
-        request->send(200, APIServer::MIMETYPE_JSON, "{\"msg\":\"Successfully set new hostname\"}");
-        break;
+
+        if (type.empty() || pin == 0)
+        {
+            request->send(400, APIServer::MIMETYPE_JSON, "{\"msg\":\"Invalid Request - please provide values for all parameters\"}");
+            Network_Utilities::my_delay(0.5L);
+            request->redirect("/");
+            return;
+        }
+
+        taskManager->setDHT(type, pin, true);
     }
     default:
     {
