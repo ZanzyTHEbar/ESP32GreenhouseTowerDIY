@@ -44,7 +44,7 @@ TaskManager timedTasks(&configManager);
 API api(&wifiStateManager, &server, &configManager, &timedTasks);
 NetworkNTP ntp;
 TowerTemp tower_temp;
-Humidity humidity;
+Humidity humidity(&configManager);
 WaterLevelSensor waterLevelSensor(&tower_temp);
 AccumulateData data(&configManager, &ntp, &tower_temp, &humidity,
                     &waterLevelSensor);

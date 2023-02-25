@@ -31,7 +31,7 @@ namespace Project_Config
     {
         enum Humidity_Features_e
         {
-            NONE,
+            NONE_HUMIDITY,
             SHT31,
             SHT31x2,
             DHT11,
@@ -41,7 +41,7 @@ namespace Project_Config
         };
         enum LDR_Features_e
         {
-            NONE,
+            NONE_LDR,
             LDR,
             BH1750,
             BH1750_FAST,
@@ -51,7 +51,7 @@ namespace Project_Config
         };
         enum Water_Level_Features_e
         {
-            NONE,
+            NONE_WATER_LEVEL,
             WATER_LEVEL_UC,
             WATER_LEVEL_PRESSURE,
             WATER_LEVEL_IR,
@@ -96,7 +96,7 @@ public:
 
     Project_Config::MQTTConfig_t *getMQTTConfig();
     std::vector<Project_Config::RelaysConfig_t> *getRelaysConfig();
-    Project_Config::RelaysConfig_t *GreenHouseConfig::getRelayConfig(int index);
+    Project_Config::RelaysConfig_t *getRelayConfig(int index);
     Project_Config::EnabledFeatures_t *getEnabledFeatures();
 
     IPAddress getBroker();

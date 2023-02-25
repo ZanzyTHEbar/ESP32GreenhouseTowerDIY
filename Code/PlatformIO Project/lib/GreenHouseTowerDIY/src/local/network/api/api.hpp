@@ -13,7 +13,6 @@ private:
   GreenHouseConfig *configManager;
   TaskManager *taskManager;
   void setupServer();
-  void handleDHTType(uint8_t type);
 
 public:
   API(StateManager<WiFiState_e> *stateManager,

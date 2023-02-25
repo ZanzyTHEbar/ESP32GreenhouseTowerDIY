@@ -274,7 +274,7 @@ float Humidity::averageStackTemp()
     }
     default:
     {
-        break;
+        return 0.0; // Should never get here
     }
     }
 }
@@ -319,6 +319,7 @@ float Humidity::stackHumidity()
     }
     default:
     {
+        return 0.0; // Should never get here
         break;
     }
     }

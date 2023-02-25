@@ -28,10 +28,6 @@ void API::setupServer()
     server->begin();
 }
 
-void API::handleDHTType(uint8_t type)
-{
-}
-
 void API::begin()
 {
     // handle the WiFi connection state changes
@@ -182,7 +178,6 @@ void API::setDHT(AsyncWebServerRequest *request)
                 pin = atoi(param->value().c_str());
             }
         }
-
         if (type.empty() || pin == 0)
         {
             request->send(400, APIServer::MIMETYPE_JSON, "{\"msg\":\"Invalid Request - please provide values for all parameters\"}");
@@ -190,7 +185,6 @@ void API::setDHT(AsyncWebServerRequest *request)
             request->redirect("/");
             return;
         }
-
         taskManager->setDHT(type, pin, true);
     }
     default:

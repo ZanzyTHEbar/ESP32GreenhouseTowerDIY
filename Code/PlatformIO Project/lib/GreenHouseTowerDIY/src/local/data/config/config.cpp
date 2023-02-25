@@ -152,7 +152,7 @@ std::string GreenHouseConfig::toRepresentation()
 	// convert enums to strings
 	switch (this->config.enabled_features.humidity_Features)
 	{
-	case HumidityFeatures_t::NONE:
+	case HumidityFeatures_t::NONE_HUMIDITY:
 		hum.assign("None");
 		break;
 	case HumidityFeatures_t::DHT11:
@@ -180,7 +180,7 @@ std::string GreenHouseConfig::toRepresentation()
 
 	switch (this->config.enabled_features.ldr_Features)
 	{
-	case LDRFeatures_t::NONE:
+	case LDRFeatures_t::NONE_LDR:
 		ldr.assign("None");
 		break;
 	case LDRFeatures_t::LDR:
@@ -208,7 +208,7 @@ std::string GreenHouseConfig::toRepresentation()
 
 	switch (this->config.enabled_features.water_Level_Features)
 	{
-	case WaterLevelFeatures_t::NONE:
+	case WaterLevelFeatures_t::NONE_WATER_LEVEL:
 		water.assign("None");
 		break;
 	case WaterLevelFeatures_t::WATER_LEVEL_UC:

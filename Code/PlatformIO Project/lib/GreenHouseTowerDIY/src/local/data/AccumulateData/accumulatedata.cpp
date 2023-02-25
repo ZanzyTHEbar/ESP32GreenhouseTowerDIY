@@ -16,7 +16,7 @@ void AccumulateData::loop()
     ntp->NTPLoop();
     // Initialize the libraries and collect the data
     if (USE_SHT31_SENSOR)
-        humidity->ReadSensor();
+        humidity->readSensor();
 
     if (USE_DHT_SENSOR)
         humidity->readDHT();
@@ -54,7 +54,7 @@ bool AccumulateData::accumulateData()
         waterLevelSensor->result.water_level_percentage;
     if (USE_SHT31_SENSOR)
     {
-        switch (humidity->_humiditySensorsActive)
+        switch (humidity->humiditySensorsActive)
         {
         case 0:
             break;
@@ -75,8 +75,8 @@ bool AccumulateData::accumulateData()
         default:
             break;
         }
-        jsonDoc["humidity_sht31_average"] = humidity->StackHumidity();
-        jsonDoc["humidity_temp_sht31_average"] = humidity->AverageStackTemp();
+        jsonDoc["humidity_sht31_average"] = humidity->stackHumidity();
+        jsonDoc["humidity_temp_sht31_average"] = humidity->averageStackTemp();
     }
 
     if (USE_DHT_SENSOR)
