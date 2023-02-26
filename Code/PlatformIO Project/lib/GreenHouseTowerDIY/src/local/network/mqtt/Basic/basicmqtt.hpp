@@ -6,8 +6,8 @@
 #ifndef BASEMQTT_HPP
 #define BASEMQTT_HPP
 #include <Arduino.h>
-#include <WiFi.h>
 #include <PubSubClient.h>
+#include <WiFi.h>
 
 //*  Sensor Includes
 #include <local/io/sensors/humidity/Humidity.hpp>
@@ -17,43 +17,45 @@
 #include <local/io/sensors/temperature/towertemp.hpp>
 #include <local/io/sensors/water_level/waterlevelsensor.hpp>
 
+//* IO Includes
+#include <local/io/Relays/relays.hpp>
+
 /**
  * @brief MQTT Class
  */
-class BASEMQTT : public IPAddress, public PubSubClient
-{
-public:
-    // Constructor
-    BASEMQTT(WiFiClient *espClient,
-             PHSENSOR *phsensor,
-             BH1750 *bh1750,
-             LDR *ldr,
-             TowerTemp *towertemp,
-             Humidity *humidity,
-             WaterLevelSensor *waterlevelsensor,
-             IPAddress *broker_ip);
-    virtual ~BASEMQTT();
+class BASEMQTT : public IPAddress, public PubSubClient {
+  PHSENSOR* phsensor;
+  BH1750* bh1750;
+  LDR* ldr;
+  TowerTemp* towertemp;
+  Humidity* humidity;
+  WaterLevelSensor* waterlevelsensor;
+  I2C_RelayBoard* relayboard;
+  GreenHouseConfig* deviceConfig;
 
-    void begin();
-    void mqttLoop();
-    void mqttReconnect();
-    void mqttCallback(char *topic, byte *payload, unsigned int length);
+  // Private variables
+  const long _interval;
+  unsigned long _previousMillis;
 
-    // Friends
-    friend class LDR;
+ public:
+  // Constructor
+  BASEMQTT(WiFiClient* espClient,
+           PHSENSOR* phsensor,
+           BH1750* bh1750,
+           LDR* ldr,
+           TowerTemp* towertemp,
+           Humidity* humidity,
+           WaterLevelSensor* waterlevelsensor,
+           I2C_RelayBoard* relayboard,
+           IPAddress* broker_ip,
+           GreenHouseConfig* config);
+  virtual ~BASEMQTT();
 
-private:
-    PHSENSOR *phsensor;
-    BH1750 *bh1750;
-    LDR *ldr;
-    TowerTemp *towertemp;
-    Humidity *humidity;
-    WaterLevelSensor *waterlevelsensor;
-
-    // Private variables
-    const long _interval;
-    unsigned long _previousMillis;
-    uint8_t _user_bytes_received;
-    char _user_data[100];
+  void begin();
+  void mqttLoop();
+  void mqttReconnect();
+  void subscribeAll();
+  void publishAll();
+  void mqttCallback(char* topic, byte* payload, unsigned int length);
 };
-#endif // HAMQTT_HPP
+#endif  // HAMQTT_HPP

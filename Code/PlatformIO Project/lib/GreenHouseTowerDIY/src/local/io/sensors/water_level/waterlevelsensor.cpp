@@ -1,28 +1,23 @@
 #include "waterlevelsensor.hpp"
 
-//***********************************************************************************************************************
-// * Capacitive Water Level Sensor Class
-// * This class is used to read the water level from a capacitive sensor.
-// * The sensor is connected to the ESP32 via a GPIO Touch pin.
-//! * Manual calibration is needed!!!
-//************************************************************************************************************************
+//**********************************************************************************************************************
+//*
+//!                                                UltraSonicDistanceSensor
+//*
+//**********************************************************************************************************************
 
-WaterLevelSensor::WaterLevelSensor(TowerTemp *_towerTemp)
-    : _towerTemp(_towerTemp),
-      _distanceSensor{
-          std::make_shared<UltraSonicDistanceSensor>(TRIG_PIN, ECHO_PIN)} {}
+WaterLevelSensor::WaterLevelSensor(TowerTemp* _towerTemp)
+    : _towerTemp(_towerTemp), _distanceSensor(TRIG_PIN, ECHO_PIN) {}
 WaterLevelSensor::~WaterLevelSensor() {}
 
-void WaterLevelSensor::begin()
-{
+void WaterLevelSensor::begin() {
   _radius = RES_RADIUS_1;
   _height = RES_HEIGHT;
 }
 
-double WaterLevelSensor::readSensor()
-{
+double WaterLevelSensor::readSensor() {
   Network_Utilities::my_delay(1L);
-  double distance = _distanceSensor->measureDistanceCm(
+  double distance = _distanceSensor.measureDistanceCm(
       _towerTemp->temp_sensor_results.temp[0]);
   log_d("Distance: %.3f cm", distance, DEC);
   log_d("Temperature: %.3f °C", _towerTemp->temp_sensor_results.temp[0], DEC);
@@ -31,10 +26,8 @@ double WaterLevelSensor::readSensor()
   return distance;
 }
 
-WaterLevelSensor::Data_t WaterLevelSensor::readWaterLevelUltraSonic()
-{
-  if (readSensor() <= 0.0)
-  {
+WaterLevelSensor::Data_t WaterLevelSensor::readWaterLevelUltraSonic() {
+  if (readSensor() <= 0.0) {
     log_i("Distance greater than 400cm");
     log_i("Failed to read ultrasonic sensor.");
     return {0, 0};
@@ -51,8 +44,7 @@ WaterLevelSensor::Data_t WaterLevelSensor::readWaterLevelUltraSonic()
   log_i("Percent Full: %.3f", p, DEC);
   log_d("True Water Level Distance: %.3f cm", readSensor(), DEC);
 
-  if (isnan(p))
-  {
+  if (isnan(p)) {
     log_e("Error: %s", "Sensor Value is NaN");
     return {0, 0};
   }
@@ -60,6 +52,20 @@ WaterLevelSensor::Data_t WaterLevelSensor::readWaterLevelUltraSonic()
   return result;
 }
 
+//**********************************************************************************************************************
+//*
+//!                                                PressureSensor
+//*
+//**********************************************************************************************************************
+
+// TODO: Add LPS33/35 - pressure sensor - measure water level based on pressure
+// -1ml = 1g
+
+//**********************************************************************************************************************
+//*
+//!                                                InfraredSensor
+//*
+//**********************************************************************************************************************
+
 // TODO: Add Infrared sensor - bounce off of styrofoam material in tube inside
 // of reservoir
-// TODO: Add LPS33/35  - pressure sensor - measure water level based on pressure -1ml = 1g
