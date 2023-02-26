@@ -58,7 +58,11 @@ HASSMQTT::HASSMQTT(WiFiClient* espClient,
       tower_temp("water_temp"),
       water_level("water_level"),
       ph("ph"),
-      relays() {
+      relays(),
+      lastReadAt(0),
+      lastSentAt(0),
+      lastInputState(0),
+      lastAvailabilityToggleAt(0) {
 }
 
 HASSMQTT::~HASSMQTT() {}
@@ -270,15 +274,16 @@ void HASSMQTT::onBeforeStateChanged(bool state, HASwitch* s) {
   // network latency
 }
 
+/**
+ * @brief This callback will be called evertime the relay state changes
+ *
+ * @param state new state of the relay
+ * @param s pointer to the relay object
+ */
 void HASSMQTT::onRelayStateChanged(bool state, HASwitch* s) {
   // Relay Control
-  bool relay = state;
-  for (int i = 0;
-       i < sizeof(cfg.config.relays_pin) / sizeof(cfg.config.relays_pin[0]);
-       i++) {
-    log_i("switching state of pin: %s\n", relay ? "HIGH" : "LOW");
-    cfg.config.relays[i] = (cfg.config.relays[i]) ? false : true;
-  }
+  std::string relay = s->getName();
+  log_i("Relay %s state changed to: [%s]", state ? "ON" : "OFF", relay.c_str());
 }
 
 #if ENABLE_PH_SUPPORT
@@ -293,8 +298,14 @@ void HASSMQTT::mqttLoop() {
   if ((millis() - lastReadAt) > 30) {  // read in 30ms interval
     // library produces MQTT message if a new state is different than the
     // previous one
-    relay.setState(digitalRead(pump._pump_relay_pin));
-    lastInputState = relay.getState();
+
+    auto relayConfig = deviceConfig->getRelaysConfig();
+    for (auto& relay : relays) {
+      for (auto relayEntity : *relayConfig) {
+        relay.setState(digitalRead(relayEntity.port));
+        lastInputState = relay.getState();
+      }
+    }
     lastReadAt = millis();
   }
 
@@ -305,15 +316,19 @@ void HASSMQTT::mqttLoop() {
 
   if ((millis() - lastSentAt) >= 5000) {
     lastSentAt = millis();
-    tower_humidity_temp.setValue(accumulatedata.config.humidity_temp);
-    tower_humidity.setValue(accumulatedata.config.humidity);
-    water_temp.setValue(accumulatedata.config.temp_sensors[0]);
-    light.setValue(ldr.getLux());
+#if USE_DHT_SENSOR
+    tower_humidity_temp.setValue(humidity->result.temp);
+    tower_humidity.setValue(humidity->result.humidity);
+#endif  // USE_DHT_SENSOR
+
+    tower_temp.setValue(towertemp->temp_sensor_results.temp.at(0));
+    light.setValue(ldr->getLux());
+
 #if USE_SHT31_SENSOR
-    sht31_humidity.setValue(lastValue);
-    sht31_humidity_temp.setValue(lastValue);
-    sht31_humidity_2.setValue(lastValue);
-    sht31_humidity_temp_2.setValue(lastValue);
+    sht31_humidity.setValue(humidity->result.humidity_sht31);
+    sht31_humidity_2.setValue(humidity->result.humidity_sht31_2);
+    sht31_humidity_temp.setValue(humidity->result.temp_sht31);
+    sht31_humidity_temp_2.setValue(humidity->result.temp_sht31_2);
 #endif  // USE_SHT31_SENSOR
 
     // Supported data types:
@@ -324,5 +339,3 @@ void HASSMQTT::mqttLoop() {
     // const char*
   }
 }
-
-HASSMQTT hassmqtt;

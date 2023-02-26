@@ -7,8 +7,8 @@
 #define HAMQTT_HPP
 #include <Arduino.h>
 #include <ArduinoHA.h>
-#include <functional>
 #include <WiFi.h>
+#include <functional>
 
 //*  Sensor Includes
 #include <local/io/sensors/humidity/Humidity.hpp>
@@ -36,10 +36,6 @@ class HASSMQTT {
   //* Home Assistant Entities
   HADevice device;
   HAMqtt mqtt;
-  std::vector<HASwitch> relays;
-  HASensor ph;
-  HASensor water_level;
-  HASensor tower_temp;
 
 #if USE_DHT_SENSOR
   HASensor tower_humidity;
@@ -54,6 +50,16 @@ class HASSMQTT {
   sht31_humidity_2("tower_humidity_sht31");
   sht31_humidity_temp_2("tower_humidity_temp_sht31");
 #endif  // USE_SHT31_SENSOR
+  HASensor ph;
+  HASensor water_level;
+  HASensor tower_temp;
+
+  std::vector<HASwitch> relays;
+
+  unsigned long lastReadAt;
+  unsigned long lastSentAt;
+  unsigned long lastInputState;
+  unsigned long lastAvailabilityToggleAt;
 
  public:
   //* Constructor
@@ -71,7 +77,6 @@ class HASSMQTT {
 
   void begin();
   void mqttLoop();
-
   void onMqttMessage(const char* topic,
                      const uint8_t* payload,
                      uint16_t length);
