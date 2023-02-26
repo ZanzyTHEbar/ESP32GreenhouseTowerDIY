@@ -16,8 +16,8 @@ class PHSENSOR {
   virtual ~PHSENSOR();
   void begin();
   void readPH();
-  void eventListener(const std::string& result);
-  void parse_cmd(const std::string& string);
+  void eventListener(std::string result);
+  void parse_cmd(std::string string);
 
   struct PH_t {
     float ph;

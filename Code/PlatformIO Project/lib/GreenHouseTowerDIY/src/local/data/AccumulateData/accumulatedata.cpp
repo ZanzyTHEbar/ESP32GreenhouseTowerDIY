@@ -66,10 +66,10 @@ void AccumulateData::loop() {
 //******************************************************************************
 // * Function: Accumulate Data to send from sensors and store in json
 // * Description: This function accumulates all sensor data and stores it in the
-// main data structure.
+// * main data structure.
 // * Parameters: None
 // * Return: bool - true if data was accumulated, false if not
-//******************************************************************************/
+//******************************************************************************
 bool AccumulateData::accumulateData() {
   // TODO: add a timer to this fucntion to make sure it doesn't run too often
   _numTempSensors = towertemp->getSensorCount();

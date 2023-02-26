@@ -40,7 +40,7 @@ bool I2C_RelayBoard::getRelay(uint8_t port) {
 //*
 //**********************************************************************************************************************
 
-void I2C_RelayBoard::eventListener(const std::string& result, uint8_t port) {
+void I2C_RelayBoard::eventListener(std::string result, uint8_t port) {
   log_d("[Relay::eventListener]: %s", result.c_str());
   // Convert to lower case using lambda
   std::for_each(result.begin(), result.end(),

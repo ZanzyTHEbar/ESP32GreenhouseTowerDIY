@@ -61,7 +61,7 @@ void TaskManager::setRelaysConfig(const std::string& name,
   size_t size = deviceConfig->config.relays.size();
   if (size == 0) {
     log_i("No Relays found, adding new one");
-    deviceConfig->config.relays.emplace_back(name, port, start_state, time);
+    deviceConfig->config.relays.emplace_back(name, port, start_state, timer);
   } else {
     int relayToUpdate = -1;
     for (size_t i = 0; i < size; i++) {
@@ -77,7 +77,7 @@ void TaskManager::setRelaysConfig(const std::string& name,
       deviceConfig->config.relays[relayToUpdate].timer = timer;
     } else if (size < 100) {
       log_i("Relay not found, adding new one");
-      deviceConfig->config.relays.emplace_back(name, port, start_state, time);
+      deviceConfig->config.relays.emplace_back(name, port, start_state, timer);
     } else {
       log_e("Relay not found, max amount of relays (100) reached");
     }

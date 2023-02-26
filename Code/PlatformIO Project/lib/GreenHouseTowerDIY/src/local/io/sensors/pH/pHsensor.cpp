@@ -83,13 +83,13 @@ void PHSENSOR::readPH() {
  * @note This function is used to parse the command from the serial monitor. The
  * command is used to calibrate the pH sensor.
  */
-void PHSENSOR::parse_cmd(const std::string& string) {
+void PHSENSOR::parse_cmd(std::string string) {
   std::string result = string;
 
   // Convert to lower case using lambda
   std::for_each(result.begin(), result.end(),
                 [](char& c) { c = ::tolower(c); });
-
+                
   if (result == "cal,7") {
     pH.cal_mid();
     log_i("MID CALIBRATED");
@@ -122,7 +122,7 @@ void PHSENSOR::parse_cmd(const std::string& string) {
  * @param length The length of the payload
  * @return void
  */
-void PHSENSOR::eventListener(const std::string& result) {
+void PHSENSOR::eventListener(std::string result) {
   // The message is for the pH sensor.
   // The message is in the format:
   // <pH>:<pH_value>

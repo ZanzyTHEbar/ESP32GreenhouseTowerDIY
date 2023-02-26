@@ -67,6 +67,8 @@ BH1750 bh1750;
 LDR ldr;
 PHSENSOR phsensor;
 
+I2C_RelayBoard relays(&configManager);
+
 AccumulateData data(&phsensor,
                     &bh1750,
                     &ldr,
@@ -76,8 +78,6 @@ AccumulateData data(&phsensor,
                     &ntp,
                     &relays,
                     &configManager);
-
-I2C_RelayBoard relays(&configManager);
 
 // TODO: Add Serial Manager to handle enabled features
 // TODO: Change macros to enums to enable or disable features
