@@ -97,15 +97,15 @@ void HASSMQTT::begin() {
   // and set their unique IDs
   auto relayConfig = deviceConfig->getRelaysConfig();
   for (auto relay : *relayConfig) {
-    relays.emplace_back(new HASwitch(relay.name.c_str(), relay.start_state));
+    relays.emplace_back((new HASwitch(relay.name.c_str(), relay.start_state)));
   }
-  for (auto& relay : relays) {
+  for (auto relay : relays) {
     for (auto relayEntity : *relayConfig) {
-      relay.setName(relayEntity.name.c_str());  // optional
+      relay->setName(relayEntity.name.c_str());  // optional
 
-      relay.onBeforeStateChanged(
+      relay->onBeforeStateChanged(
           [&](bool state, HASwitch* s) { onBeforeStateChanged(state, s); });
-      relay.onStateChanged(
+      relay->onStateChanged(
           [&](bool state, HASwitch* s) { onRelayStateChanged(state, s); });
     }
   }
@@ -300,10 +300,10 @@ void HASSMQTT::mqttLoop() {
     // previous one
 
     auto relayConfig = deviceConfig->getRelaysConfig();
-    for (auto& relay : relays) {
+    for (auto relay : relays) {
       for (auto relayEntity : *relayConfig) {
-        relay.setState(digitalRead(relayEntity.port));
-        lastInputState = relay.getState();
+        relay->setState(digitalRead(relayEntity.port));
+        lastInputState = relay->getState();
       }
     }
     lastReadAt = millis();

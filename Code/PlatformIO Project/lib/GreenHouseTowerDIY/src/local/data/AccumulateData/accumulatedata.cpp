@@ -86,7 +86,7 @@ bool AccumulateData::accumulateData() {
     jsonDoc["timestamp"] = ntp->getTimeStamp();
     jsonDoc["max_temp"] = _maxTemp;
     jsonDoc["num_temp_sensors"] = _numTempSensors;
-    
+
     jsonDoc["water_level_liters"] = waterlevelsensor->result.water_level;
     jsonDoc["water_level_percentage"] =
         waterlevelsensor->result.water_level_percentage;
@@ -130,16 +130,18 @@ bool AccumulateData::accumulateData() {
       generateJSONTimer.start();
       return false;
     }
-    if (json.length() > 0) {
-      deviceConfig->getDeviceDataJson()->deviceJson.assign(json);
-      serializeJsonPretty(jsonDoc, json);
-      log_d("[Data Json Document]: %s", json.c_str());
+    if (json.length() < 1) {
+      log_e("[Data Json Document]: Failed to write to file");
       generateJSONTimer.start();
-      return true;
+      return false;
     }
+
+    deviceConfig->getDeviceDataJson()->deviceJson.assign(json);
+    serializeJsonPretty(jsonDoc, json);
+    log_d("[Data Json Document]: %s", json.c_str());
     generateJSONTimer.start();
-    return false;
   }
+  return true;
 }
 
 void AccumulateData::update(ObserverEvent::CustomEvents event) {
