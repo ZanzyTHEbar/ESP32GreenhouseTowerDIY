@@ -37,6 +37,7 @@ class TaskManager : public ISubject<ObserverEvent::CustomEvents> {
                        uint8_t port,
                        bool start_state,
                        timeObj* timer,
+                       HASwitch* ha_switch,
                        bool shouldNotify = true);
 
   void removeRelay(const std::string& name, bool shouldNotify = true);

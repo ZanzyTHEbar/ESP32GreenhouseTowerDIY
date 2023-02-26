@@ -68,6 +68,7 @@ void API::addRelay(AsyncWebServerRequest* request) {
       uint8_t port = 0;
       bool start_state = false;
       timeObj* timer = nullptr;
+      HASwitch* ha_switch = nullptr;
 
       int params = request->params();
       log_d("Number of Params: %d", params);
@@ -82,6 +83,10 @@ void API::addRelay(AsyncWebServerRequest* request) {
         } else if (param->name() == "timer") {
           int temp = atoi(param->value().c_str());
           timer = new timeObj(temp);
+        } else if (param->name() == "ha_switch") {
+          if (param->value() == "true") {
+            ha_switch = new HASwitch(name.c_str(), start_state);
+          }
         }
 
         log_i("%s[%s]: %s\n",
@@ -97,7 +102,7 @@ void API::addRelay(AsyncWebServerRequest* request) {
         request->redirect("/");
         return;
       }
-      taskManager->setRelaysConfig(name, port, start_state, timer);
+      taskManager->setRelaysConfig(name, port, start_state, timer, ha_switch);
       request->send(200, APIServer::MIMETYPE_JSON,
                     "{\"msg\":\"Successfully added a relay device\"}");
       break;

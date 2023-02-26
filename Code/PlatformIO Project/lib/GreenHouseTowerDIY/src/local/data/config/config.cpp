@@ -93,6 +93,7 @@ void GreenHouseConfig::saveRelays() {
   std::string port = "port_";
   std::string start_state = "start_state_";
   std::string timer = "timer_";
+  std::string timer = "timer_";
 
   for (int i = 0; i < this->config.relays.size(); i++) {
     char buffer[2];

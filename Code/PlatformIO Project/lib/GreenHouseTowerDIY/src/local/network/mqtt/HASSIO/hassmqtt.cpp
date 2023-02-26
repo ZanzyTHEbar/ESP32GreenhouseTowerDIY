@@ -96,18 +96,13 @@ void HASSMQTT::begin() {
   // create relays using the relay board instance
   // and set their unique IDs
   auto relayConfig = deviceConfig->getRelaysConfig();
-  for (auto relay : *relayConfig) {
-    relays.emplace_back((new HASwitch(relay.name.c_str(), relay.start_state)));
-  }
-  for (auto relay : relays) {
-    for (auto relayEntity : *relayConfig) {
-      relay->setName(relayEntity.name.c_str());  // optional
+  for (auto& relayEntity : *relayConfig) {
+    relayEntity.ha_switch->setName(relayEntity.name.c_str());  // optional
 
-      relay->onBeforeStateChanged(
-          [&](bool state, HASwitch* s) { onBeforeStateChanged(state, s); });
-      relay->onStateChanged(
-          [&](bool state, HASwitch* s) { onRelayStateChanged(state, s); });
-    }
+    relayEntity.ha_switch->onBeforeStateChanged(
+        [&](bool state, HASwitch* s) { onBeforeStateChanged(state, s); });
+    relayEntity.ha_switch->onStateChanged(
+        [&](bool state, HASwitch* s) { onRelayStateChanged(state, s); });
   }
 
   // This method enables availability for all device types registered on the

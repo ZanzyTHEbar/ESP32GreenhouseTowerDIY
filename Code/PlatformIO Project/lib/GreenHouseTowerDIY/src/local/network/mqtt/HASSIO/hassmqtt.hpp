@@ -54,8 +54,6 @@ class HASSMQTT {
   HASensor water_level;
   HASensor tower_temp;
 
-  std::vector<HASwitch*> relays;
-
   unsigned long lastReadAt;
   unsigned long lastSentAt;
   unsigned long lastInputState;
