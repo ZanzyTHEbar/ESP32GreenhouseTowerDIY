@@ -1,5 +1,7 @@
 #include "ldr.hpp"
 
+// TODO: Fix this with a proper implementation of the LDR and lux
+
 LDR::LDR() : _GAMMA(0.7), _RL10(50)
 {
   pinMode(LDR_PIN, INPUT);

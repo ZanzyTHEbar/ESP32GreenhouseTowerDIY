@@ -79,9 +79,6 @@ AccumulateData data(&phsensor,
                     &relays,
                     &configManager);
 
-// TODO: Add Serial Manager to handle enabled features
-// TODO: Change macros to enums to enable or disable features
-
 void setup() {
   Serial.begin(115200);
   Serial.setDebugOutput(DEBUG_MODE);

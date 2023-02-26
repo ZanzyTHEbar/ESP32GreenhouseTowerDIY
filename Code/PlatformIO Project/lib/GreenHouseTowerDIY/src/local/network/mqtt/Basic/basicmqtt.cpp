@@ -1,9 +1,8 @@
 #include "basicmqtt.hpp"
 
 //***********************************************************************************************************************
-// * Class Global Variables
-// * Please only make changes to the following class variables within the ini
-// file. Do not change them here.
+// * Basic MQTT Stack
+// * This is the basic MQTT stack that is used to connect to a local Mosquitto broker.
 //************************************************************************************************************************
 
 BASEMQTT::BASEMQTT(WiFiClient* espClient,
@@ -47,31 +46,7 @@ BASEMQTT::BASEMQTT(WiFiClient* espClient,
       _previousMillis(0) {
 }
 
-BASEMQTT::~BASEMQTT() {
-  // Destructor
-}
-
-void BASEMQTT::subscribeAll() {
-  // Subscribe to all relay topics
-  // TODO: Add ECC support based on return value of subscribe()
-  auto relayConfig = deviceConfig->getRelaysConfig();
-  for (auto relay : *relayConfig) {
-    log_i("Subscribing to the topic [%s]", relay.name.c_str());
-    subscribe(relay.name.c_str());
-  }
-
-  // Subscribe to all sensor topics
-#if ENABLE_PH_SUPPORT
-  // connection succeeded
-  log_i("Connection succeeded. Subscribing to the topic [%s]",
-        phsensor->_pHTopic.c_str());
-  subscribe(phsensor->_pHTopic.c_str());
-#endif  // ENABLE_PH_SUPPORT
-
-  // TODO: Add support for subscribing to all sensor topics
-
-  log_i("Successfully subscribed to all topics.");
-}
+BASEMQTT::~BASEMQTT() {}
 
 void BASEMQTT::begin() {
   log_i("Setting up MQTT...");
@@ -90,7 +65,7 @@ void BASEMQTT::begin() {
 void BASEMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
   log_i("Message arrived on topic: [%s] ", topic);
 
-  // Convert the payload to a string
+  //* Convert the payload to a string
   std::string result;
   for (int i = 0; i < length; i++) {
     log_i("%s", static_cast<char>(payload[i]));
@@ -98,7 +73,19 @@ void BASEMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
   }
   log_i("Message: [%s]", result.c_str());
 
-  // Check if the message is for a relay
+  // TODO: Add support for all sensor topics
+
+  //* BH1750
+
+  //* LDR
+
+  //* TowerTemp
+
+  //* Humidity
+
+  //* WaterLevelSensor
+
+  //* Relays
   auto relayConfig = deviceConfig->getRelaysConfig();
   for (auto relay : *relayConfig) {
     if (relay.name == topic) {
@@ -108,7 +95,7 @@ void BASEMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
     }
   }
 
-  // Check if the message is for the PH sensor
+  //* Ph Sensor
 #if ENABLE_PH_SUPPORT
   if (phsensor->_pHTopic == topic) {
     log_i("Setting pH level to: [%s]", result.c_str());
@@ -117,8 +104,62 @@ void BASEMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
 #endif  // ENABLE_PH_SUPPORT
 }
 
+void BASEMQTT::subscribeAll() {
+  // Subscribe to all relay topics
+  // TODO: Add ECC support based on return value of subscribe()
+
+  // TODO: Add support for subscribing to all sensor topics
+
+  //* BH1750
+
+  //* LDR
+
+  //* TowerTemp
+
+  //* Humidity
+
+  //* WaterLevelSensor
+
+  //* Relays
+  auto relayConfig = deviceConfig->getRelaysConfig();
+  for (auto relay : *relayConfig) {
+    log_i("Subscribing to the topic [%s]", relay.name.c_str());
+    subscribe(relay.name.c_str());
+  }
+
+  //* Ph Sensor
+#if ENABLE_PH_SUPPORT
+  // connection succeeded
+  log_i("Connection succeeded. Subscribing to the topic [%s]",
+        phsensor->_pHTopic.c_str());
+  subscribe(phsensor->_pHTopic.c_str());
+#endif  // ENABLE_PH_SUPPORT
+  log_i("Successfully subscribed to all topics.");
+}
+
 void BASEMQTT::publishAll() {
-  // Publish all sensor data
+  // TODO: Publish all sensor data
+  //* BH1750
+
+  //* LDR
+
+  //* TowerTemp
+
+  //* Humidity
+
+  //* WaterLevelSensor
+
+  //* Relays
+
+  //* Ph Sensor
+#if ENABLE_PH_SUPPORT
+  auto ph = phsensor->getPH();
+  // convert float to string
+  char buffer[10];
+  dtostrf(ph->ph, 4, 2, buffer);
+  log_i("Publishing pH sensor data: [%s]", buffer);
+  publish(phsensor->_pHTopic.c_str(), buffer);
+#endif  // ENABLE_PH_SUPPORT
 }
 
 /**

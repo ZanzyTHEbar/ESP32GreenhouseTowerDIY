@@ -33,6 +33,9 @@ class AccumulateData : public IObserver<ObserverEvent::CustomEvents>,
   I2C_RelayBoard* relayboard;
   GreenHouseConfig* deviceConfig;
 
+  timeObj generateJSONTimer;
+  timeObj gatherDataTimer;
+
   // Stack Data to send
   int _maxTemp;
   int _numTempSensors;

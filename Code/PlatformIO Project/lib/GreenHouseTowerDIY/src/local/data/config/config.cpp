@@ -17,8 +17,6 @@ void GreenHouseConfig::initConfig() {
 //**********************************************************************************************************************
 
 void GreenHouseConfig::load() {
-  // TODO: Load MQTT
-
   loadRelays();
   loadMQTT();
   loadFeatures();

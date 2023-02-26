@@ -8,14 +8,13 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-class Scanner
-{
-public:
-    Scanner(void);
-    virtual ~Scanner(void);
-    void SetupScan();
-    void BeginScan();
-    /* private: */
+class Scanner {
+ public:
+  Scanner(void);
+  virtual ~Scanner(void);
+  void SetupScan();
+  void BeginScan();
+  /* private: */
 };
 
 extern Scanner Scan;

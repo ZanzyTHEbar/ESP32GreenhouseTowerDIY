@@ -7,30 +7,77 @@
 #define HAMQTT_HPP
 #include <Arduino.h>
 #include <ArduinoHA.h>
+#include <functional>
+#include <WiFi.h>
+
+//*  Sensor Includes
+#include <local/io/sensors/humidity/Humidity.hpp>
+#include <local/io/sensors/light/bh1750.hpp>
+#include <local/io/sensors/light/ldr.hpp>
+#include <local/io/sensors/pH/pHsensor.hpp>
+#include <local/io/sensors/temperature/towertemp.hpp>
+#include <local/io/sensors/water_level/waterlevelsensor.hpp>
+
+//* IO Includes
+#include <local/io/Relays/relays.hpp>
 
 class HASSMQTT {
+  //* Custom Class objects
+  PHSENSOR* phsensor;
+  BH1750* bh1750;
+  LDR* ldr;
+  TowerTemp* towertemp;
+  Humidity* humidity;
+  WaterLevelSensor* waterlevelsensor;
+  I2C_RelayBoard* relayboard;
+  IPAddress* broker_ip;
+  GreenHouseConfig* deviceConfig;
+
+  //* Home Assistant Entities
+  HADevice device;
+  HAMqtt mqtt;
+  std::vector<HASwitch> relays;
+  HASensor ph;
+  HASensor water_level;
+  HASensor tower_temp;
+
+#if USE_DHT_SENSOR
+  HASensor tower_humidity;
+  HASensor tower_humidity_temp;
+#endif  // USE_DHT_SENSOR
+
+  HASensor light;
+
+#if USE_SHT31_SENSOR
+  sht31_humidity("tower_humidity_sht31");
+  sht31_humidity_temp("tower_humidity_temp_sht31");
+  sht31_humidity_2("tower_humidity_sht31");
+  sht31_humidity_temp_2("tower_humidity_temp_sht31");
+#endif  // USE_SHT31_SENSOR
+
  public:
-  // Constructor
-  HASSMQTT();
+  //* Constructor
+  HASSMQTT(WiFiClient* espClient,
+           PHSENSOR* phsensor,
+           BH1750* bh1750,
+           LDR* ldr,
+           TowerTemp* towertemp,
+           Humidity* humidity,
+           WaterLevelSensor* waterlevelsensor,
+           I2C_RelayBoard* relayboard,
+           IPAddress* broker_ip,
+           GreenHouseConfig* config);
   virtual ~HASSMQTT();
 
-  void loadMQTTConfig();
+  void begin();
   void mqttLoop();
 
-  // Friends
-  friend class LDR;
-  friend void onMqttMessage(const char* topic,
-                            const uint8_t* payload,
-                            uint16_t length);
-  friend void onMqttConnected();
-
- private:
-  // Private functions
-
-  // Private variables
-  unsigned long lastReadAt;
-  unsigned long lastAvailabilityToggleAt;
-  bool lastInputState;
-  unsigned long lastSentAt;
+  void onMqttMessage(const char* topic,
+                     const uint8_t* payload,
+                     uint16_t length);
+  void onMqttConnected();
+  void onMqttConnectionFailed();
+  void onBeforeStateChanged(bool state, HASwitch* s);
+  void onRelayStateChanged(bool state, HASwitch* s);
 };
 #endif  // HAMQTT_HPP
