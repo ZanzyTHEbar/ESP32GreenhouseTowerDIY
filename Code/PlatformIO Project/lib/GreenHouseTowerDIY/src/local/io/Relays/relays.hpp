@@ -6,6 +6,10 @@
 #include <local/data/BackgroundTasks/taskManager.hpp>
 #include <local/data/config/config.hpp>
 
+// TODO: Add support for ATTiny85 based I2C relays
+
+// TODO: Add support for TCA9548A I2C multiplexer
+
 class I2C_RelayBoard : public IObserver<ObserverEvent::CustomEvents>,
                        public timeObj {
   Adafruit_MCP23008 relay;
@@ -22,16 +26,5 @@ class I2C_RelayBoard : public IObserver<ObserverEvent::CustomEvents>,
   void handleRelayTimer();
   void eventListener(std::string result, uint8_t port);
   void update(ObserverEvent::CustomEvents event);
-
-  /**
-   * @brief Event listener for the Relys
-   * @note This function is used to listen for events from the MQTT
-   * broker.
-   * @param topic The topic of the event
-   * @param payload The payload of the event
-   * @param length The length of the payload
-   * @return void
-   */
-  void eventListener(const std::string& result);
 };
 #endif

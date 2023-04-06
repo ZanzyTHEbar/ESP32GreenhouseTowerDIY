@@ -58,7 +58,6 @@ HASSMQTT::HASSMQTT(WiFiClient* espClient,
       tower_temp("water_temp"),
       water_level("water_level"),
       ph("ph"),
-      relays(),
       lastReadAt(0),
       lastSentAt(0),
       lastInputState(0),
@@ -92,7 +91,6 @@ void HASSMQTT::begin() {
   // device.setSoftwareVersion(VERSION);
 
   //* handle relay states
-
   // create relays using the relay board instance
   // and set their unique IDs
   auto relayConfig = deviceConfig->getRelaysConfig();
@@ -295,11 +293,9 @@ void HASSMQTT::mqttLoop() {
     // previous one
 
     auto relayConfig = deviceConfig->getRelaysConfig();
-    for (auto relay : relays) {
-      for (auto relayEntity : *relayConfig) {
-        relay->setState(digitalRead(relayEntity.port));
-        lastInputState = relay->getState();
-      }
+    for (auto relayEntity : *relayConfig) {
+      relayEntity.ha_switch->setState(digitalRead(relayEntity.port));
+      lastInputState = relayEntity.ha_switch->getState();
     }
     lastReadAt = millis();
   }
