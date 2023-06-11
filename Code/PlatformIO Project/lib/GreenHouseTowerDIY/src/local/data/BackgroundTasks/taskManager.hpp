@@ -1,6 +1,7 @@
 #ifndef TASKMANAGER_HPP
 #define TASKMANAGER_HPP
 #include <local/data/config/config.hpp>
+#include <set>
 #include <utilities/Observer.hpp>
 
 namespace ObserverEvent {
@@ -19,17 +20,17 @@ namespace ObserverEvent {
 class TaskManager : public ISubject<ObserverEvent::CustomEvents> {
   typedef std::set<ObserverEvent::CustomEvents> Tasks_t;
   Tasks_t tasks;
-  GreenHouseConfig* deviceConfig;
+  GreenHouseConfig& deviceConfig;
 
  public:
-  TaskManager(GreenHouseConfig* config);
+  TaskManager(GreenHouseConfig& config);
   virtual ~TaskManager();
 
   void taskHandler();
   void setTask(ObserverEvent::CustomEvents task,
-               IObserver<ObserverEvent::CustomEvents>* observer);
+               IObserver<ObserverEvent::CustomEvents>& observer);
   void eraseTask(ObserverEvent::CustomEvents task,
-                 IObserver<ObserverEvent::CustomEvents>* observer);
+                 IObserver<ObserverEvent::CustomEvents>& observer);
   void update(ObserverEvent::CustomEvents event);
   void detachAll();
   /* Set Methods */

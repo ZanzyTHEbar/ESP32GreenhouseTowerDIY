@@ -6,7 +6,7 @@
 //*
 //**********************************************************************************************************************
 
-WaterLevelSensor::WaterLevelSensor(TowerTemp* _towerTemp)
+WaterLevelSensor::WaterLevelSensor(TowerTemp& _towerTemp)
     : _towerTemp(_towerTemp), _distanceSensor(TRIG_PIN, ECHO_PIN) {}
 WaterLevelSensor::~WaterLevelSensor() {}
 
@@ -17,10 +17,10 @@ void WaterLevelSensor::begin() {
 
 double WaterLevelSensor::readSensor() {
   Network_Utilities::my_delay(1L);
-  double distance = _distanceSensor.measureDistanceCm(
-      _towerTemp->temp_sensor_results.temp[0]);
+  double distance =
+      _distanceSensor.measureDistanceCm(_towerTemp.temp_sensor_results.temp[0]);
   log_d("Distance: %.3f cm", distance, DEC);
-  log_d("Temperature: %.3f °C", _towerTemp->temp_sensor_results.temp[0], DEC);
+  log_d("Temperature: %.3f °C", _towerTemp.temp_sensor_results.temp[0], DEC);
   // Every 1 second, do a measurement using the sensor and print the distance in
   // centimeters.
   return distance;

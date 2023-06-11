@@ -25,7 +25,7 @@ std::unordered_map<std::string, uint8_t> Humidity::dht_types = {
     {"DHT21", DHT21},
 };
 
-Humidity::Humidity(GreenHouseConfig* config)
+Humidity::Humidity(GreenHouseConfig& config)
     : configManager(config),
       _delayS(0),
       _enableHeater(false),
@@ -34,8 +34,8 @@ Humidity::Humidity(GreenHouseConfig* config)
       sht31_2{std::make_shared<Adafruit_SHT31>()},
       humiditySensorsActive(HUMIDITY_SENSORS_ACTIVE_NONE) {
   dht = std::make_shared<DHT_Unified>(
-      configManager->getEnabledFeatures()->dht_pin,
-      dht_types[configManager->getEnabledFeatures()->dht_type]);
+      configManager.getEnabledFeatures()->dht_pin,
+      dht_types[configManager.getEnabledFeatures()->dht_type]);
 }
 
 Humidity::~Humidity() {}
@@ -98,9 +98,9 @@ Humidity::HUMIDITY_SENSORS_ACTIVE_e Humidity::setup() {
   log_d("------------------------------------");
   log_d("");
 
-  if (configManager->getEnabledFeatures()->humidity_Features ==
+  if (configManager.getEnabledFeatures()->humidity_Features ==
           GreenHouseConfig::HumidityFeatures_t::SHT31 ||
-      configManager->getEnabledFeatures()->humidity_Features ==
+      configManager.getEnabledFeatures()->humidity_Features ==
           GreenHouseConfig::HumidityFeatures_t::SHT31x2) {
     log_d("SHT31 Sensors Setup Beginning....");
     // Set to 0x45 for alternate i2c address

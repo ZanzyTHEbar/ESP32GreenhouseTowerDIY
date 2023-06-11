@@ -33,51 +33,43 @@
 //* Objects
 
 //* Config
-GreenHouseConfig configManager("greenhouse");
+ProjectConfig config("greenhouse");
+ConfigHandler configHandler;
+GreenHouseConfig greenhouseConfig(config);
 
 //* Network
-APIServer server(80,
-                 &configManager,
-                 "/control",
-                 "/wifimanager",
-                 "/userCommands");
+APIServer server(80, config, "/control", "/wifimanager", "/userCommands");
 
-WiFiHandler network(&configManager, &wifiStateManager, WIFI_SSID, WIFI_PASS, 1);
-OTA ota(&configManager);
-MDNSHandler mDNS(&mdnsStateManager,
-                 &configManager,
-                 ("_esp32tower"),
-                 "data",
-                 "_tcp",
-                 "api_port",
-                 "80");
+WiFiHandler network(config, WIFI_SSID, WIFI_PASS, 1);
+OTA ota(config);
+MDNSHandler mDNS(config, "_esp32tower", "data", "_tcp", "api_port", "80");
 NetworkNTP ntp;
 
 //* Tasks
-TaskManager timedTasks(&configManager);
+TaskManager timedTasks(greenhouseConfig);
 
 //* API
-API api(&wifiStateManager, &server, &configManager, &timedTasks);
+API api(server, greenhouseConfig, timedTasks);
 
 //* Sensors
 TowerTemp tower_temp;
-Humidity humidity(&configManager);
-WaterLevelSensor waterLevelSensor(&tower_temp);
+Humidity humidity(greenhouseConfig);
+WaterLevelSensor waterLevelSensor(tower_temp);
 BH1750 bh1750;
 LDR ldr;
 PHSENSOR phsensor;
 
-I2C_RelayBoard relays(&configManager);
+I2C_RelayBoard relays(greenhouseConfig);
 
-AccumulateData data(&phsensor,
-                    &bh1750,
-                    &ldr,
-                    &tower_temp,
-                    &humidity,
-                    &waterLevelSensor,
-                    &ntp,
-                    &relays,
-                    &configManager);
+AccumulateData data(phsensor,
+                    bh1750,
+                    ldr,
+                    tower_temp,
+                    humidity,
+                    waterLevelSensor,
+                    ntp,
+                    relays,
+                    config);
 
 void setup() {
   Serial.begin(115200);
@@ -85,27 +77,28 @@ void setup() {
   Logo::printASCII();
 
   //* Setup Events and Background Tasks
-  configManager.attach(&mDNS);  // attach the mDNS to the config manager
-  timedTasks.setTask(ObserverEvent::CustomEvents::relaysActivated,
-                     &relays);  // attach the relays to the timed tasks
-  timedTasks.setTask(ObserverEvent::CustomEvents::accumulateData,
-                     &data);  // attach the data to the timed tasks
-
+  config.attach(configHandler);
+  config.registerUserConfig(&greenhouseConfig);
+  config.attach(network);
+  config.attach(mDNS);  // attach the mDNS to the config manager
   //* Load Config from memory
-  configManager.initConfig();  // call before load to initialise the structs
-  configManager.load();        // load the config from flash
-
-  //* Setup Network
-  network.begin();
-  mDNS.startMDNS();
-  api.begin();
-  ntp.begin();
-  ota.SetupOTA();
+  configHandler.begin();
+  timedTasks.setTask(ObserverEvent::CustomEvents::relaysActivated,
+                     relays);  // attach the relays to the timed tasks
+  timedTasks.setTask(ObserverEvent::CustomEvents::accumulateData,
+                     data);  // attach the data to the timed tasks
 
   //* Setup Sensors
   humidity.begin();
   tower_temp.begin();
   waterLevelSensor.begin();
+
+  //* Setup Network
+  network.begin();
+  mDNS.begin();
+  api.begin();
+  ntp.begin();
+  ota.begin();
 }
 
 /**
@@ -118,7 +111,7 @@ void setup() {
  */
 void loop() {
   Network_Utilities::checkWiFiState();  // check the WiFi state
-  ota.HandleOTAUpdate();                // handle OTA updates
+  ota.handleOTAUpdate();                // handle OTA updates
   data.loop();                          // accumulate sensor data
   timedTasks.taskHandler();             // handle background tasks
 }

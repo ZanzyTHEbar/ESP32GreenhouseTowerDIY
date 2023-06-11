@@ -73,19 +73,23 @@ namespace Project_Config {
   };
 }  // namespace Project_Config
 
-class GreenHouseConfig : public ProjectConfig {
+class GreenHouseConfig : public CustomConfigInterface {
+  ProjectConfig& projectConfig;
+
  public:
-  GreenHouseConfig(const std::string& hostname);
+  GreenHouseConfig(ProjectConfig& projectConfig);
   ~GreenHouseConfig();
 
+  //* CustomConfigInterface
+  void load() override;
+  void save() override;
+
   //* Load
-  void load();
   void loadRelays();
   void loadMQTT();
   void loadFeatures();
 
   //* Save
-  void save();
   void saveRelays();
   void saveMQTT();
   void saveFeatures();

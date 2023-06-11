@@ -23,15 +23,15 @@
 
 class AccumulateData : public IObserver<ObserverEvent::CustomEvents>,
                        public timeObj {
-  PHSENSOR* phsensor;
-  BH1750* bh1750;
-  LDR* ldr;
-  TowerTemp* towertemp;
-  Humidity* humidity;
-  WaterLevelSensor* waterlevelsensor;
-  NetworkNTP* ntp;
-  I2C_RelayBoard* relayboard;
-  GreenHouseConfig* deviceConfig;
+  PHSENSOR& phsensor;
+  BH1750& bh1750;
+  LDR& ldr;
+  TowerTemp& towertemp;
+  Humidity& humidity;
+  WaterLevelSensor& waterlevelsensor;
+  NetworkNTP& ntp;
+  I2C_RelayBoard& relayBoard;
+  ProjectConfig& deviceConfig;
 
   timeObj generateJSONTimer;
   timeObj gatherDataTimer;
@@ -41,19 +41,20 @@ class AccumulateData : public IObserver<ObserverEvent::CustomEvents>,
   int _numTempSensors;
 
  public:
-  AccumulateData(PHSENSOR* phsensor,
-                 BH1750* bh1750,
-                 LDR* ldr,
-                 TowerTemp* towertemp,
-                 Humidity* humidity,
-                 WaterLevelSensor* waterlevelsensor,
-                 NetworkNTP* ntp,
-                 I2C_RelayBoard* relayboard,
-                 GreenHouseConfig* deviceConfig);
+  AccumulateData(PHSENSOR& phsensor,
+                 BH1750& bh1750,
+                 LDR& ldr,
+                 TowerTemp& towertemp,
+                 Humidity& humidity,
+                 WaterLevelSensor& waterlevelsensor,
+                 NetworkNTP& ntp,
+                 I2C_RelayBoard& relayboard,
+                 ProjectConfig& deviceConfig);
   virtual ~AccumulateData();
 
   void loop();
-  void update(ObserverEvent::CustomEvents event);
   bool accumulateData();
+  void update(ObserverEvent::CustomEvents event);
+  std::string getName();
 };
 #endif

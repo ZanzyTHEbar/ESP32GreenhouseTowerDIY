@@ -21,7 +21,7 @@ class WaterLevelSensor {
     double water_level_percentage;
   };
 
-  TowerTemp* _towerTemp;
+  TowerTemp& _towerTemp;
   UltraSonicDistanceSensor
       _distanceSensor;  // Initialize sensor.
   // Private functions
@@ -29,7 +29,7 @@ class WaterLevelSensor {
 
  public:
   // Constructor
-  WaterLevelSensor(TowerTemp* _towerTemp);
+  WaterLevelSensor(TowerTemp& _towerTemp);
   virtual ~WaterLevelSensor();
   void begin();
   // Read the water level

@@ -1,13 +1,13 @@
 #include "relays.hpp"
 
-I2C_RelayBoard::I2C_RelayBoard(GreenHouseConfig* config)
+I2C_RelayBoard::I2C_RelayBoard(GreenHouseConfig& config)
     : relay(), deviceConfig(config) {}
 
 I2C_RelayBoard::~I2C_RelayBoard() {}
 
 void I2C_RelayBoard::begin() {
   relay.begin(0x20);  // use default address
-  for (auto device : deviceConfig->config.relays) {
+  for (auto device : deviceConfig.config.relays) {
     relay.pinMode(device.port, OUTPUT);
     relay.digitalWrite(device.port, device.start_state);
   }
@@ -22,7 +22,7 @@ void I2C_RelayBoard::setRelay(uint8_t port, bool state) {
  * @note This function is called by the task manager
  */
 void I2C_RelayBoard::handleRelayTimer() {
-  for (auto device : deviceConfig->config.relays) {
+  for (auto device : deviceConfig.config.relays) {
     if (device.timer->ding()) {
       this->setRelay(device.port, !this->getRelay(device.port));
       device.timer->start();
@@ -40,7 +40,7 @@ bool I2C_RelayBoard::getRelay(uint8_t port) {
 //*
 //**********************************************************************************************************************
 
-void I2C_RelayBoard::eventListener(std::string result, uint8_t port) {
+void I2C_RelayBoard::eventListener(const std::string& result, uint8_t port) {
   log_d("[Relay::eventListener]: %s", result.c_str());
   // Convert to lower case using lambda
   std::for_each(result.begin(), result.end(),
@@ -60,4 +60,8 @@ void I2C_RelayBoard::update(ObserverEvent::CustomEvents event) {
     default:
       break;
   }
+}
+
+std::string I2C_RelayBoard::getName() {
+  return "I2C_RelayBoard";
 }

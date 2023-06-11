@@ -20,7 +20,7 @@
 
 class Humidity {
  private:
-  GreenHouseConfig* configManager;
+  GreenHouseConfig& configManager;
   uint32_t _delayS;
   bool _enableHeater;
   int _loopCnt;
@@ -32,7 +32,7 @@ class Humidity {
 
  public:
   // Constructor
-  Humidity(GreenHouseConfig* config);
+  Humidity(GreenHouseConfig& config);
   virtual ~Humidity();
 
   void begin();

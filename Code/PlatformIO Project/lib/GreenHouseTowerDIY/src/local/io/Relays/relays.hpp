@@ -13,18 +13,19 @@
 class I2C_RelayBoard : public IObserver<ObserverEvent::CustomEvents>,
                        public timeObj {
   Adafruit_MCP23008 relay;
-  GreenHouseConfig* deviceConfig;
-  timeObj* _timer;
+  GreenHouseConfig& deviceConfig;
+  // timeObj* _timer;
 
  public:
-  I2C_RelayBoard(GreenHouseConfig* config);
+  I2C_RelayBoard(GreenHouseConfig& config);
   virtual ~I2C_RelayBoard();
 
   void begin();
   void setRelay(uint8_t port, bool state);
   bool getRelay(uint8_t port);
   void handleRelayTimer();
-  void eventListener(std::string result, uint8_t port);
+  void eventListener(const std::string& result, uint8_t port);
   void update(ObserverEvent::CustomEvents event);
+  std::string getName();
 };
 #endif

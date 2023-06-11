@@ -1,41 +1,33 @@
 #include "api.hpp"
 
-API::API(StateManager<WiFiState_e>* stateManager,
-         APIServer* server,
-         GreenHouseConfig* configManager,
-         TaskManager* taskManager)
-    : stateManager(stateManager),
-      configManager(configManager),
-      taskManager(taskManager),
-      server(server) {}
+API::API(APIServer& server,
+         GreenHouseConfig& configManager,
+         TaskManager& taskManager)
+    : configManager(configManager), taskManager(taskManager), server(server) {}
 
-API::~API() {
-  delete stateManager;
-  delete configManager;
-  delete server;
-}
+API::~API() {}
 
 void API::printHelloWorld() {
   Serial.println("Hello World");
 }
 
 void API::setupServer() {
-  server->updateCommandHandlers("helloWorld",
-                                [&](AsyncWebServerRequest* request) {
-                                  printHelloWorld();
-                                  request->send(200, "text/plain", "OK");
-                                });
-  server->updateCommandHandlers(
+  server.updateCommandHandlers("helloWorld",
+                               [&](AsyncWebServerRequest* request) {
+                                 printHelloWorld();
+                                 request->send(200, "text/plain", "OK");
+                               });
+  server.updateCommandHandlers(
       "addRelay", [&](AsyncWebServerRequest* request) { addRelay(request); });
-  server->updateCommandHandlers(
+  server.updateCommandHandlers(
       "removeRelay",
       [&](AsyncWebServerRequest* request) { removeRelay(request); });
-  server->begin();
+  server.begin();
 }
 
 void API::begin() {
   // handle the WiFi connection state changes
-  switch (stateManager->getCurrentState()) {
+  switch (wifiStateManager.getCurrentState()) {
     case WiFiState_e::WiFiState_Disconnected: {
       break;
     }
@@ -62,7 +54,7 @@ void API::begin() {
 }
 
 void API::addRelay(AsyncWebServerRequest* request) {
-  switch (server->_networkMethodsMap_enum[request->method()]) {
+  switch (server._networkMethodsMap_enum[request->method()]) {
     case APIServer::POST: {
       std::string name;
       uint8_t port = 0;
@@ -90,7 +82,7 @@ void API::addRelay(AsyncWebServerRequest* request) {
         }
 
         log_i("%s[%s]: %s\n",
-              server->_networkMethodsMap[request->method()].c_str(),
+              server._networkMethodsMap[request->method()].c_str(),
               param->name().c_str(), param->value().c_str());
       }
 
@@ -102,7 +94,7 @@ void API::addRelay(AsyncWebServerRequest* request) {
         request->redirect("/");
         return;
       }
-      taskManager->setRelaysConfig(name, port, start_state, timer, ha_switch);
+      taskManager.setRelaysConfig(name, port, start_state, timer, ha_switch);
       request->send(200, APIServer::MIMETYPE_JSON,
                     "{\"msg\":\"Successfully added a relay device\"}");
       break;
@@ -117,16 +109,16 @@ void API::addRelay(AsyncWebServerRequest* request) {
 }
 
 void API::removeRelay(AsyncWebServerRequest* request) {
-  switch (server->_networkMethodsMap_enum[request->method()]) {
+  switch (server._networkMethodsMap_enum[request->method()]) {
     case APIServer::POST: {
-      size_t size = configManager->config.relays.size();
+      size_t size = configManager.config.relays.size();
       std::string name = request->getParam("name")->value().c_str();
       for (size_t i = 0; i < size; i++) {
-        if (configManager->config.relays[i].name == name) {
+        if (configManager.config.relays[i].name == name) {
           char buffer[100];
           snprintf(buffer, sizeof(buffer),
                    "{\"msg\":\"Successfully removing: %s\"}", name.c_str());
-          taskManager->removeRelay(name);
+          taskManager.removeRelay(name);
           request->send(200, APIServer::MIMETYPE_JSON, buffer);
           break;
         }
@@ -143,7 +135,7 @@ void API::removeRelay(AsyncWebServerRequest* request) {
 }
 
 void API::setDHT(AsyncWebServerRequest* request) {
-  switch (server->_networkMethodsMap_enum[request->method()]) {
+  switch (server._networkMethodsMap_enum[request->method()]) {
     case APIServer::POST: {
       std::string type;
       uint8_t pin;
@@ -153,7 +145,7 @@ void API::setDHT(AsyncWebServerRequest* request) {
       for (int i = 0; i < params; i++) {
         AsyncWebParameter* param = request->getParam(i);
         log_i("%s[%s]: %s\n",
-              server->_networkMethodsMap[request->method()].c_str(),
+              server._networkMethodsMap[request->method()].c_str(),
               param->name().c_str(), param->value().c_str());
         if (param->name() == "type") {
           type.assign(param->value().c_str());
@@ -169,7 +161,7 @@ void API::setDHT(AsyncWebServerRequest* request) {
         request->redirect("/");
         return;
       }
-      taskManager->setDHT(type, pin, true);
+      taskManager.setDHT(type, pin, true);
     }
     default: {
       request->send(400, APIServer::MIMETYPE_JSON,

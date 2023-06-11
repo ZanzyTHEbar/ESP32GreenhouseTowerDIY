@@ -1,12 +1,11 @@
 #include "config.hpp"
 
-GreenHouseConfig::GreenHouseConfig(const std::string& hostname)
-    : ProjectConfig(std::string(), hostname) {}
+GreenHouseConfig::GreenHouseConfig(ProjectConfig& projectConfig)
+    : projectConfig(projectConfig) {}
 
 GreenHouseConfig::~GreenHouseConfig() {}
 
 void GreenHouseConfig::initConfig() {
-  ProjectConfig::initConfig();
   this->config.mqtt = {"", 0, "", ""};
 }
 
@@ -20,11 +19,10 @@ void GreenHouseConfig::load() {
   loadRelays();
   loadMQTT();
   loadFeatures();
-  ProjectConfig::load();
 }
 
 void GreenHouseConfig::loadRelays() {
-  int relays_count = getInt("relays_count", 0);
+  int relays_count = projectConfig.getInt("relays_count", 0);
 
   //*! Note: The name must be less than 15 chars in size
   std::string name = "relay_";
@@ -42,10 +40,12 @@ void GreenHouseConfig::loadRelays() {
     start_state.append(iter_str);
     timer.append(iter_str);
 
-    const std::string& name_temp = getString(name.c_str(), "").c_str();
-    const uint8_t port_temp = getInt(port.c_str(), 0);
-    const bool start_state_temp = getBool(start_state.c_str(), false);
-    const float timer_temp = getFloat(timer.c_str(), 0.0f);
+    const std::string& name_temp =
+        projectConfig.getString(name.c_str(), "").c_str();
+    const uint8_t port_temp = projectConfig.getInt(port.c_str(), 0);
+    const bool start_state_temp =
+        projectConfig.getBool(start_state.c_str(), false);
+    const float timer_temp = projectConfig.getFloat(timer.c_str(), 0.0f);
 
     //! We use emplace_back to avoid copying the object
     this->config.relays.emplace_back(name_temp, port_temp, start_state_temp,
@@ -54,22 +54,25 @@ void GreenHouseConfig::loadRelays() {
 }
 
 void GreenHouseConfig::loadMQTT() {
-  this->config.mqtt.broker.assign(getString("mqtt_broker").c_str());
-  this->config.mqtt.port = getInt("mqtt_port", 1886);
-  this->config.mqtt.username.assign(getString("mqtt_username", "").c_str());
-  this->config.mqtt.password.assign(getString("mqtt_password", "").c_str());
+  this->config.mqtt.broker.assign(
+      projectConfig.getString("mqtt_broker").c_str());
+  this->config.mqtt.port = projectConfig.getInt("mqtt_port", 1886);
+  this->config.mqtt.username.assign(
+      projectConfig.getString("mqtt_username", "").c_str());
+  this->config.mqtt.password.assign(
+      projectConfig.getString("mqtt_password", "").c_str());
 }
 
 void GreenHouseConfig::loadFeatures() {
   this->config.enabled_features.humidity_Features =
-      (HumidityFeatures_t)getInt("humidity_features", 0);
+      (HumidityFeatures_t)projectConfig.getInt("humidity_features", 0);
   this->config.enabled_features.ldr_Features =
-      (LDRFeatures_t)getInt("ldr_features", 0);
+      (LDRFeatures_t)projectConfig.getInt("ldr_features", 0);
   this->config.enabled_features.water_Level_Features =
-      (WaterLevelFeatures_t)getInt("water_level_features", 0);
+      (WaterLevelFeatures_t)projectConfig.getInt("water_level_features", 0);
   this->config.enabled_features.dht_type.assign(
-      getString("dht_type", "").c_str());
-  this->config.enabled_features.dht_pin = getInt("dht_pin");
+      projectConfig.getString("dht_type", "").c_str());
+  this->config.enabled_features.dht_pin = projectConfig.getInt("dht_pin");
 }
 
 //**********************************************************************************************************************
@@ -79,14 +82,13 @@ void GreenHouseConfig::loadFeatures() {
 //**********************************************************************************************************************
 
 void GreenHouseConfig::save() {
-  ProjectConfig::save();
   saveRelays();
   saveMQTT();
   saveFeatures();
 }
 
 void GreenHouseConfig::saveRelays() {
-  putInt("relays_count", this->config.relays.size());
+  projectConfig.putInt("relays_count", this->config.relays.size());
 
   //*! Note: The name must be less than 15 chars in size
   std::string name = "relay_";
@@ -105,27 +107,27 @@ void GreenHouseConfig::saveRelays() {
     start_state.append(iter_str);
     timer.append(iter_str);
 
-    putString(name.c_str(), this->config.relays[i].name.c_str());
-    putInt(port.c_str(), this->config.relays[i].port);
-    putBool(start_state.c_str(), this->config.relays[i].start_state);
-    putFloat(timer.c_str(), this->config.relays[i].timer->getTime());
+    projectConfig.putString(name.c_str(), this->config.relays[i].name.c_str());
+    projectConfig.putInt(port.c_str(), this->config.relays[i].port);
+    projectConfig.putBool(start_state.c_str(), this->config.relays[i].start_state);
+    projectConfig.putFloat(timer.c_str(), this->config.relays[i].timer->getTime());
   }
 }
 
 void GreenHouseConfig::saveMQTT() {
-  putString("mqtt_broker", this->config.mqtt.broker.c_str());
-  putInt("mqtt_port", this->config.mqtt.port);
-  putString("mqtt_username", this->config.mqtt.username.c_str());
-  putString("mqtt_password", this->config.mqtt.password.c_str());
+  projectConfig.putString("mqtt_broker", this->config.mqtt.broker.c_str());
+  projectConfig.putInt("mqtt_port", this->config.mqtt.port);
+  projectConfig.putString("mqtt_username", this->config.mqtt.username.c_str());
+  projectConfig.putString("mqtt_password", this->config.mqtt.password.c_str());
 }
 
 void GreenHouseConfig::saveFeatures() {
-  putInt("humidity_features", this->config.enabled_features.humidity_Features);
-  putInt("ldr_features", this->config.enabled_features.ldr_Features);
-  putInt("water_features", this->config.enabled_features.water_Level_Features);
+  projectConfig.putInt("humidity_features", this->config.enabled_features.humidity_Features);
+  projectConfig.putInt("ldr_features", this->config.enabled_features.ldr_Features);
+  projectConfig.putInt("water_features", this->config.enabled_features.water_Level_Features);
 
-  putInt("dht_pin", this->config.enabled_features.dht_pin);
-  putString("dht_type", this->config.enabled_features.dht_type.c_str());
+  projectConfig.putInt("dht_pin", this->config.enabled_features.dht_pin);
+  projectConfig.putString("dht_type", this->config.enabled_features.dht_type.c_str());
 }
 
 //**********************************************************************************************************************
