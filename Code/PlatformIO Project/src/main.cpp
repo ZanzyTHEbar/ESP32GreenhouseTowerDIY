@@ -17,29 +17,21 @@
 #include <local/io/sensors/humidity/Humidity.hpp>
 #include <local/io/sensors/light/bh1750.hpp>
 #include <local/io/sensors/light/ldr.hpp>
-#include <local/io/sensors/pH/pHsensor.hpp>
 #include <local/io/sensors/temperature/towertemp.hpp>
 #include <local/io/sensors/water_level/waterlevelsensor.hpp>
-
-//* IO Includes
-#include <local/io/Relays/relays.hpp>
 
 //* Time stamp
 #include <local/network/ntp/ntp.hpp>
 
-//* Background tasks
-#include "local/data/BackgroundTasks/taskManager.hpp"
-
-//* Objects
+//! Objects
 
 //* Config
 ProjectConfig config("greenhouse");
-ConfigHandler configHandler;
+ConfigHandler configHandler(config);
 GreenHouseConfig greenhouseConfig(config);
 
 //* Network
 APIServer server(80, config, "/control", "/wifimanager", "/userCommands");
-
 WiFiHandler network(config, WIFI_SSID, WIFI_PASS, 1);
 OTA ota(config);
 MDNSHandler mDNS(config, "_esp32tower", "data", "_tcp", "api_port", "80");
@@ -57,7 +49,6 @@ Humidity humidity(greenhouseConfig);
 WaterLevelSensor waterLevelSensor(tower_temp);
 BH1750 bh1750;
 LDR ldr;
-PHSENSOR phsensor;
 
 I2C_RelayBoard relays(greenhouseConfig);
 
@@ -81,6 +72,7 @@ void setup() {
   config.registerUserConfig(&greenhouseConfig);
   config.attach(network);
   config.attach(mDNS);  // attach the mDNS to the config manager
+  
   //* Load Config from memory
   configHandler.begin();
   timedTasks.setTask(ObserverEvent::CustomEvents::relaysActivated,

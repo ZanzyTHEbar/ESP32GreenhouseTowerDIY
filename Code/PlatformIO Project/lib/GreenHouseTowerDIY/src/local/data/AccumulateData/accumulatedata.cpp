@@ -1,24 +1,20 @@
 #include "accumulatedata.hpp"
 
-AccumulateData::AccumulateData(PHSENSOR& phsensor,
-                               BH1750& bh1750,
+AccumulateData::AccumulateData(BH1750& bh1750,
                                LDR& ldr,
                                TowerTemp& towertemp,
                                Humidity& humidity,
                                WaterLevelSensor& waterlevelsensor,
                                NetworkNTP& ntp,
-                               I2C_RelayBoard& relayboard,
                                ProjectConfig& deviceConfig)
     : _maxTemp(100),
       _numTempSensors(0),
-      phsensor(phsensor),
       bh1750(bh1750),
       ldr(ldr),
       towertemp(towertemp),
       humidity(humidity),
       waterlevelsensor(waterlevelsensor),
       ntp(ntp),
-      relayBoard(relayboard),
       deviceConfig(deviceConfig),
       generateJSONTimer(30000),
       gatherDataTimer(15000) {}
@@ -142,18 +138,4 @@ bool AccumulateData::accumulateData() {
     generateJSONTimer.start();
   }
   return true;
-}
-
-void AccumulateData::update(ObserverEvent::CustomEvents event) {
-  switch (event) {
-    case ObserverEvent::CustomEvents::accumulateData:
-      accumulateData();
-      break;
-    default:
-      break;
-  }
-}
-
-std::string AccumulateData::getName() {
-  return "AccumulateData";
 }

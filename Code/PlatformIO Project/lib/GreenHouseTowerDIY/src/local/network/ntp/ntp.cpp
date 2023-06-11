@@ -17,15 +17,15 @@ const char NetworkNTP::ntpServerName[] = "us.pool.ntp.org";
  * @brief Get the current time MANUALLY
  *
  */
-NetworkNTP::NetworkNTP() : _formattedDate(""),
-                           _dayStamp(""),
-                           _timeStamp(""),
-                           localPort(8888),
-                           timeClient(ntpUDP),
-                           prevDisplay(0) {}
+NetworkNTP::NetworkNTP()
+    : _formattedDate(""),
+      _dayStamp(""),
+      _timeStamp(""),
+      localPort(8888),
+      timeClient(ntpUDP),
+      prevDisplay(0) {}
 
-void NetworkNTP::begin()
-{
+void NetworkNTP::begin() {
     timeZone = TIME_ZONE_OFFSET;
     timeClient.begin();
     timeClient.setTimeOffset(timeZone);
@@ -34,8 +34,7 @@ void NetworkNTP::begin()
 NetworkNTP::~NetworkNTP() {}
 
 #ifdef NTP_MANUAL_ENABLED
-void NetworkNTP::NTPSetupManual()
-{
+void NetworkNTP::NTPSetupManual() {
     log_i("Starting UDP");
     ntpUDP.begin(localPort);
     log_i("waiting for sync");
@@ -43,20 +42,17 @@ void NetworkNTP::NTPSetupManual()
     setSyncInterval(300);
 }
 
-void NetworkNTP::NTPLoopManual()
-{
-    if (timeStatus() != timeNotSet)
-    {
-        if (now() != prevDisplay)
-        { // update the display only if time has changed
+void NetworkNTP::NTPLoopManual() {
+    if (timeStatus() != timeNotSet) {
+        if (now() !=
+            prevDisplay) {  // update the display only if time has changed
             prevDisplay = now();
             digitalClockDisplay();
         }
     }
 }
 
-void NetworkNTP::digitalClockDisplay()
-{
+void NetworkNTP::digitalClockDisplay() {
     // digital clock display of the time
     Serial.print(hour());
     printDigits(minute());
@@ -70,8 +66,7 @@ void NetworkNTP::digitalClockDisplay()
     Serial.println();
 }
 
-void NetworkNTP::printDigits(int digits)
-{
+void NetworkNTP::printDigits(int digits) {
     // utility for digital clock display: prints preceding colon and leading 0
     Serial.print(":");
     if (digits < 10)
@@ -80,15 +75,15 @@ void NetworkNTP::printDigits(int digits)
 }
 
 /*-------- NTP code ----------*/
-const int ntp_packet_size = 48;     // NTP time is in the first 48 bytes of message
-byte packetBuffer[ntp_packet_size]; // buffer to hold incoming & outgoing packets
+const int ntp_packet_size = 48;  // NTP time is in the first 48 bytes of message
+byte packetBuffer[ntp_packet_size];  // buffer to hold incoming & outgoing
+                                     // packets
 
-time_t NetworkNTP::getNtpTime()
-{
-    IPAddress ntpServerIP; // NTP server's ip address
+time_t NetworkNTP::getNtpTime() {
+    IPAddress ntpServerIP;  // NTP server's ip address
 
     while (ntpUDP.parsePacket() > 0)
-        ; // discard any previously received packets
+        ;  // discard any previously received packets
     Serial.println("Transmit NTP Request");
     // get a random server from the pool
     WiFi.hostByName(ntpServerName, ntpServerIP);
@@ -97,13 +92,12 @@ time_t NetworkNTP::getNtpTime()
     Serial.println(ntpServerIP);
     sendNTPpacket(ntpServerIP);
     uint32_t beginWait = millis();
-    while (millis() - beginWait < 1500)
-    {
+    while (millis() - beginWait < 1500) {
         int size = ntpUDP.parsePacket();
-        if (size >= ntp_packet_size)
-        {
+        if (size >= ntp_packet_size) {
             Serial.println("Receive NTP Response");
-            ntpUDP.read(packetBuffer, ntp_packet_size); // read packet into the buffer
+            ntpUDP.read(packetBuffer,
+                        ntp_packet_size);  // read packet into the buffer
             unsigned long secsSince1900;
             // convert four bytes starting at location 40 to a long integer
             secsSince1900 = (unsigned long)packetBuffer[40] << 24;
@@ -114,20 +108,19 @@ time_t NetworkNTP::getNtpTime()
         }
     }
     Serial.println("No NTP Response :-(");
-    return 0; // return 0 if unable to get the time
+    return 0;  // return 0 if unable to get the time
 }
 
 // send an NTP request to the time server at the given address
-void NetworkNTP::sendNTPpacket(IPAddress &address)
-{
+void NetworkNTP::sendNTPpacket(IPAddress& address) {
     // set all bytes in the buffer to 0
     memset(packetBuffer, 0, ntp_packet_size);
     // Initialize values needed to form NTP request
     // (see URL above for details on the packets)
-    packetBuffer[0] = 0b11100011; // LI, Version, Mode
-    packetBuffer[1] = 0;          // Stratum, or type of clock
-    packetBuffer[2] = 6;          // Polling Interval
-    packetBuffer[3] = 0xEC;       // Peer Clock Precision
+    packetBuffer[0] = 0b11100011;  // LI, Version, Mode
+    packetBuffer[1] = 0;           // Stratum, or type of clock
+    packetBuffer[2] = 6;           // Polling Interval
+    packetBuffer[3] = 0xEC;        // Peer Clock Precision
     // 8 bytes of zero for Root Delay & Root Dispersion
     packetBuffer[12] = 49;
     packetBuffer[13] = 0x4E;
@@ -135,16 +128,14 @@ void NetworkNTP::sendNTPpacket(IPAddress &address)
     packetBuffer[15] = 52;
     // all NTP fields have been given values, now
     // you can send a packet requesting a _timestamp:
-    ntpUDP.beginPacket(address, 123); // NTP requests are to port 123
+    ntpUDP.beginPacket(address, 123);  // NTP requests are to port 123
     ntpUDP.write(packetBuffer, ntp_packet_size);
     ntpUDP.endPacket();
 }
 #else
 
-void NetworkNTP::NTPLoop()
-{
-    if (!timeClient.update())
-    {
+void NetworkNTP::NTPLoop() {
+    if (!timeClient.update()) {
         timeClient.forceUpdate();
     }
     // The _formattedDate comes with the following format:
@@ -157,37 +148,32 @@ void NetworkNTP::NTPLoop()
     _dayStamp = _formattedDate.substring(0, splitT);
     log_d("DATE: %s", _dayStamp.c_str());
 
-    _timeStamp = _formattedDate.substring(splitT + 1, _formattedDate.length() - 1);
+    _timeStamp =
+        _formattedDate.substring(splitT + 1, _formattedDate.length() - 1);
     log_d("HOUR: %s", _timeStamp.c_str());
 }
 
-String NetworkNTP::getFullDate()
-{
+String NetworkNTP::getFullDate() {
     return _formattedDate;
 }
 
-String NetworkNTP::getDayStamp()
-{
+String NetworkNTP::getDayStamp() {
     return _dayStamp;
 }
 
-String NetworkNTP::getTimeStamp()
-{
+String NetworkNTP::getTimeStamp() {
     return _timeStamp;
 }
 
-String NetworkNTP::getYear()
-{
+String NetworkNTP::getYear() {
     return timeClient.getFormattedDate().substring(0, 4);
 }
 
-String NetworkNTP::getMonth()
-{
+String NetworkNTP::getMonth() {
     return timeClient.getFormattedDate().substring(5, 7);
 }
 
-String NetworkNTP::getDay()
-{
+String NetworkNTP::getDay() {
     return timeClient.getFormattedDate().substring(8, 10);
 }
-#endif // NTP_MANUAL_ENABLED
+#endif  // NTP_MANUAL_ENABLED
