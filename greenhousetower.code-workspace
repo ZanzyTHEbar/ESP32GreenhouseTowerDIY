@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "name": "Source",
+      "path": "./Code/PlatformIO Project"
+    },
+    {
+      "name": "Root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "cSpell.words": [
+      "flexbugs",
+      "flexsearch",
+      "maneger",
+      "roadmap",
+      "vitepress"
+    ]
+  }
+}
