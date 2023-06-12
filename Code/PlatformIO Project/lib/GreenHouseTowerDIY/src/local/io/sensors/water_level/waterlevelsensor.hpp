@@ -31,8 +31,9 @@ class WaterLevelSensor : public SensorInterface<WaterLevelData_t> {
   WaterLevelSensor(TowerTemp& _towerTemp);
   virtual ~WaterLevelSensor();
   void begin();
+  const std::string& getSensorName() override;
   //* Read the water level
-  WaterLevelData_t read();
+  WaterLevelData_t read() override;
   WaterLevelData_t result;
 };
 #endif

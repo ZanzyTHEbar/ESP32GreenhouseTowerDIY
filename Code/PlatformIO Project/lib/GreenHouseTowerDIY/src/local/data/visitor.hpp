@@ -11,7 +11,7 @@ class SensorInterface {
 template <typename T>
 class Element {
  public:
-  virtual void accept(class T& visitor) = 0;
+  virtual void accept(T& visitor) = 0;
 };
 
 template <typename T>

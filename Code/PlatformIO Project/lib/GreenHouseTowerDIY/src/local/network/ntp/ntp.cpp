@@ -168,16 +168,22 @@ const std::string& NetworkNTP::getTimeStamp() {
   return _timeStamp;
 }
 
-const std::string& NetworkNTP::getYear() {
-  return timeClient.getFormattedDate().substring(0, 4).c_str();
+const std::string NetworkNTP::getYear() {
+  std::string year;
+  year.assign(timeClient.getFormattedDate().substring(0, 4).c_str());
+  return year;
 }
 
-const std::string& NetworkNTP::getMonth() {
-  return timeClient.getFormattedDate().substring(5, 7).c_str();
+const std::string NetworkNTP::getMonth() {
+  std::string month;
+  month.assign(timeClient.getFormattedDate().substring(5, 7).c_str());
+  return month;
 }
 
-const std::string& NetworkNTP::getDay() {
-  return timeClient.getFormattedDate().substring(8, 10).c_str();
+const std::string NetworkNTP::getDay() {
+  std::string day;
+  day.assign(timeClient.getFormattedDate().substring(8, 10).c_str());
+  return day;
 }
 #endif  // NTP_MANUAL_ENABLED
 
@@ -186,10 +192,10 @@ const std::string& NetworkNTP::getSensorName() {
   return name;
 }
 
-void NetworkNTP::accept(Visitor<SensorInterface<std::string>>& visitor) {
+void NetworkNTP::accept(Visitor<SensorInterface<const std::string&>>& visitor) {
   visitor.visit(this);
 }
 
-std::string NetworkNTP::read() {
+const std::string& NetworkNTP::read() {
   return getTimeStamp();
 }

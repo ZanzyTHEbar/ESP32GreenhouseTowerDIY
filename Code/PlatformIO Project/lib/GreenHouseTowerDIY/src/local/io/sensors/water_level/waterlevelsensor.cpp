@@ -16,6 +16,11 @@ void WaterLevelSensor::begin() {
   _height = RES_HEIGHT;
 }
 
+const std::string& WaterLevelSensor::getSensorName() {
+  static const std::string name = "water_level_sensor";
+  return name;
+}
+
 double WaterLevelSensor::readSensor() {
   Network_Utilities::my_delay(1L);
   double distance =

@@ -9,7 +9,7 @@ void SensorSerializer::visit(SensorInterface<float>* sensor) {
 
 StringSerializer::StringSerializer() : serializedData(std::string()) {}
 
-void StringSerializer::visit(SensorInterface<std::string>* sensor) {
+void StringSerializer::visit(SensorInterface<const std::string&>* sensor) {
   serializedData.assign(Helpers::format_string("\"%s\":\"%s\",",
                                                sensor->getSensorName().c_str(),
                                                sensor->read().c_str()));
