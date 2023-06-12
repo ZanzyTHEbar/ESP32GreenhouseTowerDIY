@@ -30,10 +30,10 @@ ConfigHandler configHandler(config);
 GreenHouseConfig greenhouseConfig(config);
 
 //* Network
-APIServer server(80, config, "/control", "/wifimanager", "/userCommands");
+APIServer server(80, config, "/control", "/wifimanager", "/tower");
 WiFiHandler network(config, WIFI_SSID, WIFI_PASS, 1);
 OTA ota(config);
-MDNSHandler mDNS(config, "_esp32tower", "data", "_tcp", "api_port", "80");
+MDNSHandler mDNS(config, "_tower", "data", "_tcp", "api_port", "80");
 NetworkNTP ntp;
 
 //* API

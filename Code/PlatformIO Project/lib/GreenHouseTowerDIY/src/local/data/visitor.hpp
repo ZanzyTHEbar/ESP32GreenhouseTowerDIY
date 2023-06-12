@@ -1,5 +1,5 @@
-#ifndef SENSORS_VISITOR_HPP
-#define SENSORS_VISITOR_HPP
+#ifndef VISITOR_HPP
+#define VISITOR_HPP
 
 template <typename T>
 class SensorInterface {

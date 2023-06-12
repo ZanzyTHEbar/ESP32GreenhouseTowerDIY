@@ -112,7 +112,7 @@ void BASEMQTT::mqttReconnect() {
       return;
     }
     log_e("[BasicMQTT]: Failed, rc= %d", state());
-    log_i("[BasicMQTT]: Try again in 15 seconds");
+    log_i("[BasicMQTT]: Trying again in 15 seconds");
     // Wait 15 seconds before retrying
     Network_Utilities::my_delay(15L);
   }
