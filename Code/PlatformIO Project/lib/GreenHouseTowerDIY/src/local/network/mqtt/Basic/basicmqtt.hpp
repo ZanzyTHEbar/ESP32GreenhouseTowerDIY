@@ -15,7 +15,7 @@
 /**
  * @brief MQTT Class
  */
-class BASEMQTT : public IPAddress, public PubSubClient {
+class BaseMQTT : public IPAddress, public PubSubClient {
   WiFiClient& _espClient;
   AccumulateData& _accumulateData;
   GreenHouseConfig& _deviceConfig;
@@ -26,10 +26,10 @@ class BASEMQTT : public IPAddress, public PubSubClient {
 
  public:
   // Constructor
-  BASEMQTT(WiFiClient& espClient,
+  BaseMQTT(WiFiClient& espClient,
            AccumulateData& data,
            GreenHouseConfig& config);
-  virtual ~BASEMQTT();
+  virtual ~BaseMQTT();
 
   void begin();
   void mqttLoop();

@@ -6,7 +6,7 @@
 // broker.
 //************************************************************************************************************************
 
-BASEMQTT::BASEMQTT(WiFiClient& espClient,
+BaseMQTT::BaseMQTT(WiFiClient& espClient,
                    AccumulateData& accumulateData,
                    GreenHouseConfig& config)
     : _espClient(espClient),
@@ -22,9 +22,9 @@ BASEMQTT::BASEMQTT(WiFiClient& espClient,
       _interval(60000),
       _previousMillis(0) {}
 
-BASEMQTT::~BASEMQTT() {}
+BaseMQTT::~BaseMQTT() {}
 
-void BASEMQTT::begin() {
+void BaseMQTT::begin() {
   log_i("[BasicMQTT]: Setting up MQTT...");
 
   //* Local Mosquitto Connection -- Start
@@ -39,7 +39,7 @@ void BASEMQTT::begin() {
 }
 
 //* Handles messages arrived on subscribed topic(s)
-void BASEMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
+void BaseMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
   log_i("[BasicMQTT]: Message arrived on topic: [%s] ", topic);
 
   //* Convert the payload to a string
@@ -61,7 +61,7 @@ void BASEMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
   //* WaterLevelSensor
 }
 
-void BASEMQTT::subscribeAll() {
+void BaseMQTT::subscribeAll() {
   // Subscribe to all relay topics
   // TODO: Add ECC support based on return value of subscribe()
 
@@ -80,7 +80,7 @@ void BASEMQTT::subscribeAll() {
   log_i("[BasicMQTT]: Successfully subscribed to all topics.");
 }
 
-void BASEMQTT::publishAll() {
+void BaseMQTT::publishAll() {
   // TODO: Publish all sensor data
 
   //* LDR
@@ -100,7 +100,7 @@ void BASEMQTT::publishAll() {
  * established
  *
  */
-void BASEMQTT::mqttReconnect() {
+void BaseMQTT::mqttReconnect() {
   // Loop until we're reconnected
   while (!connected()) {
     log_i("[BasicMQTT]: Attempting MQTT connection...");
@@ -125,7 +125,7 @@ void BASEMQTT::mqttReconnect() {
  * @note This function will handle the publishing of sensor data
  *
  */
-void BASEMQTT::mqttLoop() {
+void BaseMQTT::mqttLoop() {
   Network_Utilities::my_delay(1L);
   if (!connected()) {
     mqttReconnect();

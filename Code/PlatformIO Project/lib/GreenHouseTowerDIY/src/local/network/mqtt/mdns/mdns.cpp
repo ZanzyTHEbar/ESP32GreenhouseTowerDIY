@@ -1,9 +1,6 @@
 #include "mDNS.hpp"
-
-mDNSDiscovery::mDNSDiscovery(GreenHouseConfig& deviceConfig)
-    : _deviceConfig(deviceConfig) {}
-
-mDNSDiscovery::~mDNSDiscovery() {}
+#include <Arduino.h>
+#include <ESPmDNS.h>
 
 //******************************************************************************
 // * Function: Discover mDNS Broker
@@ -11,7 +8,7 @@ mDNSDiscovery::~mDNSDiscovery() {}
 // * Parameters: None
 // * Return: int - 1 if success, 0 if fail
 //******************************************************************************
-bool mDNSDiscovery::discovermDNSBroker() {
+bool mDNSDiscovery::discovermDNSBroker(GreenHouseConfig& _deviceConfig) {
   IPAddress mqttServer;
   // check if there is a WiFi connection
   if (wifiStateManager.getCurrentState() != WiFiState_e::WiFiState_Connected) {

@@ -8,6 +8,8 @@
 #include <local/network/api/api.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/ota/OTA.hpp>
+#include "local/network/mqtt/basic/basicmqtt.hpp"
+#include "local/network/mqtt/mdns/mdns.hpp"
 
 //* Data
 #include <local/data/AccumulateData/accumulatedata.hpp>
@@ -30,11 +32,16 @@ ConfigHandler configHandler(config);
 GreenHouseConfig greenhouseConfig(config);
 
 //* Network
+
+WiFiClient espClient;
+
 APIServer server(80, config, "/control", "/wifimanager", "/tower");
 WiFiHandler network(config, WIFI_SSID, WIFI_PASS, 1);
 OTA ota(config);
 MDNSHandler mDNS(config, "_tower", "data", "_tcp", "api_port", "80");
 NetworkNTP ntp;
+
+BaseMQTT mqtt(espClient, data, greenhouseConfig);
 
 //* API
 API api(server, greenhouseConfig);
@@ -72,9 +79,13 @@ void setup() {
   tower_temp.begin();
   waterLevelSensor.begin();
 
-  //* Setup Network
+  //* Setup Network Tasks
   network.begin();
   mDNS.begin();
+  //* Discover mDNS Broker
+  mDNSDiscovery::discovermDNSBroker(greenhouseConfig);
+  //* Setup MQTT
+  mqtt.begin();
   api.begin();
   ntp.begin();
   ota.begin();
