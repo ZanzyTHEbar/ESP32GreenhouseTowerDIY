@@ -26,6 +26,7 @@ class AccumulateData {
   ProjectConfig& deviceConfig;
   GreenHouseConfig& config;
   SensorSerializer sensorSerializer;
+  StringSerializer stringSerializer;
 
   timeObj generateJSONTimer;
   timeObj gatherDataTimer;
@@ -48,6 +49,5 @@ class AccumulateData {
 
   void begin();
   void loop();
-  bool accumulateData();
 };
 #endif

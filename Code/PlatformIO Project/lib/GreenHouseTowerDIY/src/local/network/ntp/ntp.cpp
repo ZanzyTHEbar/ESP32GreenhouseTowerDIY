@@ -133,7 +133,7 @@ void NetworkNTP::sendNTPpacket(IPAddress& address) {
 }
 #else
 
-void NetworkNTP::NTPLoop() {
+void NetworkNTP::ntpLoop() {
   if (!timeClient.update()) {
     timeClient.forceUpdate();
   }
@@ -142,11 +142,9 @@ void NetworkNTP::NTPLoop() {
   // We need to extract date and time
   _formattedDate = timeClient.getFormattedDate().c_str();
   log_d("Formatted Date: %s", _formattedDate.c_str());
-
   int splitT = _formattedDate.find("T");
   _dayStamp = _formattedDate.substr(0, splitT).c_str();
   log_d("DATE: %s", _dayStamp.c_str());
-
   _timeStamp =
       _formattedDate.substr(splitT + 1, _formattedDate.length() - 1).c_str();
   log_d("HOUR: %s", _timeStamp.c_str());
@@ -176,3 +174,16 @@ const std::string& NetworkNTP::getDay() {
   return timeClient.getFormattedDate().substring(8, 10).c_str();
 }
 #endif  // NTP_MANUAL_ENABLED
+
+const std::string& NetworkNTP::getSensorName() {
+  static std::string name = "ntp";
+  return name;
+}
+
+void NetworkNTP::accept(Visitor<SensorInterface<std::string>>& visitor) {
+  visitor.visit(this);
+}
+
+std::string NetworkNTP::read() {
+  return getTimeStamp();
+}

@@ -77,7 +77,7 @@ float LDR::read() {
 }
 
 const std::string& LDR::getSensorName() {
-  static std::string name = "LDR";
+  static std::string name = "ldr";
   return name;
 }
 

@@ -9,15 +9,20 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <string>
+#include "local/data/visitor.hpp"
 
-class NetworkNTP {
+class NetworkNTP : public Element<Visitor<SensorInterface<std::string>>>,
+                   public SensorInterface<std::string> {
  public:
   // constructors
   NetworkNTP();
   virtual ~NetworkNTP();
   // Functions
   void begin();
-  void NTPLoop();
+  void ntpLoop();
+  std::string read() override;
+  const std::string& getSensorName() override;
+  void accept(Visitor<SensorInterface<std::string>>& visitor) override;
 #if NTP_MANUAL_ENABLED
   time_t getNtpTime();
   void digitalClockDisplay();

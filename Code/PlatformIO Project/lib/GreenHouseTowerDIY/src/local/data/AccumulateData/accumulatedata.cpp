@@ -15,6 +15,7 @@ AccumulateData::AccumulateData(LDR& ldr,
       deviceConfig(deviceConfig),
       config(config),
       sensorSerializer(),
+      stringSerializer(),
       gatherDataTimer(60000),
       _maxTemp(100),
       _numTempSensors(0),
@@ -33,12 +34,16 @@ void AccumulateData::begin() {}
  * @return void
  */
 void AccumulateData::loop() {
-  ntp.NTPLoop();
+  ntp.ntpLoop();
 
   std::string json = "{";
 
   if (gatherDataTimer.ding()) {
     //* build the json string
+    ntp.accept(stringSerializer);
+    json.append(
+        Helpers::format_string("%s", stringSerializer.serializedData.c_str()));
+
     for (auto& sensor : sensors) {
       //* serialize the data
       sensor->accept(sensorSerializer);
