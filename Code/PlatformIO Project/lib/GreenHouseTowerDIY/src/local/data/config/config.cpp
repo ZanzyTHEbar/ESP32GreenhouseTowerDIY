@@ -6,7 +6,7 @@ GreenHouseConfig::GreenHouseConfig(ProjectConfig& projectConfig)
 GreenHouseConfig::~GreenHouseConfig() {}
 
 void GreenHouseConfig::initConfig() {
-  this->config.mqtt = {"", 0, "", "", {}};
+  this->config.mqtt = {"", 0, "", ""};
 }
 
 //**********************************************************************************************************************
@@ -28,14 +28,6 @@ void GreenHouseConfig::loadMQTT() {
       projectConfig.getString("mqtt_username", "").c_str());
   this->config.mqtt.password.assign(
       projectConfig.getString("mqtt_password", "").c_str());
-
-  for (auto it = this->config.mqtt.topics.begin();
-       it != this->config.mqtt.topics.end(); ++it) {
-    std::string key =
-        "mqtt_topic_" +
-        std::to_string(std::distance(this->config.mqtt.topics.begin(), it));
-    it->assign(projectConfig.getString(key.c_str()).c_str());
-  }
 }
 
 void GreenHouseConfig::loadFeatures() {
@@ -66,14 +58,6 @@ void GreenHouseConfig::saveMQTT() {
   projectConfig.putInt("mqtt_port", this->config.mqtt.port);
   projectConfig.putString("mqtt_username", this->config.mqtt.username.c_str());
   projectConfig.putString("mqtt_password", this->config.mqtt.password.c_str());
-
-  for (auto it = this->config.mqtt.topics.begin();
-       it != this->config.mqtt.topics.end(); ++it) {
-    std::string key =
-        "mqtt_topic_" +
-        std::to_string(std::distance(this->config.mqtt.topics.begin(), it));
-    projectConfig.putString(key.c_str(), it->c_str());
-  }
 }
 
 void GreenHouseConfig::saveFeatures() {

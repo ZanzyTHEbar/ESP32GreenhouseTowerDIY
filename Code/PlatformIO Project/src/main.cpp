@@ -40,7 +40,7 @@ WiFiHandler network(config, WIFI_SSID, WIFI_PASS, 1);
 OTA ota(config);
 MDNSHandler mDNS(config, "_tower", "data", "_tcp", "api_port", "80");
 NetworkNTP ntp;
-
+BaseMQTT mqtt(espClient, greenhouseConfig);
 
 //* API
 API api(server, greenhouseConfig);
@@ -57,9 +57,8 @@ AccumulateData data(ldr,
                     waterLevelSensor,
                     ntp,
                     config,
-                    greenhouseConfig);
-
-BaseMQTT mqtt(espClient, data, greenhouseConfig);
+                    greenhouseConfig,
+                    mqtt);
 
 void setup() {
   Serial.begin(115200);
