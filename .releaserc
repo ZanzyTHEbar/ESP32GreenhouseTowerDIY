@@ -148,7 +148,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i 's/\"version\": \"[0-9\\.]*\",/\"version\": \"${nextRelease.version}\",/g' ./Code/PlatformIO Project/lib/GreenHouseTowerDIY/library.json",
+        "prepareCmd": "./scripts/prepareCMD.sh ${nextRelease.version}",
         "publishCmd": "ls -l"
       }
     ],

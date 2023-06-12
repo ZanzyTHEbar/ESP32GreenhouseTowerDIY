@@ -1,6 +1,9 @@
-name: Build and Release the OpenIris bin files
+name: Build and Release the bin files
 on:
+  workflow_dispatch:
   push:
+    tags:
+      - "v*"
     branches:
       - "master"
       - "main"
@@ -8,77 +11,68 @@ on:
     branches:
       - "master"
       - "main"
-  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: write
+
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: echo "matrix={\"target_name\":[\"esp32AIThinker\",\"esp32M5Stack\",\"esp32Cam\",\"esp_eye\",\"wrover\",\"wrooms3QIO\",\"wrooms3QIOUSB\",\"wrooms3\",\"wrooms3USB\"],\"target_build_type\":[\"\", \"_release\"]}" >> $GITHUB_OUTPUT
+
   build:
+    needs: setup
     strategy:
       fail-fast: false
-      matrix:
-        target_name: [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover]
-        target_build_type: ["", _release, _OTA]
+      matrix: ${{fromJson(needs.setup.outputs.matrix)}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Cache pip
-        uses: actions/cache@v3
+      - name: Build OpenIris Firmware
+        uses: addnab/docker-run-action@v3
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: ${{ runner.os }}-pip-
-      - name: Cache PlatformIO
-        uses: actions/cache@v3
-        with:
-          path: ~/.platformio
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-          restore-keys: |
-            ${{ runner.os }}-pio-
-      - name: Setup Python install
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-      - name: Install PlatformIO with Pip
-        run: |
-
-          python -m pip install --upgrade pip
-          pip install distro
-          pip install --upgrade platformio
-          pio upgrade --dev
-          pio pkg update --global
-      - name: Update build command
-        working-directory: ./Code/PlatformIO Project
-        run: |
-          sed -i '/\[env\]/p; s/\[env\]/upload_protocol = custom/' platformio.ini
-      - name: Build Firmware
-        working-directory: ./Code/PlatformIO Project
-        run: |
-          export CI_BUILD=1
-          mkdir build 
-          mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
-          echo "::group::platformio.ini"
-          cat platformio.ini
-          echo "::endgroup::"
-          echo "::group::pio run"
-          pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }}
-          echo "::endgroup::"
-          unzip -l './build/${{ matrix.target_name }}${{ matrix.target_build_type }}/*.zip'
-        #echo "::group::pio merge binaries"
-        #esptool --chip esp32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB 0x1000 bootloader.bin 0x8000 partitions.bin 0xe000 boot.bin 0x10000 OpenIris-v1.3.0-esp32AIThinker-8229a3a-master.bin
-        #echo "::endgroup::"
+          image: ghcr.io/zanzythebar/piodocker:latest
+          options: -v ${{ github.workspace }}:/workspace
+          run: |
+            cd ESP
+            export OPENIRIS_CI_BUILD=1
+            mkdir build 
+            mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
+            echo "::endgroup::"
+            echo "::group::pio run"
+            pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }}
+            echo "::endgroup::"
+            echo "::group::create zip"
+            unzip -l 'build/${{ matrix.target_name }}${{ matrix.target_build_type }}/*.zip'
+            echo "::endgroup::"
+            echo "::group::copy firmware name file"
+            cp tools/firmware_name.txt build/${{ matrix.target_name }}${{ matrix.target_build_type }}/firmware_name.txt
+            echo "::endgroup::"
       - name: Archive Firmware name File
         # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
         run: |
-          echo "FIRMWARE_NAME=$(cat ./Code/PlatformIO Project/tools/firmware_name.txt)" >> $GITHUB_ENV
+          echo "FIRMWARE_NAME=$(cat ESP/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/firmware_name.txt)" >> $GITHUB_ENV
       - name: Archive Firmware Binaries
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.target_name }}${{ matrix.target_build_type }}-firmware
           #path: "./ESP/.pio/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/${{ env.FIRMWARE_NAME }}.bin"
-          path: "./Code/PlatformIO Project/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/${{ env.FIRMWARE_NAME }}.zip"
+          path: "Code/Platformio Project/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/${{ env.FIRMWARE_NAME }}.zip"
           retention-days: 5
           if-no-files-found: error
-  release-openiris:
+  release-tower:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
@@ -106,16 +100,16 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release
+        run: |
+          sudo apt-get install -y jq
+          chmod +x ./repo-tools/scripts/prepareCMD.sh 
+          semantic-release
   cleanup:
+    needs: [setup, release-tower]
     strategy:
       fail-fast: false
-      matrix:
-        target_name: [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover]
-        target_build_type: ["", _release, _OTA]
+      matrix: ${{fromJson(needs.setup.outputs.matrix)}}
     name: Cleanup actions
-    needs:
-      - release-openiris
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
