@@ -41,7 +41,6 @@ OTA ota(config);
 MDNSHandler mDNS(config, "_tower", "data", "_tcp", "api_port", "80");
 NetworkNTP ntp;
 
-BaseMQTT mqtt(espClient, data, greenhouseConfig);
 
 //* API
 API api(server, greenhouseConfig);
@@ -59,6 +58,8 @@ AccumulateData data(ldr,
                     ntp,
                     config,
                     greenhouseConfig);
+
+BaseMQTT mqtt(espClient, data, greenhouseConfig);
 
 void setup() {
   Serial.begin(115200);
