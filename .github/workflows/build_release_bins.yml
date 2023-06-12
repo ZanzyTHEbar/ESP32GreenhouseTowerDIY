@@ -28,7 +28,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
-        run: echo "matrix={\"target_name\":[\"debug\",\"release\"],\"target_build_type\":[]}" >> $GITHUB_OUTPUT
+        run: echo "matrix={\"target_name\":[\"debug\",\"release\"]}" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
@@ -49,27 +49,27 @@ jobs:
             cd "Code/PlatformIO Project/"
             export OPENIRIS_CI_BUILD=1
             mkdir build 
-            mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
+            mkdir build/${{ matrix.target_name }}
             echo "::endgroup::"
             echo "::group::pio run"
-            pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }}
+            pio run --environment ${{ matrix.target_name }}
             echo "::endgroup::"
             echo "::group::create zip"
-            unzip -l 'build/${{ matrix.target_name }}${{ matrix.target_build_type }}/*.zip'
+            unzip -l 'build/${{ matrix.target_name }}/*.zip'
             echo "::endgroup::"
             echo "::group::copy firmware name file"
-            cp tools/firmware_name.txt build/${{ matrix.target_name }}${{ matrix.target_build_type }}/firmware_name.txt
+            cp tools/firmware_name.txt build/${{ matrix.target_name }}/firmware_name.txt
             echo "::endgroup::"
       - name: Archive Firmware name File
         # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
         run: |
-          echo "FIRMWARE_NAME=$(cat ESP/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/firmware_name.txt)" >> $GITHUB_ENV
+          echo "FIRMWARE_NAME=$(cat ESP/build/${{ matrix.target_name }}/firmware_name.txt)" >> $GITHUB_ENV
       - name: Archive Firmware Binaries
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.target_name }}${{ matrix.target_build_type }}-firmware
-          #path: "./ESP/.pio/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/${{ env.FIRMWARE_NAME }}.bin"
-          path: "Code/Platformio Project/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/${{ env.FIRMWARE_NAME }}.zip"
+          name: ${{ matrix.target_name }}-firmware
+          #path: "./ESP/.pio/build/${{ matrix.target_name }}/${{ env.FIRMWARE_NAME }}.bin"
+          path: "Code/Platformio Project/build/${{ matrix.target_name }}/${{ env.FIRMWARE_NAME }}.zip"
           retention-days: 5
           if-no-files-found: error
   release-tower:
@@ -116,4 +116,4 @@ jobs:
       - name: "♻️ remove build artifacts"
         uses: geekyeggo/delete-artifact@v1
         with:
-          name: ${{ matrix.target_name }}${{ matrix.target_build_type }}-firmware
+          name: ${{ matrix.target_name }}-firmware
