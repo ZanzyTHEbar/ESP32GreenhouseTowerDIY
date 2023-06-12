@@ -14,12 +14,12 @@ namespace Project_Config {
     std::string password;
   };
 
-  struct RelaysConfig_t {
+  /* struct RelaysConfig_t {
     RelaysConfig_t(const std::string& name,
                    uint8_t port,
                    bool start_state,
-                   timeObj* timer,
-                   HASwitch* ha_switch)
+                   timeObj& timer,
+                   HASwitch& ha_switch)
         : name(std::move(name)),
           port(port),
           start_state(start_state),
@@ -28,9 +28,9 @@ namespace Project_Config {
     std::string name;
     uint8_t port;
     bool start_state;
-    timeObj* timer;
-    HASwitch* ha_switch;
-  };
+    timeObj& timer;
+    HASwitch& ha_switch;
+  }; */
 
   struct EnabledFeatures_t {
     enum Humidity_Features_e {
@@ -46,9 +46,9 @@ namespace Project_Config {
       NONE_LDR,
       LDR,
       BH1750,
-      BH1750_FAST,
-      BH1750_GND,
-      BH1750_VCC,
+      //BH1750_FAST,
+      //BH1750_GND,
+      //BH1750_VCC,
       ALL_LDR
     };
     enum Water_Level_Features_e {
@@ -68,7 +68,6 @@ namespace Project_Config {
 
   struct GreenHouseConfig_t : ProjectConfig_t {
     MQTTConfig_t mqtt;
-    std::vector<RelaysConfig_t> relays;
     EnabledFeatures_t enabled_features;
   };
 }  // namespace Project_Config
@@ -85,22 +84,18 @@ class GreenHouseConfig : public CustomConfigInterface {
   void save() override;
 
   //* Load
-  void loadRelays();
   void loadMQTT();
   void loadFeatures();
 
   //* Save
-  void saveRelays();
   void saveMQTT();
   void saveFeatures();
   void initConfig();
 
   std::string toRepresentation();
 
-  Project_Config::MQTTConfig_t* getMQTTConfig();
-  std::vector<Project_Config::RelaysConfig_t>* getRelaysConfig();
-  Project_Config::RelaysConfig_t* getRelayConfig(int index);
-  Project_Config::EnabledFeatures_t* getEnabledFeatures();
+  Project_Config::MQTTConfig_t& getMQTTConfig();
+  Project_Config::EnabledFeatures_t& getEnabledFeatures();
 
   IPAddress getBroker();
 

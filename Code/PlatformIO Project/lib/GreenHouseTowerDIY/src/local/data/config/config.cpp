@@ -16,7 +16,6 @@ void GreenHouseConfig::initConfig() {
 //**********************************************************************************************************************
 
 void GreenHouseConfig::load() {
-  loadRelays();
   loadMQTT();
   loadFeatures();
 }
@@ -50,7 +49,6 @@ void GreenHouseConfig::loadFeatures() {
 //**********************************************************************************************************************
 
 void GreenHouseConfig::save() {
-  saveRelays();
   saveMQTT();
   saveFeatures();
 }
@@ -63,12 +61,16 @@ void GreenHouseConfig::saveMQTT() {
 }
 
 void GreenHouseConfig::saveFeatures() {
-  projectConfig.putInt("humidity_features", this->config.enabled_features.humidity_Features);
-  projectConfig.putInt("ldr_features", this->config.enabled_features.ldr_Features);
-  projectConfig.putInt("water_features", this->config.enabled_features.water_Level_Features);
+  projectConfig.putInt("humidity_features",
+                       this->config.enabled_features.humidity_Features);
+  projectConfig.putInt("ldr_features",
+                       this->config.enabled_features.ldr_Features);
+  projectConfig.putInt("water_features",
+                       this->config.enabled_features.water_Level_Features);
 
   projectConfig.putInt("dht_pin", this->config.enabled_features.dht_pin);
-  projectConfig.putString("dht_type", this->config.enabled_features.dht_type.c_str());
+  projectConfig.putString("dht_type",
+                          this->config.enabled_features.dht_type.c_str());
 }
 
 //**********************************************************************************************************************
@@ -121,15 +123,6 @@ std::string GreenHouseConfig::toRepresentation() {
     case LDRFeatures_t::BH1750:
       ldr.assign("BH1750");
       break;
-    case LDRFeatures_t::BH1750_FAST:
-      ldr.assign("BH1750");
-      break;
-    case LDRFeatures_t::BH1750_GND:
-      ldr.assign("BH1750 GND mode");
-      break;
-    case LDRFeatures_t::BH1750_VCC:
-      ldr.assign("BH1750 VCC mode");
-      break;
     case LDRFeatures_t::ALL_LDR:
       ldr.assign("All");
       break;
@@ -171,20 +164,9 @@ std::string GreenHouseConfig::toRepresentation() {
       this->config.mqtt.broker.c_str(), this->config.mqtt.port,
       this->config.mqtt.username.c_str(), this->config.mqtt.password.c_str());
 
-  //* Relays Section
-  std::string relays_json;
-  for (int i = 0; i < this->config.relays.size(); i++) {
-    relays_json.append(Helpers::format_string(
-        "\"relays_%d\": {\"name\": \"%s\", \"port\": \"%d\", \"start_state\": "
-        "\"%s\", \"timer\": \"%.3f\"}",
-        i, this->config.relays[i].name.c_str(), this->config.relays[i].port,
-        this->config.relays[i].start_state ? "on" : "off",
-        this->config.relays[i].timer->getTime()));
-  }
-
   //* Return formatted json string
   return Helpers::format_string("{%s, %s, %s}", mqtt_json.c_str(),
-                                features_json.c_str(), relays_json.c_str());
+                                features_json.c_str());
 }
 
 //**********************************************************************************************************************
@@ -193,8 +175,8 @@ std::string GreenHouseConfig::toRepresentation() {
 //*
 //**********************************************************************************************************************
 
-Project_Config::MQTTConfig_t* GreenHouseConfig::getMQTTConfig() {
-  return &this->config.mqtt;
+Project_Config::MQTTConfig_t& GreenHouseConfig::getMQTTConfig() {
+  return this->config.mqtt;
 }
 
 /**
@@ -202,19 +184,15 @@ Project_Config::MQTTConfig_t* GreenHouseConfig::getMQTTConfig() {
  */
 IPAddress GreenHouseConfig::getBroker() {
   IPAddress broker_ip;
-  Project_Config::MQTTConfig_t* mqttConfig = getMQTTConfig();
-  if (!mqttConfig->broker.empty()) {
+  Project_Config::MQTTConfig_t& mqttConfig = getMQTTConfig();
+  if (!mqttConfig.broker.empty()) {
     log_d("[mDNS responder started] Setting up Broker...");
-    return broker_ip.fromString(mqttConfig->broker.c_str());
+    return broker_ip.fromString(mqttConfig.broker.c_str());
   }
   log_d("[mDNS responder failed]");
   return broker_ip.fromString(MQTT_BROKER);
 }
 
-std::vector<Project_Config::RelaysConfig_t>* GreenHouseConfig::getRelaysConfig() {
-  return &this->config.relays;
-}
-
-Project_Config::EnabledFeatures_t* GreenHouseConfig::getEnabledFeatures() {
-  return &this->config.enabled_features;
+Project_Config::EnabledFeatures_t& GreenHouseConfig::getEnabledFeatures() {
+  return this->config.enabled_features;
 }
