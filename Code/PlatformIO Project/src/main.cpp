@@ -101,6 +101,7 @@ void setup() {
  */
 void loop() {
   Network_Utilities::checkWiFiState();  // check the WiFi state
+  mqtt.mqttLoop();                      // handle MQTT
   ota.handleOTAUpdate();                // handle OTA updates
   data.loop();                          // accumulate sensor data
 }
