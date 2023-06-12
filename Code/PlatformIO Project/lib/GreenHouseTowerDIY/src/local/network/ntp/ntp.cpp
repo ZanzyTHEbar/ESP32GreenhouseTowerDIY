@@ -143,6 +143,12 @@ void NetworkNTP::ntpLoop() {
   _formattedDate = timeClient.getFormattedDate().c_str();
   log_d("Formatted Date: %s", _formattedDate.c_str());
   int splitT = _formattedDate.find("T");
+
+  if (splitT == std::string::npos) {
+    log_e("Error parsing date");
+    return;
+  }
+
   _dayStamp = _formattedDate.substr(0, splitT).c_str();
   log_d("DATE: %s", _dayStamp.c_str());
   _timeStamp =

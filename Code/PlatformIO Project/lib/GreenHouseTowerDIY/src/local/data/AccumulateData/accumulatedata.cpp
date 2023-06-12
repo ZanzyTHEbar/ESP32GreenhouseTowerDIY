@@ -27,7 +27,7 @@ void AccumulateData::begin() {}
 
 //* Collect the data
 /**
- * @brief Accumulate Data to send from sensors and store in json. \n
+ * @brief Accumulate Data to send from sensors and store in json.
  * @note This function accumulates all sensor data and stores it in the main
  * data structure.
  * @parameters: None
