@@ -3,18 +3,17 @@
 #include <Arduino.h>
 #include <ESPmDNS.h>
 #include <data/statemanager/StateManager.hpp>
-#include <local/data/BackgroundTasks/taskManager.hpp>
 #include <utilities/helpers.hpp>
+#include "local/data/config/config.hpp"
 
 /**
  * @brief Namespace for mDNS Discovery
  */
-class mDNSDiscovery
-{
-  TaskManager *taskManager;
+class mDNSDiscovery {
+  GreenHouseConfig& _deviceConfig;
 
-public:
-  mDNSDiscovery(TaskManager *taskManager);
+ public:
+  mDNSDiscovery(GreenHouseConfig& config);
   virtual ~mDNSDiscovery();
   //******************************************************************************
   // * Function: Discover mDNS Broker
@@ -24,6 +23,6 @@ public:
   // * Return: int - 1 if success, 0 if fail
   //******************************************************************************
   bool discovermDNSBroker();
-}; // namespace mDNSDiscovery
+};  // namespace mDNSDiscovery
 
-#endif // MDNS_DISCOVERY_HPP
+#endif  // MDNS_DISCOVERY_HPP

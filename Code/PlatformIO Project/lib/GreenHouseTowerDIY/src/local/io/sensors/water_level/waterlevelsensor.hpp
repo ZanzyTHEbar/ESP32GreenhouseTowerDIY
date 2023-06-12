@@ -9,18 +9,14 @@
 #include <functional>
 
 #include <utilities/network_utilities.hpp>
+#include "local/data/visitor.hpp"
 #include "local/io/sensors/temperature/towertemp.hpp"
 
-struct WaterLevelData_t {
-  double water_level;
-  double water_level_percentage;
-};
-
-class WaterLevelSensor : public SensorInterface<WaterLevelData_t> {
+class WaterLevelSensor : public Element<Visitor<SensorInterface<float>>>,
+                         public SensorInterface<float> {
   //* Private variables
   double _radius;
   double _height;
-
   TowerTemp& _towerTemp;
   UltraSonicDistanceSensor _distanceSensor;
   //* Private functions
@@ -31,9 +27,23 @@ class WaterLevelSensor : public SensorInterface<WaterLevelData_t> {
   WaterLevelSensor(TowerTemp& _towerTemp);
   virtual ~WaterLevelSensor();
   void begin();
-  const std::string& getSensorName() override;
+  double volume();
   //* Read the water level
-  WaterLevelData_t read() override;
-  WaterLevelData_t result;
+  float read() override;
+  //* Accept the visitor
+  const std::string& getSensorName() override;
+  void accept(Visitor<SensorInterface<float>>& visitor) override;
 };
+
+class WaterLevelPercentage : public Element<Visitor<SensorInterface<float>>>,
+                             public SensorInterface<float> {
+  WaterLevelSensor& _waterLevelSensor;
+
+ public:
+  WaterLevelPercentage(WaterLevelSensor& waterLevelSensor);
+  float read() override;
+  const std::string& getSensorName() override;
+  void accept(Visitor<SensorInterface<float>>& visitor) override;
+};
+
 #endif

@@ -169,6 +169,21 @@ std::string GreenHouseConfig::toRepresentation() {
                                 features_json.c_str());
 }
 
+void GreenHouseConfig::setMQTTConfig(const std::string& broker,
+                                     const std::string& username,
+                                     const std::string& password,
+                                     uint16_t port) {
+  this->config.mqtt.username.assign(username);
+  this->config.mqtt.password.assign(password);
+  this->config.mqtt.port = port;
+  this->config.mqtt.broker.assign(broker);
+}
+
+void GreenHouseConfig::setMQTTBroker(const std::string& broker, uint16_t port) {
+  this->config.mqtt.port = port;
+  this->config.mqtt.broker.assign(broker);
+}
+
 //**********************************************************************************************************************
 //*
 //!                                                GetMethods
@@ -186,10 +201,10 @@ IPAddress GreenHouseConfig::getBroker() {
   IPAddress broker_ip;
   Project_Config::MQTTConfig_t& mqttConfig = getMQTTConfig();
   if (!mqttConfig.broker.empty()) {
-    log_d("[mDNS responder started] Setting up Broker...");
+    log_d("[mDNS responder started]: Setting up Broker...");
     return broker_ip.fromString(mqttConfig.broker.c_str());
   }
-  log_d("[mDNS responder failed]");
+  log_d("[mDNS responder failed]: Using hardcoded IP...");
   return broker_ip.fromString(MQTT_BROKER);
 }
 

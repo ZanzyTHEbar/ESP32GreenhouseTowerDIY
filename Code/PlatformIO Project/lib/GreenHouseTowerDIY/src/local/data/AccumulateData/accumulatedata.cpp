@@ -7,19 +7,28 @@ AccumulateData::AccumulateData(LDR& ldr,
                                NetworkNTP& ntp,
                                ProjectConfig& deviceConfig,
                                GreenHouseConfig& config)
-    : ldr(ldr),
-      towertemp(towertemp),
-      humidity(humidity),
-      waterlevelsensor(waterlevelsensor),
-      ntp(ntp),
-      deviceConfig(deviceConfig),
-      config(config),
-      sensorSerializer(),
-      stringSerializer(),
-      gatherDataTimer(60000),
+    : _ldr(ldr),
+      _towertemp(towertemp),
+      _humidity(humidity),
+      _waterLevelSensor(waterlevelsensor),
+      _waterLevelPercentage(_waterLevelSensor),
+      _ntp(ntp),
+      _deviceConfig(deviceConfig),
+      _config(config),
+      _sensorSerializer(),
+      _stringSerializer(),
+      _gatherDataTimer(60000),
       _maxTemp(100),
       _numTempSensors(0),
-      sensors{&ldr} {}
+      data({
+          .sensors =
+              {
+                  {&_ldr, 0},
+                  {&_waterLevelSensor, 0},
+                  {&_waterLevelPercentage, 0},
+              },
+          .ntpTime = std::string(),
+      }) {}
 
 AccumulateData::~AccumulateData() {}
 
@@ -34,27 +43,30 @@ void AccumulateData::begin() {}
  * @return void
  */
 void AccumulateData::loop() {
-  ntp.ntpLoop();
+  _ntp.ntpLoop();
 
   std::string json = "{";
 
-  if (gatherDataTimer.ding()) {
-    //* build the json string
-    ntp.accept(stringSerializer);
-    json.append(
-        Helpers::format_string("%s", stringSerializer.serializedData.c_str()));
+  if (_gatherDataTimer.ding()) {
+    _ntp.accept(_stringSerializer);
+    data.ntpTime.assign(_stringSerializer.value);
 
-    for (auto& sensor : sensors) {
+    //* build the json string
+    json.append(
+        Helpers::format_string("%s", _stringSerializer.serializedData.c_str()));
+
+    for (auto& sensor : data.sensors) {
       //* serialize the data
-      sensor->accept(sensorSerializer);
+      sensor.first->accept(_sensorSerializer);
       //* add the data to the json string
       json.append(Helpers::format_string(
-          "%s", sensorSerializer.serializedData.c_str()));
+          "%s", _sensorSerializer.serializedData.c_str()));
+      sensor.second = _sensorSerializer.value;
     }
     json.append("}");
-    deviceConfig.getDeviceDataJson().deviceJson.assign(json);
+    _deviceConfig.getDeviceDataJson().deviceJson.assign(json);
 
     log_d("[Data Json Document]: %s", json.c_str());
-    gatherDataTimer.start();
+    _gatherDataTimer.start();
   }
 }

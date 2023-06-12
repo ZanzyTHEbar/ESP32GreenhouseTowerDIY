@@ -1,7 +1,7 @@
 #ifndef ACCUMULATEDATA_HPP
 #define ACCUMULATEDATA_HPP
 
-#include <vector>
+#include <unordered_map>
 
 //* Data Struct
 #include <local/data/config/config.hpp>
@@ -18,24 +18,23 @@
 #include <local/network/ntp/ntp.hpp>
 
 class AccumulateData {
-  LDR& ldr;
-  TowerTemp& towertemp;
-  Humidity& humidity;
-  WaterLevelSensor& waterlevelsensor;
-  NetworkNTP& ntp;
-  ProjectConfig& deviceConfig;
-  GreenHouseConfig& config;
-  SensorSerializer sensorSerializer;
-  StringSerializer stringSerializer;
+  LDR& _ldr;
+  TowerTemp& _towertemp;
+  Humidity& _humidity;
+  WaterLevelSensor& _waterLevelSensor;
+  WaterLevelPercentage _waterLevelPercentage;
+  NetworkNTP& _ntp;
+  ProjectConfig& _deviceConfig;
+  GreenHouseConfig& _config;
+  SensorSerializer _sensorSerializer;
+  StringSerializer _stringSerializer;
 
-  timeObj generateJSONTimer;
-  timeObj gatherDataTimer;
+  timeObj _generateJSONTimer;
+  timeObj _gatherDataTimer;
 
   // Stack Data to send
   int _maxTemp;
   int _numTempSensors;
-
-  std::vector<Element<Visitor<SensorInterface<float>>>*> sensors;
 
  public:
   AccumulateData(LDR& ldr,
@@ -49,5 +48,13 @@ class AccumulateData {
 
   void begin();
   void loop();
+
+  struct SensorData {
+    std::unordered_map<Element<Visitor<SensorInterface<float>>>*, float>
+        sensors;
+    std::string ntpTime;
+  };
+
+  SensorData data;
 };
 #endif

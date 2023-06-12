@@ -1,4 +1,7 @@
 [wokwi]
 version = 1
-elf = ".pio/build/debug/ESP32GreenhouseTowerDIY-f4a4006fc36a378f9ec4ef652aeb424996f39a81-debug-f4a4006-main.elf"
-firmware = ".pio/build/debug/ESP32GreenhouseTowerDIY-f4a4006fc36a378f9ec4ef652aeb424996f39a81-debug-f4a4006-main.bin"
+elf = ".pio/build/debug/debug-v0.0.1-main.elf"
+firmware = ".pio/build/debug/debug-v0.0.1-main.bin"
+[[net.forward]]
+from = "localhost:8180"
+to = "target:80"

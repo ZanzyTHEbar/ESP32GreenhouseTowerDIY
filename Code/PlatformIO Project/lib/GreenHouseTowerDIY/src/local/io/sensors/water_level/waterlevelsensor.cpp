@@ -16,11 +16,6 @@ void WaterLevelSensor::begin() {
   _height = RES_HEIGHT;
 }
 
-const std::string& WaterLevelSensor::getSensorName() {
-  static const std::string name = "water_level_sensor";
-  return name;
-}
-
 double WaterLevelSensor::readSensor() {
   Network_Utilities::my_delay(1L);
   double distance =
@@ -32,18 +27,17 @@ double WaterLevelSensor::readSensor() {
   return distance;
 }
 
-WaterLevelData_t WaterLevelSensor::read() {
+float WaterLevelSensor::read() {
   if (readSensor() <= 0.0) {
     log_i("Distance greater than 400cm");
     log_i("Failed to read ultrasonic sensor.");
-    return {0, 0};
+    return 0.0;
   }
 
-  // tank diameter and height, in centimeters
+  //* tank diameter and height, in centimeters
   double diameter = pow(_radius, 2.0);
-  double height = _height;
-  double v = ((diameter * PI) * (height) / 1000.0);
-  double stock = ((diameter * PI) * (height - readSensor()) / 1000.0);
+  double v = volume();
+  double stock = ((diameter * PI) * (_height - readSensor()) / 1000.0);
   log_i("Stock is: %.3f liters", stock, DEC);
   double p = (stock / v) * 100.0;
 
@@ -52,7 +46,43 @@ WaterLevelData_t WaterLevelSensor::read() {
 
   if (isnan(p)) {
     log_e("Error: %s", "Sensor Value is NaN");
-    return {0, 0};
+    return 0.0;
   }
-  return {stock, p};
+  return stock;
+}
+
+double WaterLevelSensor::volume() {
+  double diameter = pow(_radius, 2.0);
+  double v = ((diameter * PI) * (_height) / 1000.0);
+  return v;
+}
+
+const std::string& WaterLevelSensor::getSensorName() {
+  static const std::string name = "water_level_sensor";
+  return name;
+}
+
+void WaterLevelSensor::accept(Visitor<SensorInterface<float>>& visitor) {
+  visitor.visit(this);
+}
+
+//***********************************************************************************************************************
+
+WaterLevelPercentage::WaterLevelPercentage(WaterLevelSensor& waterLevelSensor)
+    : _waterLevelSensor(waterLevelSensor) {}
+
+float WaterLevelPercentage::read() {
+  float stock = _waterLevelSensor.read();
+  float percentage = (stock / _waterLevelSensor.volume()) * 100.0;
+  log_i("Percent Full: %.3f", percentage, DEC);
+  return percentage;
+}
+
+const std::string& WaterLevelPercentage::getSensorName() {
+  static const std::string name = "water_level_percentage";
+  return name;
+}
+
+void WaterLevelPercentage::accept(Visitor<SensorInterface<float>>& visitor) {
+  visitor.visit(this);
 }

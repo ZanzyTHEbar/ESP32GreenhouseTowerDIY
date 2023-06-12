@@ -12,6 +12,7 @@ class SensorSerializer : public Visitor<SensorInterface<float>> {
   void visit(SensorInterface<float>* sensor) override;
 
   std::string serializedData;
+  float value;
 };
 
 class StringSerializer : public Visitor<SensorInterface<const std::string&>> {
@@ -20,6 +21,7 @@ class StringSerializer : public Visitor<SensorInterface<const std::string&>> {
   void visit(SensorInterface<const std::string&>* sensor) override;
 
   std::string serializedData;
+  std::string value;
 };
 
 #endif

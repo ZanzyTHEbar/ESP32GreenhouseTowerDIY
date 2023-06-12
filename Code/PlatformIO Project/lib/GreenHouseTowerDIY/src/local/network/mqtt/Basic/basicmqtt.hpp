@@ -9,29 +9,16 @@
 #include <PubSubClient.h>
 #include <WiFi.h>
 
-//*  Sensor Includes
-#include <local/io/sensors/humidity/Humidity.hpp>
-#include <local/io/sensors/light/bh1750.hpp>
-#include <local/io/sensors/light/ldr.hpp>
-#include <local/io/sensors/pH/pHsensor.hpp>
-#include <local/io/sensors/temperature/towertemp.hpp>
-#include <local/io/sensors/water_level/waterlevelsensor.hpp>
-
-//* IO Includes
-#include <local/io/Relays/relays.hpp>
+//*  Data Includes
+#include "local/data/AccumulateData/accumulatedata.hpp"
 
 /**
  * @brief MQTT Class
  */
 class BASEMQTT : public IPAddress, public PubSubClient {
-  PHSENSOR* phsensor;
-  BH1750* bh1750;
-  LDR* ldr;
-  TowerTemp* towertemp;
-  Humidity* humidity;
-  WaterLevelSensor* waterlevelsensor;
-  I2C_RelayBoard* relayboard;
-  GreenHouseConfig* deviceConfig;
+  WiFiClient& _espClient;
+  AccumulateData& _accumulateData;
+  GreenHouseConfig& _deviceConfig;
 
   // Private variables
   const long _interval;
@@ -39,16 +26,9 @@ class BASEMQTT : public IPAddress, public PubSubClient {
 
  public:
   // Constructor
-  BASEMQTT(WiFiClient* espClient,
-           PHSENSOR* phsensor,
-           BH1750* bh1750,
-           LDR* ldr,
-           TowerTemp* towertemp,
-           Humidity* humidity,
-           WaterLevelSensor* waterlevelsensor,
-           I2C_RelayBoard* relayboard,
-           IPAddress* broker_ip,
-           GreenHouseConfig* config);
+  BASEMQTT(WiFiClient& espClient,
+           AccumulateData& data,
+           GreenHouseConfig& config);
   virtual ~BASEMQTT();
 
   void begin();

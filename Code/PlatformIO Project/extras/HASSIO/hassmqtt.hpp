@@ -10,28 +10,15 @@
 #include <WiFi.h>
 #include <functional>
 
-//*  Sensor Includes
-#include <local/io/sensors/humidity/Humidity.hpp>
-#include <local/io/sensors/light/bh1750.hpp>
-#include <local/io/sensors/light/ldr.hpp>
-#include <local/io/sensors/pH/pHsensor.hpp>
-#include <local/io/sensors/temperature/towertemp.hpp>
-#include <local/io/sensors/water_level/waterlevelsensor.hpp>
-
-//* IO Includes
-#include <local/io/Relays/relays.hpp>
+//*  Data Includes
+#include "local/data/AccumulateData/accumulatedata.hpp"
 
 class HASSMQTT {
+  WiFiClient& _espClient;
+  
   //* Custom Class objects
-  PHSENSOR* phsensor;
-  BH1750* bh1750;
-  LDR* ldr;
-  TowerTemp* towertemp;
-  Humidity* humidity;
-  WaterLevelSensor* waterlevelsensor;
-  I2C_RelayBoard* relayboard;
-  IPAddress* broker_ip;
-  GreenHouseConfig* deviceConfig;
+  AccumulateData& _accumulateData;
+  GreenHouseConfig& _deviceConfig;
 
   //* Home Assistant Entities
   HADevice device;

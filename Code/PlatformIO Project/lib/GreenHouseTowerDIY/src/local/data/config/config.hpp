@@ -46,9 +46,9 @@ namespace Project_Config {
       NONE_LDR,
       LDR,
       BH1750,
-      //BH1750_FAST,
-      //BH1750_GND,
-      //BH1750_VCC,
+      // BH1750_FAST,
+      // BH1750_GND,
+      // BH1750_VCC,
       ALL_LDR
     };
     enum Water_Level_Features_e {
@@ -93,6 +93,13 @@ class GreenHouseConfig : public CustomConfigInterface {
   void initConfig();
 
   std::string toRepresentation();
+
+  void setMQTTConfig(const std::string& broker,
+                     const std::string& username = std::string(),
+                     const std::string& password = std::string(),
+                     uint16_t port = 1883);
+
+  void setMQTTBroker(const std::string& broker, uint16_t port = 1883);
 
   Project_Config::MQTTConfig_t& getMQTTConfig();
   Project_Config::EnabledFeatures_t& getEnabledFeatures();
