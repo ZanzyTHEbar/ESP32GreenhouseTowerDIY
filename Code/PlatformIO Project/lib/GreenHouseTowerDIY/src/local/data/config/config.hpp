@@ -1,7 +1,6 @@
 #ifndef GREENHOUSE_CONFIG_HPP
 #define GREENHOUSE_CONFIG_HPP
 #include <Arduino.h>
-#include <device-types/HASwitch.h>
 #include <timeObj.h>
 #include <data/config/project_config.hpp>
 #include <unordered_map>
