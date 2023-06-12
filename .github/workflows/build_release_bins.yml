@@ -28,7 +28,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
-        run: echo "matrix={\"target_name\":[\"debug\",\"release\"],\"target_build_type\":[\"\", \"\"]}" >> $GITHUB_OUTPUT
+        run: echo "matrix={\"target_name\":[\"debug\",\"release\"],\"target_build_type\":[]}" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
@@ -46,7 +46,7 @@ jobs:
           image: ghcr.io/zanzythebar/piodocker:latest
           options: -v ${{ github.workspace }}:/workspace
           run: |
-            cd ESP
+            cd "Code/PlatformIO Project/"
             export OPENIRIS_CI_BUILD=1
             mkdir build 
             mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
