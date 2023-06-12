@@ -52,7 +52,6 @@ void API::setDHT(AsyncWebServerRequest* request) {
     case APIServer::POST: {
       std::string type;
       uint8_t pin;
-
       int params = request->params();
       log_d("Number of Params: %d", params);
       for (int i = 0; i < params; i++) {
@@ -74,7 +73,6 @@ void API::setDHT(AsyncWebServerRequest* request) {
         request->redirect("/");
         return;
       }
-      //taskManager.setDHT(type, pin, true);
     }
     default: {
       request->send(400, APIServer::MIMETYPE_JSON,

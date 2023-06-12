@@ -6,7 +6,8 @@ AccumulateData::AccumulateData(LDR& ldr,
                                WaterLevelSensor& waterlevelsensor,
                                NetworkNTP& ntp,
                                ProjectConfig& deviceConfig,
-                               GreenHouseConfig& config)
+                               GreenHouseConfig& config,
+                               BaseMQTT& mqtt)
     : _ldr(ldr),
       _towertemp(towertemp),
       _humidity(humidity),
@@ -17,6 +18,7 @@ AccumulateData::AccumulateData(LDR& ldr,
       _config(config),
       _sensorSerializer(),
       _stringSerializer(),
+      _mqtt(mqtt),
       _gatherDataTimer(60000),
       _maxTemp(100),
       _numTempSensors(0),
@@ -58,6 +60,10 @@ void AccumulateData::loop() {
     for (auto& sensor : data.sensors) {
       //* serialize the data
       sensor.first->accept(_sensorSerializer);
+
+      //* Pass the data to the mqtt client
+      sensor.first->accept(_mqtt);
+
       //* add the data to the json string
       json.append(Helpers::format_string(
           "%s", _sensorSerializer.serializedData.c_str()));

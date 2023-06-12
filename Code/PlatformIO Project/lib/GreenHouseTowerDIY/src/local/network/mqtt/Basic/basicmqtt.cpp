@@ -6,11 +6,8 @@
 // broker.
 //************************************************************************************************************************
 
-BaseMQTT::BaseMQTT(WiFiClient& espClient,
-                   AccumulateData& accumulateData,
-                   GreenHouseConfig& config)
+BaseMQTT::BaseMQTT(WiFiClient& espClient, GreenHouseConfig& config)
     : _espClient(espClient),
-      _accumulateData(accumulateData),
       _deviceConfig(config),
       PubSubClient(
           _deviceConfig.getBroker(),
@@ -19,8 +16,7 @@ BaseMQTT::BaseMQTT(WiFiClient& espClient,
             mqttCallback(topic, payload, length);
           },
           espClient),
-      _interval(60000),
-      _previousMillis(0) {}
+      networkConnected(false) {}
 
 BaseMQTT::~BaseMQTT() {}
 
@@ -31,9 +27,10 @@ void BaseMQTT::begin() {
   if (connect(DEFAULT_HOSTNAME)) {
     log_i("[BasicMQTT]: Connection succeeded. MQTT client state is: %d",
           state());
-    subscribeAll();
+    networkConnected = true;
     return;
   }
+  networkConnected = false;
   log_i("[BasicMQTT]: Connection failed. MQTT client state is: %d", state());
   //* Local Mosquitto Connection -- End
 }
@@ -51,69 +48,38 @@ void BaseMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
   log_i("[BasicMQTT]: Message: [%s]", result.c_str());
 
   // TODO: Add support for all sensor topics
-
-  //* LDR
-
-  //* TowerTemp
-
-  //* Humidity
-
-  //* WaterLevelSensor
 }
 
-void BaseMQTT::subscribeAll() {
-  // Subscribe to all relay topics
-  // TODO: Add ECC support based on return value of subscribe()
-
-  // TODO: Add support for subscribing to all sensor topics
-
-  //* BH1750
-
-  //* LDR
-
-  //* TowerTemp
-
-  //* Humidity
-
-  //* WaterLevelSensor
-  // subscribe(relay.name.c_str());
-  log_i("[BasicMQTT]: Successfully subscribed to all topics.");
-}
-
-void BaseMQTT::publishAll() {
-  // TODO: Publish all sensor data
-
-  //* LDR
-
-  //* TowerTemp
-
-  //* Humidity
-
-  //* WaterLevelSensor
-
-  // publish(topic, data);
+void BaseMQTT::visit(SensorInterface<float>* sensor) {
+  std::string topic = sensor->getSensorName();
+  if (!networkConnected && !topic.empty()) {
+    this->subscribe(topic.c_str());
+  }
+  std::string payload = std::to_string(sensor->read());
+  if (!topic.empty() && !payload.empty()) {
+    publish(topic.c_str(), payload.c_str(), payload.length());
+  }
 }
 
 /**
  * @brief Reconnect to the MQTT broker
  * @note This is a blocking function and will not return until the connection is
  * established
- *
  */
 void BaseMQTT::mqttReconnect() {
-  // Loop until we're reconnected
+  //* Loop until we're reconnected
   while (!connected()) {
     log_i("[BasicMQTT]: Attempting MQTT connection...");
-    // Attempt to connect
+    //* Attempt to connect
+    networkConnected = false;
     if (connect(DEFAULT_HOSTNAME)) {
       log_i("[BasicMQTT]: Connected to MQTT broker.");
-      // Subscribe
-      subscribeAll();
+      networkConnected = true;
       return;
     }
     log_e("[BasicMQTT]: Failed, rc= %d", state());
     log_i("[BasicMQTT]: Trying again in 15 seconds");
-    // Wait 15 seconds before retrying
+    //* Wait 15 seconds before retrying
     Network_Utilities::my_delay(15L);
   }
 }
@@ -131,11 +97,5 @@ void BaseMQTT::mqttLoop() {
     mqttReconnect();
   } else {
     loop();
-    unsigned long currentMillis = millis();
-    if (currentMillis - _previousMillis >= _interval) {
-      _previousMillis = currentMillis;
-      // Publish all sensor data
-      publishAll();
-    }
   }
 }

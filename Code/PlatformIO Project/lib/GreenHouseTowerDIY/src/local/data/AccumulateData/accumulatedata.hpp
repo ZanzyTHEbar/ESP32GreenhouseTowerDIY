@@ -3,6 +3,9 @@
 
 #include <unordered_map>
 
+//* Network Includes
+#include "local/network/mqtt/basic/basicmqtt.hpp"
+
 //* Data Struct
 #include <local/data/config/config.hpp>
 #include "local/Serializers/SensorSerializer/sensorserializer.hpp"
@@ -28,8 +31,7 @@ class AccumulateData {
   GreenHouseConfig& _config;
   SensorSerializer _sensorSerializer;
   StringSerializer _stringSerializer;
-
-  timeObj _generateJSONTimer;
+  BaseMQTT& _mqtt;
   timeObj _gatherDataTimer;
 
   // Stack Data to send
@@ -43,7 +45,8 @@ class AccumulateData {
                  WaterLevelSensor& waterlevelsensor,
                  NetworkNTP& ntp,
                  ProjectConfig& deviceConfig,
-                 GreenHouseConfig& config);
+                 GreenHouseConfig& config,
+                 BaseMQTT& mqtt);
   virtual ~AccumulateData();
 
   void begin();

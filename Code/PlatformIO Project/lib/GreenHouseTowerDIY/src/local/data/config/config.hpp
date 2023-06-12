@@ -13,24 +13,6 @@ namespace Project_Config {
     std::string password;
   };
 
-  /* struct RelaysConfig_t {
-    RelaysConfig_t(const std::string& name,
-                   uint8_t port,
-                   bool start_state,
-                   timeObj& timer,
-                   HASwitch& ha_switch)
-        : name(std::move(name)),
-          port(port),
-          start_state(start_state),
-          timer(timer),
-          ha_switch(ha_switch) {}
-    std::string name;
-    uint8_t port;
-    bool start_state;
-    timeObj& timer;
-    HASwitch& ha_switch;
-  }; */
-
   struct EnabledFeatures_t {
     enum Humidity_Features_e {
       NONE_HUMIDITY,

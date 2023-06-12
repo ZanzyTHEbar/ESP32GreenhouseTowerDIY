@@ -14,7 +14,7 @@ class API {
   API(APIServer& server, GreenHouseConfig& configManager);
   virtual ~API();
   void begin();
-  void removeRelay(AsyncWebServerRequest* request);
+  void setTopic(AsyncWebServerRequest* request);
   void setDHT(AsyncWebServerRequest* request);
 };
 
