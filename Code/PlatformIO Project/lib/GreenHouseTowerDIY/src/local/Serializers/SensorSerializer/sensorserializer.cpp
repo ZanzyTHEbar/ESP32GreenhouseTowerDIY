@@ -1,5 +1,13 @@
 #include "sensorserializer.hpp"
 
+//* Format Specializers
+template <>
+const char* SensorSerializer<int>::fmt = "\"%s\":%d,";
+template <>
+const char* SensorSerializer<long>::fmt = "\"%s\":%ld,";
+template <>
+const char* SensorSerializer<float>::fmt = "\"%s\":%.3f,";
+
 //* Specialize for std::string
 template <>
 void SensorSerializer<std::string>::visit(
@@ -35,7 +43,6 @@ void SensorSerializer<std::vector<std::string>>::visit(
   }
   serializedData.append("],");
   value = sensor->read();
-  return;
 }
 
 //* Specialize for unordered_map<string, float>

@@ -9,10 +9,14 @@
 
 template <typename T>
 class SensorSerializer : public Visitor<SensorInterface<T>> {
+ private:
+  static const char* fmt;
+
  public:
   void visit(SensorInterface<T>* sensor) override {
+    // T reading = static_cast<T>(sensor->read());
     serializedData.assign(Helpers::format_string(
-        "\"%s\":%.3f,", sensor->getSensorName().c_str(), sensor->read()));
+        fmt, sensor->getSensorName().c_str(), sensor->read()));
     value = sensor->read();
     sensorName.assign(sensor->getSensorName());
   };
