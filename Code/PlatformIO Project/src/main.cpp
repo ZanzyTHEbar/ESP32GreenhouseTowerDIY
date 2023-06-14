@@ -1,3 +1,9 @@
+
+// TODO: Implement observer for humidity sensor
+// TODO: Implement pressure sensor for water level
+// TODO: Implement IR sensor for water level
+// FIXME: Fix CI build
+
 #include <Arduino.h>
 
 //* Utilities
@@ -12,7 +18,7 @@
 #include "local/network/mqtt/mdns/mdns.hpp"
 
 //* Data
-#include <local/data/AccumulateData/accumulatedata.hpp>
+#include <local/data/accumulatedata/accumulatedata.hpp>
 #include <local/data/config/config.hpp>
 
 //*  Sensor Includes

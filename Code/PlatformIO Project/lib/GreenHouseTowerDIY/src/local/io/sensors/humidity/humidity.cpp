@@ -50,7 +50,6 @@ void Humidity::begin() {
         F("[Humidity]: Humidity Sensor Setup Failed - no sensors found"));
     return;
   }
-  Serial.println(F("[Humidity]: Found humidity sensor"));
   Serial.println(F(hum_iter->second.c_str()));
 }
 
