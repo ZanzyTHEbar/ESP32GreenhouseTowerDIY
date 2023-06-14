@@ -6,7 +6,7 @@ GreenHouseConfig::GreenHouseConfig(ProjectConfig& projectConfig)
 GreenHouseConfig::~GreenHouseConfig() {}
 
 void GreenHouseConfig::initConfig() {
-  this->config.mqtt = {"", 0, "", ""};
+  this->mqtt = {"", 0, "", ""};
 }
 
 //**********************************************************************************************************************
@@ -21,25 +21,24 @@ void GreenHouseConfig::load() {
 }
 
 void GreenHouseConfig::loadMQTT() {
-  this->config.mqtt.broker.assign(
-      projectConfig.getString("mqtt_broker").c_str());
-  this->config.mqtt.port = projectConfig.getInt("mqtt_port", 1886);
-  this->config.mqtt.username.assign(
+  this->mqtt.broker.assign(projectConfig.getString("mqtt_broker").c_str());
+  this->mqtt.port = projectConfig.getInt("mqtt_port", 1886);
+  this->mqtt.username.assign(
       projectConfig.getString("mqtt_username", "").c_str());
-  this->config.mqtt.password.assign(
+  this->mqtt.password.assign(
       projectConfig.getString("mqtt_password", "").c_str());
 }
 
 void GreenHouseConfig::loadFeatures() {
-  this->config.enabled_features.humidity_Features =
+  this->enabled_features.humidity_features =
       (HumidityFeatures_t)projectConfig.getInt("humidity_features", 0);
-  this->config.enabled_features.ldr_Features =
+  this->enabled_features.ldr_features =
       (LDRFeatures_t)projectConfig.getInt("ldr_features", 0);
-  this->config.enabled_features.water_Level_Features =
+  this->enabled_features.water_Level_features =
       (WaterLevelFeatures_t)projectConfig.getInt("water_level_features", 0);
-  this->config.enabled_features.dht_type.assign(
+  this->enabled_features.dht_type.assign(
       projectConfig.getString("dht_type", "").c_str());
-  this->config.enabled_features.dht_pin = projectConfig.getInt("dht_pin");
+  this->enabled_features.dht_pin = projectConfig.getInt("dht_pin");
 }
 
 //**********************************************************************************************************************
@@ -54,23 +53,21 @@ void GreenHouseConfig::save() {
 }
 
 void GreenHouseConfig::saveMQTT() {
-  projectConfig.putString("mqtt_broker", this->config.mqtt.broker.c_str());
-  projectConfig.putInt("mqtt_port", this->config.mqtt.port);
-  projectConfig.putString("mqtt_username", this->config.mqtt.username.c_str());
-  projectConfig.putString("mqtt_password", this->config.mqtt.password.c_str());
+  projectConfig.putString("mqtt_broker", this->mqtt.broker.c_str());
+  projectConfig.putInt("mqtt_port", this->mqtt.port);
+  projectConfig.putString("mqtt_username", this->mqtt.username.c_str());
+  projectConfig.putString("mqtt_password", this->mqtt.password.c_str());
 }
 
 void GreenHouseConfig::saveFeatures() {
   projectConfig.putInt("humidity_features",
-                       this->config.enabled_features.humidity_Features);
-  projectConfig.putInt("ldr_features",
-                       this->config.enabled_features.ldr_Features);
+                       this->enabled_features.humidity_features);
+  projectConfig.putInt("ldr_features", this->enabled_features.ldr_features);
   projectConfig.putInt("water_features",
-                       this->config.enabled_features.water_Level_Features);
+                       this->enabled_features.water_Level_features);
 
-  projectConfig.putInt("dht_pin", this->config.enabled_features.dht_pin);
-  projectConfig.putString("dht_type",
-                          this->config.enabled_features.dht_type.c_str());
+  projectConfig.putInt("dht_pin", this->enabled_features.dht_pin);
+  projectConfig.putString("dht_type", this->enabled_features.dht_type.c_str());
 }
 
 //**********************************************************************************************************************
@@ -86,34 +83,31 @@ std::string GreenHouseConfig::toRepresentation() {
   std::string water;
 
   // convert enums to strings
-  switch (this->config.enabled_features.humidity_Features) {
-    case HumidityFeatures_t::NONE_HUMIDITY:
-      hum.assign("None");
-      break;
-    case HumidityFeatures_t::DHT11:
+  switch (this->enabled_features.dht_features) {
+    case DHTFeatures_t::DHT11:
       hum.assign("DHT11");
       break;
-    case HumidityFeatures_t::DHT22:
+    case DHTFeatures_t::DHT22:
       hum.assign("DHT22");
       break;
-    case HumidityFeatures_t::DHT21:
+    case DHTFeatures_t::DHT21:
       hum.assign("DHT21");
       break;
+  }
+
+  switch (this->enabled_features.humidity_features) {
     case HumidityFeatures_t::SHT31:
       hum.assign("SHT31");
       break;
-    case HumidityFeatures_t::SHT31x2:
-      hum.assign("SHT31x2");
-      break;
-    case HumidityFeatures_t::ALL_HUMIDITY:
-      hum.assign("All");
+    case HumidityFeatures_t::DHT:
+      hum.assign("DHT");
       break;
     default:
       hum.assign("None");
       break;
   }
 
-  switch (this->config.enabled_features.ldr_Features) {
+  switch (this->enabled_features.ldr_features) {
     case LDRFeatures_t::NONE_LDR:
       ldr.assign("None");
       break;
@@ -131,7 +125,7 @@ std::string GreenHouseConfig::toRepresentation() {
       break;
   }
 
-  switch (this->config.enabled_features.water_Level_Features) {
+  switch (this->enabled_features.water_Level_features) {
     case WaterLevelFeatures_t::NONE_WATER_LEVEL:
       water.assign("None");
       break;
@@ -161,8 +155,8 @@ std::string GreenHouseConfig::toRepresentation() {
   std::string mqtt_json = Helpers::format_string(
       "\"deviceData\": {\"broker\": \"%s\", \"port\": \"%d\", \"username\": "
       "\"%s\", \"password\": \"%s\"}",
-      this->config.mqtt.broker.c_str(), this->config.mqtt.port,
-      this->config.mqtt.username.c_str(), this->config.mqtt.password.c_str());
+      this->mqtt.broker.c_str(), this->mqtt.port, this->mqtt.username.c_str(),
+      this->mqtt.password.c_str());
 
   //* Return formatted json string
   return Helpers::format_string("{%s, %s, %s}", mqtt_json.c_str(),
@@ -173,15 +167,15 @@ void GreenHouseConfig::setMQTTConfig(const std::string& broker,
                                      const std::string& username,
                                      const std::string& password,
                                      uint16_t port) {
-  this->config.mqtt.username.assign(username);
-  this->config.mqtt.password.assign(password);
-  this->config.mqtt.port = port;
-  this->config.mqtt.broker.assign(broker);
+  this->mqtt.username.assign(username);
+  this->mqtt.password.assign(password);
+  this->mqtt.port = port;
+  this->mqtt.broker.assign(broker);
 }
 
 void GreenHouseConfig::setMQTTBroker(const std::string& broker, uint16_t port) {
-  this->config.mqtt.port = port;
-  this->config.mqtt.broker.assign(broker);
+  this->mqtt.port = port;
+  this->mqtt.broker.assign(broker);
 }
 
 //**********************************************************************************************************************
@@ -191,7 +185,7 @@ void GreenHouseConfig::setMQTTBroker(const std::string& broker, uint16_t port) {
 //**********************************************************************************************************************
 
 Project_Config::MQTTConfig_t& GreenHouseConfig::getMQTTConfig() {
-  return this->config.mqtt;
+  return this->mqtt;
 }
 
 /**
@@ -205,9 +199,9 @@ IPAddress GreenHouseConfig::getBroker() {
     return broker_ip.fromString(mqttConfig.broker.c_str());
   }
   log_d("[mDNS responder failed]: Using hardcoded IP...");
-  return broker_ip.fromString(MQTT_BROKER);
+  return broker_ip.fromString("");
 }
 
 Project_Config::EnabledFeatures_t& GreenHouseConfig::getEnabledFeatures() {
-  return this->config.enabled_features;
+  return this->enabled_features;
 }

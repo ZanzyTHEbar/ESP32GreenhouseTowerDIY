@@ -1,8 +1,6 @@
 #ifndef ACCUMULATEDATA_HPP
 #define ACCUMULATEDATA_HPP
 
-#include <unordered_map>
-
 //* Network Includes
 #include "local/network/mqtt/basic/basicmqtt.hpp"
 
@@ -29,14 +27,18 @@ class AccumulateData {
   NetworkNTP& _ntp;
   ProjectConfig& _deviceConfig;
   GreenHouseConfig& _config;
-  SensorSerializer _sensorSerializer;
-  StringSerializer _stringSerializer;
+  SensorSerializer<float> _floatSensorSerializer;
+  SensorSerializer<std::string> _stringSensorSerializer;
+  SensorSerializer<std::vector<std::string>> _vectorStringSensorSerializer;
+  SensorSerializer<Temp_Array_t> _vectorFloatSensorSerializer;
+  SensorSerializer<Humidity_Return_t> _humiditySerializer;
   BaseMQTT& _mqtt;
   timeObj _gatherDataTimer;
 
   // Stack Data to send
   int _maxTemp;
   int _numTempSensors;
+  std::vector<Element<Visitor<SensorInterface<float>>>*> _sensors;
 
  public:
   AccumulateData(LDR& ldr,
@@ -51,13 +53,5 @@ class AccumulateData {
 
   void begin();
   void loop();
-
-  struct SensorData {
-    std::unordered_map<Element<Visitor<SensorInterface<float>>>*, float>
-        sensors;
-    std::string ntpTime;
-  };
-
-  SensorData data;
 };
 #endif

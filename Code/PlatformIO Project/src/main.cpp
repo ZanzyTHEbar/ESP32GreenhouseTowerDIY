@@ -27,7 +27,7 @@
 //! Objects
 
 //* Config
-ProjectConfig config("greenhouse");
+ProjectConfig config("greenhouse", "tower");
 ConfigHandler configHandler(config);
 GreenHouseConfig greenhouseConfig(config);
 
@@ -47,7 +47,7 @@ API api(server, greenhouseConfig);
 
 //* Sensors
 TowerTemp tower_temp;
-Humidity humidity;
+Humidity humidity(greenhouseConfig);
 WaterLevelSensor waterLevelSensor(tower_temp);
 LDR ldr(greenhouseConfig);
 
@@ -62,7 +62,6 @@ AccumulateData data(ldr,
 
 void setup() {
   Serial.begin(115200);
-  Serial.setDebugOutput(DEBUG_MODE);
   Logo::printASCII();
 
   //* Setup Events and Background Tasks
@@ -77,13 +76,12 @@ void setup() {
   //* Setup Sensors
   humidity.begin();
   tower_temp.begin();
-  waterLevelSensor.begin();
 
   //* Setup Network Tasks
   network.begin();
   mDNS.begin();
   //* Discover mDNS Broker
-  mDNSDiscovery::discovermDNSBroker(greenhouseConfig);
+  mDNSDiscovery::discovermDNSBroker(config, greenhouseConfig);
   //* Setup MQTT
   mqtt.begin();
   api.begin();

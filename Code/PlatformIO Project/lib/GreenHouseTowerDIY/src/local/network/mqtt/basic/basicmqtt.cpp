@@ -50,14 +50,70 @@ void BaseMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
   // TODO: Add support for all sensor topics
 }
 
-void BaseMQTT::visit(SensorInterface<float>* sensor) {
-  std::string topic = sensor->getSensorName();
+void BaseMQTT::dataHandler(const std::string& topic,
+                           const std::string& payload) {
   if (!networkConnected && !topic.empty()) {
     this->subscribe(topic.c_str());
   }
-  std::string payload = std::to_string(sensor->read());
+
   if (!topic.empty() && !payload.empty()) {
     publish(topic.c_str(), payload.c_str(), payload.length());
+  }
+}
+
+void BaseMQTT::dataHandler(const std::string& topic, float payload) {
+  if (!networkConnected && !topic.empty()) {
+    this->subscribe(topic.c_str());
+  }
+
+  std::string payloadStr = std::to_string(payload);
+  if (!topic.empty() && !payloadStr.empty()) {
+    publish(topic.c_str(), payloadStr.c_str(), payloadStr.length());
+  }
+}
+
+void BaseMQTT::dataHandler(const std::string& topic,
+                           std::vector<float> payload) {
+  if (!networkConnected && !topic.empty()) {
+    this->subscribe(topic.c_str());
+  }
+
+  std::string payloadStr;
+  for (auto& i : payload) {
+    payloadStr += std::to_string(i) + ",";
+  }
+  if (!topic.empty() && !payloadStr.empty()) {
+    publish(topic.c_str(), payloadStr.c_str(), payloadStr.length());
+  }
+}
+
+void BaseMQTT::dataHandler(const std::string& topic,
+                           std::vector<std::string> payload) {
+  if (!networkConnected && !topic.empty()) {
+    this->subscribe(topic.c_str());
+  }
+
+  std::string payloadStr;
+  for (auto& i : payload) {
+    payloadStr += i + ",";
+  }
+  if (!topic.empty() && !payloadStr.empty()) {
+    publish(topic.c_str(), payloadStr.c_str(), payloadStr.length());
+  }
+}
+
+void BaseMQTT::dataHandler(const std::string& topic,
+                           std::unordered_map<std::string, float> payload) {
+  if (!networkConnected && !topic.empty()) {
+    this->subscribe(topic.c_str());
+  }
+
+  std::string payloadStr;
+  for (auto& i : payload) {
+    payloadStr += i.first + ":" + std::to_string(i.second) + ",";
+  }
+  if (!topic.empty() && !payloadStr.empty()) {
+    publish(topic.c_str(), payloadStr.c_str(), payloadStr.length());
   }
 }
 

@@ -1,9 +1,10 @@
 #include "towertemp.hpp"
 
-TowerTemp::Temp temp_sensor_results;
-
 TowerTemp::TowerTemp()
-    : _sensors_count(0), oneWire(ONE_WIRE_BUS), sensors(&oneWire) {}
+    : _sensors_count(0),
+      oneWire(ONE_WIRE_BUS),
+      sensors(&oneWire),
+      temp_sensor_results{0} {}
 
 TowerTemp::~TowerTemp() {}
 
@@ -24,7 +25,7 @@ int TowerTemp::getSensorCount() {
 // * Return: None
 //******************************************************************************
 bool TowerTemp::begin() {
-  // Start up the ds18b20 library
+  //* Start up the ds18b20 library
   sensors.begin();
   setSensorCount();
   log_d(" Requesting temperatures...");
@@ -36,7 +37,7 @@ bool TowerTemp::begin() {
   // You can have more than one DS18B20 on the same bus.
   // 0 refers to the first IC on the wire
 
-  // handle the case where no sensors are connected
+  //* handle the case where no sensors are connected
   log_i("Locating devices...");
   if (_sensors_count == 0) {
     log_e(
@@ -44,17 +45,17 @@ bool TowerTemp::begin() {
         "device");
     return false;
   }
-  // locate devices on the bus
+  //* locate devices on the bus
   log_i("Found %d devices", _sensors_count, DEC);
 
-  // Loop through each device, print out address
+  //* Loop through each device, print out address
   readAddresses();
   return true;
 }
 
 void TowerTemp::readAddresses() {
   for (int i = 0; i < _sensors_count; i++) {
-    // Search the wire for address
+    //* Search the wire for address
     if (sensors.getAddress(temp_sensor_addresses, i)) {
       log_i("Found device index %d with address: %s", i,
             printAddress(temp_sensor_addresses, size).c_str(), DEC);
@@ -73,7 +74,7 @@ void TowerTemp::readAddresses() {
 // * Parameters: DeviceAddress - Address of the sensor
 // * Return: None
 //******************************************************************************
-// function to print a device address
+//* function to print a device address
 std::string TowerTemp::printAddress(DeviceAddress deviceAddress, size_t size) {
   char hexstr[size * 2 + 1];
   for (uint8_t i = 0; i < _sensors_count; i++) {
@@ -92,7 +93,7 @@ void TowerTemp::checkSensors() {
   if (_sensors_count == 0) {
     float no_sensors[] = {0};
     for (int i = 0; i < _sensors_count; i++) {
-      temp_sensor_results.temp.push_back(no_sensors[i]);
+      temp_sensor_results.push_back(no_sensors[i]);
     }
     log_i(
         "No temperature sensors found - please connect them and restart the "
@@ -107,15 +108,14 @@ void TowerTemp::checkSensors() {
 // * Parameters: None
 // * Return: float array - Temperature of the sensors
 //******************************************************************************
-TowerTemp::Temp TowerTemp::getTempC() {
+Temp_Array_t TowerTemp::getTempC() {
   // handle the case where no sensors are connected
   checkSensors();
   sensors.requestTemperatures();
   for (int i = 0; i < _sensors_count; i++) {
-    // Search the wire for address
+    //* Search the wire for address
     if (sensors.getAddress(temp_sensor_addresses, i)) {
-      temp_sensor_results.temp.push_back(
-          sensors.getTempC(temp_sensor_addresses));
+      temp_sensor_results.push_back(sensors.getTempC(temp_sensor_addresses));
       printAddress(temp_sensor_addresses, size);
     } else {
       log_w(
@@ -134,14 +134,14 @@ TowerTemp::Temp TowerTemp::getTempC() {
 // * Parameters: None
 // * Return: float array - Temperature of the sensors in fahrenheit
 //******************************************************************************
-TowerTemp::Temp TowerTemp::getTempF() {
-  // handle the case where no sensors are connected
+Temp_Array_t TowerTemp::getTempF() {
+  //* handle the case where no sensors are connected
   checkSensors();
   sensors.requestTemperatures();
   for (int i = 0; i < _sensors_count; i++) {
     // Search the wire for address
     if (sensors.getAddress(temp_sensor_addresses, i)) {
-      temp_sensor_results.temp.push_back(
+      temp_sensor_results.push_back(
           sensors.getTempC(temp_sensor_addresses) * (9.0 / 5.0) + 32.0);
       printAddress(temp_sensor_addresses, size);
     } else {
@@ -152,4 +152,17 @@ TowerTemp::Temp TowerTemp::getTempF() {
     }
   }
   return temp_sensor_results;
+}
+
+std::vector<float> TowerTemp::read() {
+  return temp_sensor_results;
+}
+
+const std::string& TowerTemp::getSensorName() {
+  static std::string name = "temperature";
+  return name;
+}
+
+void TowerTemp::accept(Visitor<SensorInterface<std::vector<float>>>& visitor) {
+  visitor.visit(this);
 }

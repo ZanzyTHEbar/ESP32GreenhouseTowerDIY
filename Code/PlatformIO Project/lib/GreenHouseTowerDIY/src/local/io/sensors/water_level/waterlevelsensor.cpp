@@ -7,21 +7,22 @@
 //! * Manual calibration is needed!!!
 //************************************************************************************************************************
 
-WaterLevelSensor::WaterLevelSensor(TowerTemp& _towerTemp)
-    : _towerTemp(_towerTemp), _distanceSensor(TRIG_PIN, ECHO_PIN) {}
-WaterLevelSensor::~WaterLevelSensor() {}
+// TODO: Add set method for radius  and height
+// TODO: Migrate this to a pressure sensor
 
-void WaterLevelSensor::begin() {
-  _radius = RES_RADIUS_1;
-  _height = RES_HEIGHT;
-}
+WaterLevelSensor::WaterLevelSensor(TowerTemp& _towerTemp)
+    : _radius(),
+      _height(),
+      _towerTemp(_towerTemp),
+      _distanceSensor(TRIG_PIN, ECHO_PIN) {}
+WaterLevelSensor::~WaterLevelSensor() {}
 
 double WaterLevelSensor::readSensor() {
   Network_Utilities::my_delay(1L);
   double distance =
-      _distanceSensor.measureDistanceCm(_towerTemp.temp_sensor_results.temp[0]);
+      _distanceSensor.measureDistanceCm(_towerTemp.temp_sensor_results[0]);
   log_d("Distance: %.3f cm", distance, DEC);
-  log_d("Temperature: %.3f °C", _towerTemp.temp_sensor_results.temp[0], DEC);
+  log_d("Temperature: %.3f °C", _towerTemp.temp_sensor_results[0], DEC);
   // Every 1 second, do a measurement using the sensor and print the distance
   // in centimeters.
   return distance;

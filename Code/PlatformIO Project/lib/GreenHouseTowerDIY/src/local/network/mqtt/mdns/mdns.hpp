@@ -6,6 +6,7 @@
  * @brief Namespace for mDNS Discovery
  */
 namespace mDNSDiscovery {
-  bool discovermDNSBroker(GreenHouseConfig& _deviceConfig);
+  bool discovermDNSBroker(ProjectConfig& networkConfig,
+                          GreenHouseConfig& deviceConfig);
 }  // namespace mDNSDiscovery
 #endif  // MDNS_DISCOVERY_HPP

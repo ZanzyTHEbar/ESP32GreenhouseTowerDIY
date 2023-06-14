@@ -7,7 +7,7 @@ LDR::LDR(GreenHouseConfig& config) : config(config), _GAMMA(0.7), _RL10(50) {}
 LDR::~LDR() {}
 
 void LDR::begin() {
-  switch (config.config.enabled_features.ldr_Features) {
+  switch (config.getEnabledFeatures().ldr_features) {
     case GreenHouseConfig::LDRFeatures_t::NONE_LDR:
       /* code */
       break;
@@ -22,17 +22,14 @@ void LDR::begin() {
       bool avail = BH1750_sensor.begin(
           BH1750_TO_GROUND);  // will be false no sensor found
 #endif                        // bh1750_GND
-#if bh1750_VCC
       bool avail =
           BH1750_sensor.begin(BH1750_TO_VCC);  // will be false no sensor found
-#endif                                         // bh1750_VCC
+                                               // bh1750_VCC
       Serial.println(!avail ? "No BH1750 sensor found" : "BH1750 sensor found");
       if (!avail) {
       } else {
         Serial.println("BH1750 sensor found");
-#if bh1750_FAST
         BH1750_sensor.calibrateTiming();
-#endif                          // bh1750_FAST
         BH1750_sensor.start();  // start the first measurement in setup
       }
     } break;
@@ -46,7 +43,7 @@ void LDR::begin() {
 
 float LDR::read() {
   float lux = 0;
-  switch (config.config.enabled_features.ldr_Features) {
+  switch (config.getEnabledFeatures().ldr_features) {
     case GreenHouseConfig::LDRFeatures_t::NONE_LDR:
       /* code */
       break;

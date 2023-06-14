@@ -11,8 +11,8 @@
 #include <string>
 #include "local/data/visitor.hpp"
 
-class NetworkNTP : public Element<Visitor<SensorInterface<const std::string&>>>,
-                   public SensorInterface<const std::string&> {
+class NetworkNTP : public Element<Visitor<SensorInterface<std::string>>>,
+                   public SensorInterface<std::string> {
  public:
   // constructors
   NetworkNTP();
@@ -20,9 +20,9 @@ class NetworkNTP : public Element<Visitor<SensorInterface<const std::string&>>>,
   // Functions
   void begin();
   void ntpLoop();
-  const std::string& read() override;
+  std::string read() override;
   const std::string& getSensorName() override;
-  void accept(Visitor<SensorInterface<const std::string&>>& visitor) override;
+  void accept(Visitor<SensorInterface<std::string>>& visitor) override;
 #if NTP_MANUAL_ENABLED
   time_t getNtpTime();
   void digitalClockDisplay();

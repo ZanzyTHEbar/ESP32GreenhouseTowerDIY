@@ -192,10 +192,10 @@ const std::string& NetworkNTP::getSensorName() {
   return name;
 }
 
-void NetworkNTP::accept(Visitor<SensorInterface<const std::string&>>& visitor) {
+void NetworkNTP::accept(Visitor<SensorInterface<std::string>>& visitor) {
   visitor.visit(this);
 }
 
-const std::string& NetworkNTP::read() {
+std::string NetworkNTP::read() {
   return getTimeStamp();
 }

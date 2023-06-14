@@ -14,9 +14,7 @@
 /**
  * @brief MQTT Class
  */
-class BaseMQTT : public IPAddress,
-                 public PubSubClient,
-                 public Visitor<SensorInterface<float>> {
+class BaseMQTT : public IPAddress, public PubSubClient {
   WiFiClient& _espClient;
   GreenHouseConfig& _deviceConfig;
 
@@ -28,7 +26,14 @@ class BaseMQTT : public IPAddress,
   void mqttLoop();
   void mqttReconnect();
   void mqttCallback(char* topic, byte* payload, unsigned int length);
-  void visit(SensorInterface<float>* sensor) override;
+
+  //* Data Handlers
+  void dataHandler(const std::string& topic, const std::string& payload);
+  void dataHandler(const std::string& topic, float payload);
+  void dataHandler(const std::string& topic, std::vector<float> payload);
+  void dataHandler(const std::string& topic, std::vector<std::string> payload);
+  void dataHandler(const std::string& topic,
+                   std::unordered_map<std::string, float> payload);
 
   bool networkConnected;
 };

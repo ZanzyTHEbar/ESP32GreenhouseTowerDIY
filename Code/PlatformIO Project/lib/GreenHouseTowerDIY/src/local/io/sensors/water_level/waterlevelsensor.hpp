@@ -26,7 +26,6 @@ class WaterLevelSensor : public Element<Visitor<SensorInterface<float>>>,
   //* Constructor
   WaterLevelSensor(TowerTemp& _towerTemp);
   virtual ~WaterLevelSensor();
-  void begin();
   double volume();
   //* Read the water level
   float read() override;
