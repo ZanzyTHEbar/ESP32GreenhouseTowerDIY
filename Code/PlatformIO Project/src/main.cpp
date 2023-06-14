@@ -57,6 +57,7 @@ Humidity humidity(greenhouseConfig);
 WaterLevelSensor waterLevelSensor(tower_temp);
 LDR ldr(greenhouseConfig);
 
+//* Data
 AccumulateData data(ldr,
                     tower_temp,
                     humidity,
