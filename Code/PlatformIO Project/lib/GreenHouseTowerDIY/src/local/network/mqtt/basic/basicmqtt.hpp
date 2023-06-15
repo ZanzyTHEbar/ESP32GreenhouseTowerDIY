@@ -14,15 +14,20 @@
 /**
  * @brief MQTT Class
  */
-class BaseMQTT : public IPAddress, public PubSubClient {
+class BaseMQTT : public IPAddress {
   WiFiClient& _espClient;
   GreenHouseConfig& _deviceConfig;
+  ProjectConfig& _projectConfig;
+  PubSubClient _client;
 
  public:
-  BaseMQTT(WiFiClient& espClient, GreenHouseConfig& config);
+  BaseMQTT(WiFiClient& espClient,
+           GreenHouseConfig& config,
+           ProjectConfig& _projectConfig);
   virtual ~BaseMQTT();
 
   void begin();
+  bool discovermDNSBroker();
   void mqttLoop();
   void mqttReconnect();
   void mqttCallback(char* topic, byte* payload, unsigned int length);
@@ -36,5 +41,6 @@ class BaseMQTT : public IPAddress, public PubSubClient {
                    std::unordered_map<std::string, float> payload);
 
   bool networkConnected;
+  bool brokerDiscovery;
 };
 #endif  // HAMQTT_HPP

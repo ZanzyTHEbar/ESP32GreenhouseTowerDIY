@@ -44,18 +44,17 @@ void AccumulateData::begin() {}
  * @return void
  */
 void AccumulateData::loop() {
-  _ntp.ntpLoop();
-
-  if (_config.getEnabledFeatures().temp_features !=
-      GreenHouseConfig::TempFeatures_t::TEMP_C) {
-    _towertemp.getTempF();
-  } else {
-    _towertemp.getTempC();
-  }
-
-  std::string json = "{";
-
   if (_gatherDataTimer.ding()) {
+    _ntp.ntpLoop();
+
+    if (_config.getEnabledFeatures().temp_features !=
+        GreenHouseConfig::TempFeatures_t::TEMP_C) {
+      _towertemp.getTempF();
+    } else {
+      _towertemp.getTempC();
+    }
+
+    std::string json = "{";
     _ntp.accept(_stringSensorSerializer);
     _towertemp.accept(_vectorFloatSensorSerializer);
     _humidity.accept(_humiditySerializer);

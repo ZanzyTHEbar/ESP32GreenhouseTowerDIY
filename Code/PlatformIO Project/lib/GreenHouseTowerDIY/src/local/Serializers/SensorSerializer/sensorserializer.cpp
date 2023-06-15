@@ -1,4 +1,6 @@
 #include "sensorserializer.hpp"
+#include <string>
+#include <unordered_map>
 
 //* Format Specializers
 template <>

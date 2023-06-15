@@ -194,12 +194,8 @@ Project_Config::MQTTConfig_t& GreenHouseConfig::getMQTTConfig() {
 IPAddress GreenHouseConfig::getBroker() {
   IPAddress broker_ip;
   Project_Config::MQTTConfig_t& mqttConfig = getMQTTConfig();
-  if (!mqttConfig.broker.empty()) {
-    log_d("[mDNS responder started]: Setting up Broker...");
-    return broker_ip.fromString(mqttConfig.broker.c_str());
-  }
-  log_d("[mDNS responder failed]: Using hardcoded IP...");
-  return broker_ip.fromString("");
+  log_d("[mDNS responder started]: Setting up Broker...");
+  return broker_ip.fromString(mqttConfig.broker.c_str());
 }
 
 Project_Config::EnabledFeatures_t& GreenHouseConfig::getEnabledFeatures() {
