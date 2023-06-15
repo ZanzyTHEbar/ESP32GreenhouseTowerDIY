@@ -15,14 +15,16 @@
 /**
  * @brief MQTT Class
  */
-class BaseMQTT : public IPAddress, public MQTTClientCallback {
+class BaseMQTT : public MQTTClientCallback, public IPAddress {
   GreenHouseConfig& _deviceConfig;
   ProjectConfig& _projectConfig;
-  MQTTClient* _client;
+  MQTTClient& _client;
 
-  //* Configuration for MQTT
-  StaticJsonDocument<384> doc;
-  JsonObject mqttConfig;
+ public:
+  BaseMQTT(GreenHouseConfig& config,
+           ProjectConfig& _projectConfig,
+           MQTTClient& client);
+  virtual ~BaseMQTT();
 
   //* Callbacks for MQTT library
   virtual void onConnected(MQTTClient* client) override;
@@ -33,14 +35,9 @@ class BaseMQTT : public IPAddress, public MQTTClientCallback {
   virtual void onTopicUpdate(MQTTClient* client,
                              const mqtt_client_topic_data* topic) override;
 
- public:
-  BaseMQTT(GreenHouseConfig& config,
-           ProjectConfig& _projectConfig,
-           MQTTClient* client);
-  virtual ~BaseMQTT();
   void begin();
   bool discovermDNSBroker();
-  bool mqttConnected() { return _client->connected(); }
+  bool mqttConnected() { return _client.connected(); }
 
   //* Data Handlers
   void dataHandler(const std::string& topic, const std::string& payload);
@@ -51,8 +48,5 @@ class BaseMQTT : public IPAddress, public MQTTClientCallback {
                    std::unordered_map<std::string, float> payload);
 
   bool brokerDiscovery;
-  unsigned long currentLoopMillis;
-  unsigned long previousPublishMillis;
-  unsigned long publishTime;
 };
 #endif  // HAMQTT_HPP

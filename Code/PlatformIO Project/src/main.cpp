@@ -43,7 +43,7 @@ OTA ota(config);
 MDNSHandler mDNS(config, "_tower", "data", "_tcp", "api_port", "80");
 NetworkNTP ntp;
 MQTTClient mqttClient;
-BaseMQTT mqtt(greenhouseConfig, config, &mqttClient);
+BaseMQTT mqtt(greenhouseConfig, config, mqttClient);
 
 //* API
 API api(server, greenhouseConfig);

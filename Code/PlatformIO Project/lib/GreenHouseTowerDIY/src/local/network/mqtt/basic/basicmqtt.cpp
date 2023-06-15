@@ -8,22 +8,17 @@
 //************************************************************************************************************************
 BaseMQTT::BaseMQTT(GreenHouseConfig& config,
                    ProjectConfig& projectConfig,
-                   MQTTClient* client)
+                   MQTTClient& client)
     : _deviceConfig(config),
       _projectConfig(projectConfig),
       _client(client),
-      doc(),
-      mqttConfig(doc.createNestedObject("mqtt")),
-      brokerDiscovery(false),
-      currentLoopMillis(0),
-      previousPublishMillis(0),
-      publishTime(60000) {}
+      brokerDiscovery(false) {}
 
 BaseMQTT::~BaseMQTT() {}
 
 void BaseMQTT::begin() {
   log_i("[BasicMQTT]: Setting up MQTT...");
-  _client->addCallback(this);
+  _client.addCallback(this);
 
   brokerDiscovery = discovermDNSBroker();
 
@@ -33,6 +28,10 @@ void BaseMQTT::begin() {
 
   if (brokerDiscovery) {
     //* Generate the MQTT configuration
+    //* Configuration for MQTT
+    StaticJsonDocument<384> doc;
+    JsonObject mqttConfig = doc.createNestedObject("mqtt");
+
     mqttConfig["enabled"] = _deviceConfig.getMQTTConfig().enabled;
     mqttConfig["reconnect_mqtt"] = _deviceConfig.getMQTTConfig().reconnect_mqtt;
     mqttConfig["reconnect_retires"] =
@@ -67,17 +66,19 @@ void BaseMQTT::begin() {
         _deviceConfig.getMQTTConfig().mqtt_task_stack_size;
 
     serializeJsonPretty(doc, Serial);
-    _client->setConfig(mqttConfig);
+    _client.setConfig(mqttConfig);
     //* End MQTT Configuration
     log_i("[BasicMQTT]: Hostname: %s",
           _projectConfig.getMDNSConfig().hostname.c_str());
-    _client->setup();
+    _client.setup();
     //* Local Mosquitto Connection -- Start
   }
 }
 
 void BaseMQTT::onTopicUpdate(MQTTClient* client,
                              const mqtt_client_topic_data* topic) {}
+
+void BaseMQTT::onConnected(MQTTClient* client) {}
 
 //* Handles messages arrived on subscribed topic(s)
 void BaseMQTT::onDataReceived(MQTTClient* client,
@@ -100,33 +101,36 @@ void BaseMQTT::onDataReceived(MQTTClient* client,
   // TODO: Add support to handle sensor specific commands
 }
 
+void BaseMQTT::onSubscribed(MQTTClient* thisClient,
+                            const mqtt_client_topic_data* topic) {}
+
 void BaseMQTT::dataHandler(const std::string& topic,
                            const std::string& payload) {
-  if (!_client->connected() && !topic.empty()) {
-    _client->addTopicSub(topic.c_str(), 2);
+  if (!_client.connected() && !topic.empty()) {
+    _client.addTopicSub(topic.c_str(), 2);
   }
 
   if (!topic.empty() && !payload.empty()) {
-    _client->publish(topic.c_str(), payload.c_str(), payload.length(), 2, 1);
+    _client.publish(topic.c_str(), payload.c_str(), payload.length(), 2, 1);
   }
 }
 
 void BaseMQTT::dataHandler(const std::string& topic, float payload) {
-  if (!_client->connected() && !topic.empty()) {
-    _client->addTopicSub(topic.c_str(), 2);
+  if (!_client.connected() && !topic.empty()) {
+    _client.addTopicSub(topic.c_str(), 2);
   }
 
   std::string payloadStr = std::to_string(payload);
   if (!topic.empty() && !payloadStr.empty()) {
-    _client->publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
-                     1);
+    _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
+                    1);
   }
 }
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::vector<float> payload) {
-  if (!_client->connected() && !topic.empty()) {
-    _client->addTopicSub(topic.c_str(), 2);
+  if (!_client.connected() && !topic.empty()) {
+    _client.addTopicSub(topic.c_str(), 2);
   }
 
   std::string payloadStr;
@@ -134,15 +138,15 @@ void BaseMQTT::dataHandler(const std::string& topic,
     payloadStr += std::to_string(i) + ",";
   }
   if (!topic.empty() && !payloadStr.empty()) {
-    _client->publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
-                     1);
+    _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
+                    1);
   }
 }
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::vector<std::string> payload) {
-  if (!_client->connected() && !topic.empty()) {
-    _client->addTopicSub(topic.c_str(), 2);
+  if (!_client.connected() && !topic.empty()) {
+    _client.addTopicSub(topic.c_str(), 2);
   }
 
   std::string payloadStr;
@@ -150,15 +154,15 @@ void BaseMQTT::dataHandler(const std::string& topic,
     payloadStr += i + ",";
   }
   if (!topic.empty() && !payloadStr.empty()) {
-    _client->publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
-                     1);
+    _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
+                    1);
   }
 }
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::unordered_map<std::string, float> payload) {
-  if (!_client->connected() && !topic.empty()) {
-    _client->addTopicSub(topic.c_str(), 2);
+  if (!_client.connected() && !topic.empty()) {
+    _client.addTopicSub(topic.c_str(), 2);
   }
 
   std::string payloadStr;
@@ -166,8 +170,8 @@ void BaseMQTT::dataHandler(const std::string& topic,
     payloadStr += i.first + ":" + std::to_string(i.second) + ",";
   }
   if (!topic.empty() && !payloadStr.empty()) {
-    _client->publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
-                     1);
+    _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
+                    1);
   }
 }
 
