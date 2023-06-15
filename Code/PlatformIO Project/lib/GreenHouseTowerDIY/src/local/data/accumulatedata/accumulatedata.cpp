@@ -55,44 +55,70 @@ void AccumulateData::loop() {
     }
 
     std::string json = "{";
+
+    // ADd logging
+
+    log_i("[Accumulate Data]: Gathering data...");
     _ntp.accept(_stringSensorSerializer);
+
+    log_i("[Accumulate Data]: Tower");
     _towertemp.accept(_vectorFloatSensorSerializer);
+
+    log_i("[Accumulate Data]: Humidity");
     _humidity.accept(_humiditySerializer);
 
     //* Pass the data to the mqtt client
-    _mqtt.dataHandler(_stringSensorSerializer.sensorName,
-                      _stringSensorSerializer.value);
-    _mqtt.dataHandler(_vectorFloatSensorSerializer.sensorName,
-                      _vectorFloatSensorSerializer.value);
+    log_i("[Accumulate Data]: Humidity");
 
-    _mqtt.dataHandler(_humiditySerializer.sensorName,
-                      _humiditySerializer.value);
+    if (_mqtt.mqttConnected()) {
+      _mqtt.dataHandler(_stringSensorSerializer.sensorName,
+                        _stringSensorSerializer.value);
+      _mqtt.dataHandler(_vectorFloatSensorSerializer.sensorName,
+                        _vectorFloatSensorSerializer.value);
+
+      _mqtt.dataHandler(_humiditySerializer.sensorName,
+                        _humiditySerializer.value);
+    }
+
+    // append a comma to the json string after each sensor
 
     //* build the json string
     json.append(Helpers::format_string(
         "%s", _stringSensorSerializer.serializedData.c_str()));
 
+    json.append(",");
+
     //* Serialize the temperature vector
     json.append(Helpers::format_string(
         "%s", _vectorFloatSensorSerializer.serializedData.c_str()));
+
+    json.append(",");
 
     //* Serialize the humidity
     json.append(Helpers::format_string(
         "%s", _humiditySerializer.serializedData.c_str()));
 
+    json.append(",");
+
     //* Generate JSON for the sensors
-    for (auto& sensor : _sensors) {
+    for (auto it = _sensors.begin(); it != _sensors.end(); ++it) {
       //* serialize the data
-      sensor->accept(_floatSensorSerializer);
+      log_i("[Accumulate Data]: Sensors");
+      (*it)->accept(_floatSensorSerializer);
 
       //* add the data to the json string
       json.append(Helpers::format_string(
           "%s", _floatSensorSerializer.serializedData.c_str()));
 
+      if (it != _sensors.end() - 1)
+        json.append(",");
+
       //* Pass the data to the mqtt client
-      _mqtt.dataHandler(_floatSensorSerializer.sensorName,
-                        _floatSensorSerializer.value);
+      if (_mqtt.mqttConnected())
+        _mqtt.dataHandler(_floatSensorSerializer.sensorName,
+                          _floatSensorSerializer.value);
     }
+
     json.append("}");
     _deviceConfig.getDeviceDataJson().deviceJson.assign(json);
 

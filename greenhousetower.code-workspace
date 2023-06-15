@@ -16,7 +16,8 @@
       "maneger",
       "roadmap",
       "Specializers",
-      "vitepress"
+      "vitepress",
+      "Websockets"
     ],
     "files.associations": {
       "*.json.liquid": "json",

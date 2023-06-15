@@ -6,21 +6,22 @@
 // * This is the basic MQTT stack that is used to connect to a local Mosquitto
 // broker.
 //************************************************************************************************************************
-
-BaseMQTT::BaseMQTT(WiFiClient& espClient,
-                   GreenHouseConfig& config,
-                   ProjectConfig& projectConfig)
-    : _espClient(espClient),
-      _deviceConfig(config),
+BaseMQTT::BaseMQTT(GreenHouseConfig& config,
+                   ProjectConfig& projectConfig,
+                   MQTTClient* client)
+    : _deviceConfig(config),
       _projectConfig(projectConfig),
-      _client(espClient),
-      networkConnected(false),
-      brokerDiscovery(false) {}
-
-BaseMQTT::~BaseMQTT() {}
+      _client(client),
+      doc(),
+      mqttConfig(doc.createNestedObject("mqtt")),
+      brokerDiscovery(false),
+      currentLoopMillis(0),
+      previousPublishMillis(0),
+      publishTime(60000) {}
 
 void BaseMQTT::begin() {
   log_i("[BasicMQTT]: Setting up MQTT...");
+  _client->addCallback(this);
 
   brokerDiscovery = discovermDNSBroker();
 
@@ -28,69 +29,102 @@ void BaseMQTT::begin() {
         _deviceConfig.getMQTTConfig().broker.c_str(),
         _deviceConfig.getMQTTConfig().port);
 
-  _client.setServer(_deviceConfig.getBroker(),
-                    _deviceConfig.getMQTTConfig().port);
-  _client.setCallback([&](char* topic, byte* payload, unsigned int length) {
-    mqttCallback(topic, payload, length);
-  });
+  if (brokerDiscovery) {
+    //* Generate the MQTT configuration
+    mqttConfig["enabled"] = _deviceConfig.getMQTTConfig().enabled;
+    mqttConfig["reconnect_mqtt"] = _deviceConfig.getMQTTConfig().reconnect_mqtt;
+    mqttConfig["reconnect_retires"] =
+        _deviceConfig.getMQTTConfig().reconnect_tries;
+    mqttConfig["reconnect_time_ms"] =
+        _deviceConfig.getMQTTConfig().reconnect_time_ms;
+    mqttConfig["server"] = _deviceConfig.getMQTTConfig().broker;
+    mqttConfig["port"] = _deviceConfig.getMQTTConfig().port;
+    mqttConfig["id_name"] = _projectConfig.getMDNSConfig().hostname;
+    mqttConfig["auth"] = (bool)_deviceConfig.getMQTTConfig().auth;
+    mqttConfig["username"] = _deviceConfig.getMQTTConfig().username;
+    mqttConfig["password"] = _deviceConfig.getMQTTConfig().password;
+    mqttConfig["enable_certs"] = _deviceConfig.getMQTTConfig().enable_certs;
+    mqttConfig["ca_file"] = _deviceConfig.getMQTTConfig().ca_file;
+    mqttConfig["cert_file"] = _deviceConfig.getMQTTConfig().cert_file;
+    mqttConfig["key_file"] = _deviceConfig.getMQTTConfig().key_file;
+    mqttConfig["enabled_websocket"] =
+        _deviceConfig.getMQTTConfig().enabled_websocket;
+    mqttConfig["websocket_path"] = _deviceConfig.getMQTTConfig().websocket_path;
 
-  std::string hostname = _projectConfig.getMDNSConfig().hostname;
-  log_i("[BasicMQTT]: Hostname: %s", hostname.c_str());
+    JsonArray pub_topics = mqttConfig.createNestedArray("pub_topic");
+    for (auto& topic : _deviceConfig.getMQTTConfig().pub_topics) {
+      pub_topics.add(topic);
+    }
 
-  //* Local Mosquitto Connection -- Start
-  if (!_client.connect(hostname.c_str())) {
-    networkConnected = false;
-    log_e("[BasicMQTT]: Connection failed. MQTT client state is: %d",
-          _client.state());
-    //* Local Mosquitto Connection -- End
-    return;
+    JsonArray sub_topics = mqttConfig.createNestedArray("sub_topic");
+    for (auto& topic : _deviceConfig.getMQTTConfig().sub_topics) {
+      sub_topics.add(topic);
+    }
+
+    mqttConfig["mqtt_task_stack_size"] =
+        _deviceConfig.getMQTTConfig().mqtt_task_stack_size;
+
+    serializeJsonPretty(doc, Serial);
+    _client->setConfig(mqttConfig);
+    //* End MQTT Configuration
+    log_i("[BasicMQTT]: Hostname: %s",
+          _projectConfig.getMDNSConfig().hostname.c_str());
+    _client->setup();
+    //* Local Mosquitto Connection -- Start
   }
-  log_i("[BasicMQTT]: Connection succeeded. MQTT client state is: %d",
-        _client.state());
-  networkConnected = true;
 }
 
-//* Handles messages arrived on subscribed topic(s)
-void BaseMQTT::mqttCallback(char* topic, byte* payload, unsigned int length) {
-  log_i("[BasicMQTT]: Message arrived on topic: [%s] ", topic);
+void BaseMQTT::onTopicUpdate(MQTTClient* client,
+                             const mqtt_client_topic_data* topic) {}
 
+//* Handles messages arrived on subscribed topic(s)
+void BaseMQTT::onDataReceived(MQTTClient* client,
+                              const mqtt_client_event_data* data) {
   //* Convert the payload to a string
   std::string result;
-  for (int i = 0; i < length; i++) {
-    log_i("%s", static_cast<char>(payload[i]));
-    result += static_cast<char>(payload[i]);
+  for (int i = 0; i < data->data_len; i++) {
+    log_i("%s", static_cast<char>(data->data[i]));
+    result += static_cast<char>(data->data[i]);
   }
   log_i("[BasicMQTT]: Message: [%s]", result.c_str());
 
-  // TODO: Add support for all sensor topics
+  log_i(
+      "[BasicMQTT]: [%lu] +++ MQTT message of size %d on topic "
+      "%s: "
+      "%.*s\r\n",
+      millis(), data->data_len, data->topic.c_str(), data->data_len,
+      data->data);
+
+  // TODO: Add support to handle sensor specific commands
 }
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            const std::string& payload) {
-  if (!networkConnected && !topic.empty()) {
-    _client.subscribe(topic.c_str());
+  if (!_client->connected() && !topic.empty()) {
+    _client->addTopicSub(topic.c_str(), 2);
   }
 
   if (!topic.empty() && !payload.empty()) {
-    _client.publish(topic.c_str(), payload.c_str(), payload.length());
+    _client->publish(topic.c_str(), payload.c_str(), payload.length(), 2, 1);
   }
 }
 
 void BaseMQTT::dataHandler(const std::string& topic, float payload) {
-  if (!networkConnected && !topic.empty()) {
-    _client.subscribe(topic.c_str());
+  if (!_client->connected() && !topic.empty()) {
+    _client->addTopicSub(topic.c_str(), 2);
   }
 
   std::string payloadStr = std::to_string(payload);
   if (!topic.empty() && !payloadStr.empty()) {
-    _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length());
+    _client->publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
+                     1);
   }
 }
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::vector<float> payload) {
-  if (!networkConnected && !topic.empty()) {
-    _client.subscribe(topic.c_str());
+  if (!_client->connected() && !topic.empty()) {
+    _client->addTopicSub(topic.c_str(), 2);
   }
 
   std::string payloadStr;
@@ -98,14 +132,15 @@ void BaseMQTT::dataHandler(const std::string& topic,
     payloadStr += std::to_string(i) + ",";
   }
   if (!topic.empty() && !payloadStr.empty()) {
-    _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length());
+    _client->publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
+                     1);
   }
 }
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::vector<std::string> payload) {
-  if (!networkConnected && !topic.empty()) {
-    _client.subscribe(topic.c_str());
+  if (!_client->connected() && !topic.empty()) {
+    _client->addTopicSub(topic.c_str(), 2);
   }
 
   std::string payloadStr;
@@ -113,14 +148,15 @@ void BaseMQTT::dataHandler(const std::string& topic,
     payloadStr += i + ",";
   }
   if (!topic.empty() && !payloadStr.empty()) {
-    _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length());
+    _client->publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
+                     1);
   }
 }
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::unordered_map<std::string, float> payload) {
-  if (!networkConnected && !topic.empty()) {
-    _client.subscribe(topic.c_str());
+  if (!_client->connected() && !topic.empty()) {
+    _client->addTopicSub(topic.c_str(), 2);
   }
 
   std::string payloadStr;
@@ -128,49 +164,9 @@ void BaseMQTT::dataHandler(const std::string& topic,
     payloadStr += i.first + ":" + std::to_string(i.second) + ",";
   }
   if (!topic.empty() && !payloadStr.empty()) {
-    _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length());
+    _client->publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
+                     1);
   }
-}
-
-/**
- * @brief Reconnect to the MQTT broker
- * @note This is a blocking function and will not return until the connection is
- * established
- */
-void BaseMQTT::mqttReconnect() {
-  //* Loop until we're reconnected
-  while (!_client.connected()) {
-    log_i("[BasicMQTT]: Attempting MQTT connection...");
-    //* Attempt to connect
-    networkConnected = false;
-    if (_client.connect(DEFAULT_HOSTNAME)) {
-      log_i("[BasicMQTT]: Connected to MQTT broker.");
-      networkConnected = true;
-      return;
-    }
-    log_e("[BasicMQTT]: Failed, rc= %d", _client.state());
-    log_i("[BasicMQTT]: Trying again in 15 seconds");
-    //* Wait 15 seconds before retrying
-    Network_Utilities::my_delay(15L);
-  }
-}
-
-/**
- * @brief MQTT loop function
- * @note This function should be called in the main loop
- * @note This function will handle the reconnection to the MQTT broker
- * @note This function will handle the publishing of sensor data
- */
-void BaseMQTT::mqttLoop() {
-  if (brokerDiscovery) {
-    Network_Utilities::my_delay(1L);
-    if (!_client.connected()) {
-      mqttReconnect();
-    }
-    loop();
-    return;
-  }
-  log_e("[MQTT]: Failed to connect to MQTT broker");
 }
 
 //******************************************************************************

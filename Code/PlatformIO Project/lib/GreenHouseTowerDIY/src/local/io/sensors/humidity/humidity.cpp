@@ -32,6 +32,8 @@ Humidity::Humidity(GreenHouseConfig& config)
           {map_return_keys[1], 0.0},
           {map_return_keys[2], 0.0},
           {map_return_keys[3], 0.0},
+          {map_return_keys[4], 0.0},
+          {map_return_keys[5], 0.0},
       }),
       _humiditySensorsActive(HUMIDITY_SENSORS_ACTIVE_NONE),
       _config(config),

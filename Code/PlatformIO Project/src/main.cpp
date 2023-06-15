@@ -36,15 +36,14 @@ ConfigHandler configHandler(config);
 GreenHouseConfig greenhouseConfig(config);
 
 //* Network
-
-WiFiClient espClient;
-
 APIServer server(80, config, "/control", "/wifimanager", "/tower");
+
 WiFiHandler network(config, WIFI_SSID, WIFI_PASS, 1);
 OTA ota(config);
 MDNSHandler mDNS(config, "_tower", "data", "_tcp", "api_port", "80");
 NetworkNTP ntp;
-BaseMQTT mqtt(espClient, greenhouseConfig, config);
+MQTTClient mqttClient;
+BaseMQTT mqtt(greenhouseConfig, config, &mqttClient);
 
 //* API
 API api(server, greenhouseConfig);
@@ -101,7 +100,6 @@ void setup() {
  */
 void loop() {
   Network_Utilities::checkWiFiState();  // check the WiFi state
-  mqtt.mqttLoop();                      // handle MQTT
   ota.handleOTAUpdate();                // handle OTA updates
   data.loop();                          // accumulate sensor data
 }

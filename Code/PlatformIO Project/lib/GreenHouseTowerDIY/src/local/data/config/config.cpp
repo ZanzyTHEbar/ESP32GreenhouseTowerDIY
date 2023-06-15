@@ -6,7 +6,26 @@ GreenHouseConfig::GreenHouseConfig(ProjectConfig& projectConfig)
 GreenHouseConfig::~GreenHouseConfig() {}
 
 void GreenHouseConfig::initConfig() {
-  this->mqtt = {"", 0, "", ""};
+  this->mqtt = {
+      .enabled = false,
+      .reconnect_mqtt = false,
+      .reconnect_tries = 10,
+      .reconnect_time_ms = 10000,
+      .broker = "",
+      .port = 1883,
+      .auth = MqttSecure_t::INSECURE_MQTT,
+      .username = "",
+      .password = "",
+      .enable_certs = false,
+      .ca_file = "certs/ca.crt",
+      .cert_file = "certs/client.der",
+      .key_file = "certs/private.der",
+      .enabled_websocket = false,
+      .websocket_path = "/",
+      .pub_topics = {},
+      .sub_topics = {},
+      .mqtt_task_stack_size = 7168,
+  };
 }
 
 //**********************************************************************************************************************
