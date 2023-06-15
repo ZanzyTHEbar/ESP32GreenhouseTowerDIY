@@ -19,6 +19,8 @@ BaseMQTT::BaseMQTT(GreenHouseConfig& config,
       previousPublishMillis(0),
       publishTime(60000) {}
 
+BaseMQTT::~BaseMQTT() {}
+
 void BaseMQTT::begin() {
   log_i("[BasicMQTT]: Setting up MQTT...");
   _client->addCallback(this);

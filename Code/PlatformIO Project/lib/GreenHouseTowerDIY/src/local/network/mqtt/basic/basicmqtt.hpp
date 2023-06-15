@@ -37,7 +37,7 @@ class BaseMQTT : public IPAddress, public MQTTClientCallback {
   BaseMQTT(GreenHouseConfig& config,
            ProjectConfig& _projectConfig,
            MQTTClient* client);
-
+  virtual ~BaseMQTT();
   void begin();
   bool discovermDNSBroker();
   bool mqttConnected() { return _client->connected(); }
