@@ -49,33 +49,31 @@ void AccumulateData::loop() {
 
     std::string json = "{";
 
-    log_i("[Accumulate Data]: Gathering data...");
+    log_d("[Accumulate Data]: Gathering data...");
     _ntp.accept(_stringSensorSerializer);
 
-    log_i("[Accumulate Data]: Tower");
+    log_d("[Accumulate Data]: Tower");
     _towertemp.accept(_vectorFloatSensorSerializer);
 
-    log_i("[Accumulate Data]: Humidity");
+    log_d("[Accumulate Data]: Humidity");
     _humidity.accept(_humiditySerializer);
 
     //* Pass the data to the mqtt client
-    log_i("[Accumulate Data]: Humidity");
+    log_d("[Accumulate Data]: Humidity");
 
-    log_i("[Accumulate Data]: %s", _mqtt.mqttConnected() ? "true" : "false");
+    log_d("[Accumulate Data]: %s", _mqtt.mqttConnected() ? "true" : "false");
 
     if (_mqtt.mqttConnected()) {
-      log_i("[Accumulate Data]: NTPTimer MQTT");
+      log_d("[Accumulate Data]: NTPTimer MQTT");
       _mqtt.dataHandler(_stringSensorSerializer.sensorName,
                         _stringSensorSerializer.value);
-      log_i("[Accumulate Data]: Tower MQTT");
+      log_d("[Accumulate Data]: Tower MQTT");
       _mqtt.dataHandler(_vectorFloatSensorSerializer.sensorName,
                         _vectorFloatSensorSerializer.serializedData);
-      log_i("[Accumulate Data]: Humidity MQTT");
+      log_d("[Accumulate Data]: Humidity MQTT");
       _mqtt.dataHandler(_humiditySerializer.sensorName,
                         _humiditySerializer.serializedData);
     }
-
-    // append a comma to the json string after each sensor
 
     //* build the json string
     json.append(Helpers::format_string(
@@ -98,7 +96,7 @@ void AccumulateData::loop() {
     //* Generate JSON for the sensors
     for (auto it = _sensors.begin(); it != _sensors.end(); ++it) {
       //* serialize the data
-      log_i("[Accumulate Data]: Sensors");
+      log_d("[Accumulate Data]: Sensors");
       (*it)->accept(_floatSensorSerializer);
 
       //* add the data to the json string
@@ -110,7 +108,7 @@ void AccumulateData::loop() {
 
       //* Pass the data to the mqtt client
       if (_mqtt.mqttConnected())
-        log_i("[Accumulate Data]: Sensors MQTT");
+        log_d("[Accumulate Data]: Sensors MQTT");
       _mqtt.dataHandler(_floatSensorSerializer.sensorName,
                         _floatSensorSerializer.value);
     }
