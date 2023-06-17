@@ -49,19 +49,19 @@ BaseMQTT mqtt(greenhouseConfig, config, mqttClient);
 API api(server, greenhouseConfig);
 
 //* Sensors
-TowerTemp tower_temp;
+TowerTemp tower_temp(greenhouseConfig);
 Humidity humidity(greenhouseConfig);
 WaterLevelSensor waterLevelSensor(tower_temp);
 LDR ldr(greenhouseConfig);
 
 //* Data
-AccumulateData data(ldr,
+AccumulateData data(greenhouseConfig,
+                    config,
+                    ldr,
                     tower_temp,
                     humidity,
                     waterLevelSensor,
                     ntp,
-                    config,
-                    greenhouseConfig,
                     mqtt);
 
 void setup() {

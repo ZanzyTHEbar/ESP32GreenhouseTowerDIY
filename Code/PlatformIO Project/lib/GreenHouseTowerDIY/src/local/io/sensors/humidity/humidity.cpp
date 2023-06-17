@@ -1,27 +1,26 @@
 #include "humidity.hpp"
 
-std::unordered_map<Humidity::_HUMIDITY_SENSORS_ACTIVE, std::string>
+std::unordered_map<GreenHouseConfig::HumidityFeatures_t, std::string>
     Humidity::humidity_sensors_map = {
-        {Humidity::_HUMIDITY_SENSORS_ACTIVE::HUMIDITY_SENSORS_ACTIVE_NONE,
+        {GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY,
          "Humidity Sensor Setup Failed - initialised to NONE"},
-        {Humidity::_HUMIDITY_SENSORS_ACTIVE::HUMIDITY_SENSORS_ACTIVE_SHT31,
+        {GreenHouseConfig::HumidityFeatures_t::SHT31,
          "Humidity Sensor Setup - initialised to SHT31"},
-        {Humidity::_HUMIDITY_SENSORS_ACTIVE::HUMIDITY_SENSORS_ACTIVE_SHT31_2,
+        {GreenHouseConfig::HumidityFeatures_t::SHT31_2,
          "Humidity Sensor Setup - initialised to SHT31_2"},
-        {Humidity::_HUMIDITY_SENSORS_ACTIVE::HUMIDITY_SENSORS_ACTIVE_BOTH,
+        {GreenHouseConfig::HumidityFeatures_t::BOTH_HUMIDITY,
          "Humidity Sensor Setup - initialised to BOTH"},
-        {Humidity::_HUMIDITY_SENSORS_ACTIVE::HUMIDITY_SENSORS_ACTIVE_DHT,
+        {GreenHouseConfig::HumidityFeatures_t::DHT,
          "Humidity Sensor Setup - initialised to DHT"},
-        {Humidity::_HUMIDITY_SENSORS_ACTIVE::HUMIDITY_SENSORS_ACTIVE_DHT_SHT31,
+        {GreenHouseConfig::HumidityFeatures_t::DHT_SHT31,
          "Humidity Sensor Setup - initialised to DHT_SHT31"},
-        {Humidity::_HUMIDITY_SENSORS_ACTIVE::
-             HUMIDITY_SENSORS_ACTIVE_DHT_SHT31_2,
+        {GreenHouseConfig::HumidityFeatures_t::DHT_SHT31_2,
          "Humidity Sensor Setup - initialised to DHT_SHT31_2"},
 };  // end of map
 
-std::string Humidity::map_return_keys[5] = {
-    "dht_hum", "dht_temp", "sht31_1_hum", "sht31_1_temp, sht31_2_hum",
-    "sht31_2_temp"};
+std::string Humidity::map_return_keys[6] = {"dht_hum",     "dht_temp",
+                                            "sht31_1_hum", "sht31_1_temp",
+                                            "sht31_2_hum", "sht31_2_temp"};
 
 Humidity::Humidity(GreenHouseConfig& config)
     : _delayS(0),
@@ -35,7 +34,8 @@ Humidity::Humidity(GreenHouseConfig& config)
           {map_return_keys[4], 0.0},
           {map_return_keys[5], 0.0},
       }),
-      _humiditySensorsActive(HUMIDITY_SENSORS_ACTIVE_NONE),
+      _humiditySensorsActive(
+          GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY),
       _config(config),
       sht31(),
       sht31_2(),
@@ -56,6 +56,22 @@ void Humidity::begin() {
 }
 
 Humidity_Return_t Humidity::read() {
+  switch (_config.getEnabledFeatures().humidity_features) {
+    case GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY: {
+    } break;
+    case GreenHouseConfig::HumidityFeatures_t::SHT31: {
+      readSHT31();
+    } break;
+    case GreenHouseConfig::HumidityFeatures_t::DHT: {
+      readDHT();
+    } break;
+    case GreenHouseConfig::HumidityFeatures_t::DHT_SHT31: {
+      readDHT();
+      readSHT31();
+    } break;
+    default:
+      break;
+  }
   return _humidity;
 }
 
@@ -73,18 +89,19 @@ void checkISNAN(const char* msg, float data) {
  *their respective heaters Parameters: None Return: Enum
  *_HUMIDITY_SENSORS_ACTIVE
  ******************************************************************************/
-Humidity::_HUMIDITY_SENSORS_ACTIVE Humidity::setup() {
+GreenHouseConfig::HumidityFeatures_t Humidity::setup() {
   switch (_config.getEnabledFeatures().humidity_features) {
     case GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY:
       log_d("[Humidity]: No Humidity Sensors Enabled");
-      _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_NONE;
+      _humiditySensorsActive =
+          GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY;
       break;
     case GreenHouseConfig::HumidityFeatures_t::DHT:
       log_d("[Humidity]: DHT Sensor Enabled");
       // Initialize the DHT sensor.
       dht.begin();
       log_i("[Humidity]: DHT Sensor connected!");
-      _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_DHT;
+      _humiditySensorsActive = GreenHouseConfig::HumidityFeatures_t::DHT;
       // Print temperature sensor details.
       sensor_t sensor;
       dht.temperature().getSensor(&sensor);
@@ -115,7 +132,7 @@ Humidity::_HUMIDITY_SENSORS_ACTIVE Humidity::setup() {
       break;
     case GreenHouseConfig::HumidityFeatures_t::SHT31:
       log_d("[Humidity]: SHT31 Sensor Enabled");
-      _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_SHT31;
+      _humiditySensorsActive = GreenHouseConfig::HumidityFeatures_t::SHT31;
       log_d("[Humidity]: SHT31 Sensors Setup Beginning....");
       // Set to 0x45 for alternate i2c address
       if (!sht31.begin(0x44) && !sht31_2.begin(0x45)) {
@@ -124,22 +141,25 @@ Humidity::_HUMIDITY_SENSORS_ACTIVE Humidity::setup() {
             "[Humidity]: SHT31 Sensors Setup did not complete successfully, "
             "check your "
             "wiring or the addresses and try again");
-        _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_NONE;
+        _humiditySensorsActive =
+            GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY;
       } else if (!sht31.begin(0x44) && sht31_2.begin(0x45)) {
         log_d("[Humidity]: Found 1 SHT31 Sensor");
-        _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_SHT31;
+        _humiditySensorsActive = GreenHouseConfig::HumidityFeatures_t::SHT31;
       } else if (!sht31_2.begin(0x45) && sht31.begin(0x44)) {
         log_d("[Humidity]: Found 2 SHT31 Sensor");
-        _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_SHT31_2;
+        _humiditySensorsActive = GreenHouseConfig::HumidityFeatures_t::SHT31_2;
       } else {
         log_d("[Humidity]: SHT31 Sensors Setup Complete");
-        _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_BOTH;
+        _humiditySensorsActive =
+            GreenHouseConfig::HumidityFeatures_t::BOTH_HUMIDITY;
       }
       delay(2L);  // delay in between reads for stability
       break;
     default:
       log_d("[Humidity]: No Humidity Sensors Enabled");
-      _humiditySensorsActive = HUMIDITY_SENSORS_ACTIVE_NONE;
+      _humiditySensorsActive =
+          GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY;
       break;
   }
   return _humiditySensorsActive;
@@ -163,10 +183,10 @@ void Humidity::readDHT() {
 
 bool Humidity::checkHeaterEnabled() {
   switch (_humiditySensorsActive) {
-    case HUMIDITY_SENSORS_ACTIVE_NONE:
+    case GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY:
       return false;
       break;
-    case HUMIDITY_SENSORS_ACTIVE_SHT31: {
+    case GreenHouseConfig::HumidityFeatures_t::SHT31: {
       bool _sensor1 = sht31.isHeaterEnabled();
       bool heaterenabled = false;
       if (_loopCnt >= 30) {
@@ -187,7 +207,7 @@ bool Humidity::checkHeaterEnabled() {
       return heaterenabled;
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_SHT31_2: {
+    case GreenHouseConfig::HumidityFeatures_t::SHT31_2: {
       bool _sensor2 = sht31_2.isHeaterEnabled();
       bool heaterenabled = false;
       if (_loopCnt >= 30) {
@@ -208,7 +228,7 @@ bool Humidity::checkHeaterEnabled() {
       return heaterenabled;
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_BOTH: {
+    case GreenHouseConfig::HumidityFeatures_t::BOTH_HUMIDITY: {
       bool _sensor1 = sht31.isHeaterEnabled();
       bool _sensor2 = sht31_2.isHeaterEnabled();
       bool heaterenabled = false;
@@ -245,23 +265,23 @@ bool Humidity::checkHeaterEnabled() {
  ******************************************************************************/
 float Humidity::towerTemp() {
   switch (_humiditySensorsActive) {
-    case HUMIDITY_SENSORS_ACTIVE_NONE: {
+    case GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY: {
       float stack_temp = 0;
       return stack_temp;  // return 0 if no sensors are active
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_SHT31: {
+    case GreenHouseConfig::HumidityFeatures_t::SHT31: {
       return _humidity.at(map_return_keys[3]);  // Only one sensor - return the
                                                 // value of that sensor
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_SHT31_2: {
+    case GreenHouseConfig::HumidityFeatures_t::SHT31_2: {
       float stack_temp = _humidity.at(map_return_keys[5]);
       return stack_temp;  // Only one sensor - return the value of that
                           // sensor
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_BOTH: {
+    case GreenHouseConfig::HumidityFeatures_t::BOTH_HUMIDITY: {
       float stack_temp =
           _humidity.at(map_return_keys[3]) + _humidity.at(map_return_keys[5]);
       return stack_temp / 2;  // Read the _temperature from the sensor and
@@ -284,21 +304,21 @@ float Humidity::towerTemp() {
  ******************************************************************************/
 float Humidity::towerHumidity() {
   switch (_humiditySensorsActive) {
-    case HUMIDITY_SENSORS_ACTIVE_NONE: {
+    case GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY: {
       return 0;  // return 0 if no sensors are active
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_SHT31: {
+    case GreenHouseConfig::HumidityFeatures_t::SHT31: {
       return _humidity.at(map_return_keys[2]);  // Only one sensor - return the
                                                 // value of that sensor
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_SHT31_2: {
+    case GreenHouseConfig::HumidityFeatures_t::SHT31_2: {
       return _humidity.at(map_return_keys[4]);  // Only one sensor - return the
                                                 // value of that sensor
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_BOTH: {
+    case GreenHouseConfig::HumidityFeatures_t::BOTH_HUMIDITY: {
       float stack_humidity =
           _humidity.at(map_return_keys[2]) + _humidity.at(map_return_keys[4]);
       return stack_humidity / 2;  // Read the _humidity from the sensor
@@ -320,14 +340,14 @@ float Humidity::towerHumidity() {
  ******************************************************************************/
 void Humidity::readSHT31() {
   switch (_humiditySensorsActive) {
-    case HUMIDITY_SENSORS_ACTIVE_NONE: {
+    case GreenHouseConfig::HumidityFeatures_t::NONE_HUMIDITY: {
       _humidity.at(map_return_keys[2]) = 0;
       _humidity.at(map_return_keys[3]) = 0;
       _humidity.at(map_return_keys[4]) = 0;
       _humidity.at(map_return_keys[5]) = 0;
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_SHT31: {
+    case GreenHouseConfig::HumidityFeatures_t::SHT31: {
       float temp = sht31.readTemperature();
       float hum = sht31.readHumidity();
       // check if 'is not a number'
@@ -345,7 +365,7 @@ void Humidity::readSHT31() {
       _humidity.at(map_return_keys[3]) = temp;
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_SHT31_2: {
+    case GreenHouseConfig::HumidityFeatures_t::SHT31_2: {
       float temp_2 = sht31_2.readTemperature();
       float hum_2 = sht31_2.readHumidity();
 
@@ -364,7 +384,7 @@ void Humidity::readSHT31() {
       _humidity.at(map_return_keys[5]) = temp_2;
       break;
     }
-    case HUMIDITY_SENSORS_ACTIVE_BOTH: {
+    case GreenHouseConfig::HumidityFeatures_t::BOTH_HUMIDITY: {
       float temp_1 = sht31.readTemperature();
       float temp_2 = sht31_2.readTemperature();
       checkISNAN("[Humidity]: Temp_1", temp_1);

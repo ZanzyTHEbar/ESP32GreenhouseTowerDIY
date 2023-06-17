@@ -1,1 +1,15 @@
-{"ntp":"00:01:34Z","temperature":["0.000"],"humidity":{"":"0.000","sht31_2_temp":"0.000","sht31_1_temp, sht31_2_hum":"0.000","sht31_1_hum":"0.000","dht_temp":"0.000","dht_hum":"0.000",},"ldr":0.000,"water_level_sensor":0.000,"water_level_percentage":nan}
+{
+  "ntp": "22:01:15Z",
+  "temperature": ["0.000"],
+  "humidity": {
+    "sht31_2_temp": "0.000",
+    "sht31_2_hum": "0.000",
+    "sht31_1_temp": "0.000",
+    "sht31_1_hum": "0.000",
+    "dht_temp": "0.000",
+    "dht_hum": "0.000"
+  },
+  "ldr": 0.0,
+  "water_level_sensor": 0.0,
+  "water_level_percentage": 0.0
+}

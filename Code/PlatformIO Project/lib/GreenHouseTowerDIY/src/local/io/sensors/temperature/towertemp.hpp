@@ -9,25 +9,28 @@
 #include <DallasTemperature.h>
 #include <OneWire.h>
 #include <vector>
+#include "local/data/config/config.hpp"
 #include "local/data/visitor.hpp"
 
 using Temp_Array_t = std::vector<float>;
 class TowerTemp : public Element<Visitor<SensorInterface<Temp_Array_t>>>,
                   public SensorInterface<Temp_Array_t> {
-  std::string printAddress(DeviceAddress deviceAddress, size_t size);
-  int _sensors_count;
+  GreenHouseConfig& _config;
   // Setup a oneWire instance to communicate with any OneWire devices
   OneWire oneWire;
   // Pass our oneWire reference to Dallas Temperature.
   DallasTemperature sensors;
   // variable to hold device addresses
   DeviceAddress temp_sensor_addresses;
+
+  int _sensors_count;
   size_t size;
 
+  std::string printAddress(DeviceAddress deviceAddress, size_t size);
   void readAddresses();
 
  public:
-  TowerTemp();
+  TowerTemp(GreenHouseConfig& config);
   virtual ~TowerTemp();
   bool begin();
   void checkSensors();

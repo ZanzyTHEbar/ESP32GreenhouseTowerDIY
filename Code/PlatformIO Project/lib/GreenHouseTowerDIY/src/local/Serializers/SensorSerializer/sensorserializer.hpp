@@ -1,6 +1,6 @@
 #ifndef SERIALIZER_HPP
 #define SERIALIZER_HPP
-
+#include <Arduino.h>
 #include <utilities/helpers.hpp>
 #include "local/data/visitor.hpp"
 
@@ -11,7 +11,7 @@ class SensorSerializer : public Visitor<SensorInterface<T>> {
 
  public:
   void visit(SensorInterface<T>* sensor) override {
-    // T reading = static_cast<T>(sensor->read());
+    log_d("Serializing %s", sensor->getSensorName().c_str());
     serializedData.assign(Helpers::format_string(
         fmt, sensor->getSensorName().c_str(), sensor->read()));
     value = sensor->read();

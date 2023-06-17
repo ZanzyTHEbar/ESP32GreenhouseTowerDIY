@@ -1,10 +1,11 @@
 #include "towertemp.hpp"
 
-TowerTemp::TowerTemp()
-    : _sensors_count(0),
+TowerTemp::TowerTemp(GreenHouseConfig& config)
+    : _config(config),
       oneWire(ONE_WIRE_BUS),
       sensors(&oneWire),
-      temp_sensor_results{0} {}
+      temp_sensor_results{0},
+      _sensors_count(0) {}
 
 TowerTemp::~TowerTemp() {}
 
@@ -155,6 +156,16 @@ Temp_Array_t TowerTemp::getTempF() {
 }
 
 std::vector<float> TowerTemp::read() {
+  switch (_config.getEnabledFeatures().temp_features) {
+    case GreenHouseConfig::TempFeatures_t::NONE_TEMP: {
+    } break;
+    case GreenHouseConfig::TempFeatures_t::TEMP_C: {
+      getTempC();
+    } break;
+    case GreenHouseConfig::TempFeatures_t::TEMP_F: {
+      getTempF();
+    } break;
+  }
   return temp_sensor_results;
 }
 

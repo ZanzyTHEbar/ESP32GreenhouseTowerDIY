@@ -1,21 +1,21 @@
 #include "accumulatedata.hpp"
 
-AccumulateData::AccumulateData(LDR& ldr,
+AccumulateData::AccumulateData(GreenHouseConfig& config,
+                               ProjectConfig& deviceConfig,
+                               LDR& ldr,
                                TowerTemp& towertemp,
                                Humidity& humidity,
                                WaterLevelSensor& waterlevelsensor,
                                NetworkNTP& ntp,
-                               ProjectConfig& deviceConfig,
-                               GreenHouseConfig& config,
                                BaseMQTT& mqtt)
-    : _ldr(ldr),
+    : _config(config),
+      _deviceConfig(deviceConfig),
+      _ldr(ldr),
       _towertemp(towertemp),
       _humidity(humidity),
       _waterLevelSensor(waterlevelsensor),
       _waterLevelPercentage(_waterLevelSensor),
       _ntp(ntp),
-      _deviceConfig(deviceConfig),
-      _config(config),
       _floatSensorSerializer(),
       _stringSensorSerializer(),
       _vectorStringSensorSerializer(),
@@ -47,16 +47,7 @@ void AccumulateData::loop() {
   if (_gatherDataTimer.ding()) {
     _ntp.ntpLoop();
 
-    if (_config.getEnabledFeatures().temp_features !=
-        GreenHouseConfig::TempFeatures_t::TEMP_C) {
-      _towertemp.getTempF();
-    } else {
-      _towertemp.getTempC();
-    }
-
     std::string json = "{";
-
-    // ADd logging
 
     log_i("[Accumulate Data]: Gathering data...");
     _ntp.accept(_stringSensorSerializer);

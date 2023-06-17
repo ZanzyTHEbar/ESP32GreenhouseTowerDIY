@@ -19,14 +19,14 @@
 #include <local/network/ntp/ntp.hpp>
 
 class AccumulateData {
+  GreenHouseConfig& _config;
+  ProjectConfig& _deviceConfig;
   LDR& _ldr;
   TowerTemp& _towertemp;
   Humidity& _humidity;
   WaterLevelSensor& _waterLevelSensor;
   WaterLevelPercentage _waterLevelPercentage;
   NetworkNTP& _ntp;
-  ProjectConfig& _deviceConfig;
-  GreenHouseConfig& _config;
   SensorSerializer<float> _floatSensorSerializer;
   SensorSerializer<std::string> _stringSensorSerializer;
   SensorSerializer<std::vector<std::string>> _vectorStringSensorSerializer;
@@ -41,13 +41,13 @@ class AccumulateData {
   std::vector<Element<Visitor<SensorInterface<float>>>*> _sensors;
 
  public:
-  AccumulateData(LDR& ldr,
+  AccumulateData(GreenHouseConfig& config,
+                 ProjectConfig& deviceConfig,
+                 LDR& ldr,
                  TowerTemp& towertemp,
                  Humidity& humidity,
                  WaterLevelSensor& waterlevelsensor,
                  NetworkNTP& ntp,
-                 ProjectConfig& deviceConfig,
-                 GreenHouseConfig& config,
                  BaseMQTT& mqtt);
   virtual ~AccumulateData();
 

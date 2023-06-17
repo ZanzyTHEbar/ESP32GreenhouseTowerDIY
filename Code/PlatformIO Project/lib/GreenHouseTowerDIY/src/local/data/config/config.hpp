@@ -12,7 +12,15 @@ namespace Project_Config {
       DHT22 = (unsigned char)22U,
       DHT21 = (unsigned char)21U,
     };
-    enum Humidity_Features_e { NONE_HUMIDITY, SHT31, DHT };
+    enum Humidity_Features_e {
+      NONE_HUMIDITY,
+      SHT31,
+      SHT31_2,
+      BOTH_HUMIDITY,
+      DHT,
+      DHT_SHT31,
+      DHT_SHT31_2,
+    };
     enum LDR_Features_e : uint8_t {
       NONE_LDR,
       LDR,
@@ -22,7 +30,7 @@ namespace Project_Config {
       // BH1750_VCC,
       ALL_LDR
     };
-    enum Temp_Features_e : uint8_t { NONE_TEMP, TEMP_F, TEMP_C, ALL_TEMP };
+    enum Temp_Features_e : uint8_t { NONE_TEMP, TEMP_F, TEMP_C };
     enum Water_Level_Features_e : uint8_t {
       NONE_WATER_LEVEL,
       WATER_LEVEL_UC,
