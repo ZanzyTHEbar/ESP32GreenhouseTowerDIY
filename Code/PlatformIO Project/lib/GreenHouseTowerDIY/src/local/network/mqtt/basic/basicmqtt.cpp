@@ -190,7 +190,7 @@ void BaseMQTT::dataHandler(const std::string& topic,
 //******************************************************************************
 bool BaseMQTT::discovermDNSBroker() {
   IPAddress mqttServer;
-  // check if there is a WiFi connection
+  //* check if there is a WiFi connection
   if (wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_Connected) {
     log_i("[mDNS Broker Discovery]: Connected to Wifi, proceeding... \n");
     log_i("[mDNS Broker Discovery]: Setting up mDNS... ");

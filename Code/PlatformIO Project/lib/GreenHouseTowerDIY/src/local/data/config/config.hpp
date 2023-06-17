@@ -46,8 +46,6 @@ namespace Project_Config {
     Temp_Features_e temp_features;
     LDR_Features_e ldr_features;
     Water_Level_Features_e water_Level_features;
-
-    std::string dht_type;
     uint8_t dht_pin;
   };
 

@@ -41,27 +41,30 @@ void GreenHouseConfig::load() {
 
 void GreenHouseConfig::loadMQTT() {
   this->mqtt.broker.assign(projectConfig.getString("mqtt_broker", "").c_str());
-  this->mqtt.port = projectConfig.getInt("mqtt_port");
+  this->mqtt.port = projectConfig.getInt("mqtt_port", 1883);
   this->mqtt.username.assign(
       projectConfig.getString("mqtt_username", "").c_str());
   this->mqtt.password.assign(
       projectConfig.getString("mqtt_password", "").c_str());
 
-  this->mqtt.enabled = projectConfig.getBool("mqtt_enabled");
-  this->mqtt.reconnect_mqtt = projectConfig.getBool("rc_mqtt");
-  this->mqtt.reconnect_tries = projectConfig.getInt("rc_tries");
-  this->mqtt.reconnect_time_ms = projectConfig.getInt("rc_time_ms");
-  this->mqtt.auth = (MqttSecure_t)projectConfig.getInt("mqtt_auth");
-  this->mqtt.enable_certs = projectConfig.getBool("enable_certs");
-  this->mqtt.ca_file.assign(projectConfig.getString("ca_file", "").c_str());
-  this->mqtt.cert_file.assign(projectConfig.getString("cert_file", "").c_str());
-  this->mqtt.key_file.assign(projectConfig.getString("key_file", "").c_str());
+  this->mqtt.enabled = projectConfig.getBool("mqtt_enabled", true);
+  this->mqtt.reconnect_mqtt = projectConfig.getBool("rc_mqtt", true);
+  this->mqtt.reconnect_tries = projectConfig.getInt("rc_tries", 10);
+  this->mqtt.reconnect_time_ms = projectConfig.getInt("rc_time_ms", 10000);
+  this->mqtt.auth = (MqttSecure_t)projectConfig.getBool("mqtt_auth", false);
+  this->mqtt.enable_certs = projectConfig.getBool("enable_certs", false);
+  this->mqtt.ca_file.assign(
+      projectConfig.getString("ca_file", "certs/ca.crt").c_str());
+  this->mqtt.cert_file.assign(
+      projectConfig.getString("cert_file", "certs/client.der").c_str());
+  this->mqtt.key_file.assign(
+      projectConfig.getString("key_file", "certs/private.der").c_str());
   this->mqtt.enabled_websocket = projectConfig.getBool("en_ws");
   this->mqtt.websocket_path.assign(
-      projectConfig.getString("ws_path", "").c_str());
-  this->mqtt.mqtt_task_stack_size = projectConfig.getInt("mqtt_size");
+      projectConfig.getString("ws_path", "/").c_str());
+  this->mqtt.mqtt_task_stack_size = projectConfig.getInt("mqtt_size", 7168);
 
-  // TODO: pub_topics and sub_topics - use for loops
+  // TODO: sub_topics - use for loops
 }
 
 void GreenHouseConfig::loadFeatures() {
@@ -71,8 +74,8 @@ void GreenHouseConfig::loadFeatures() {
       (LDRFeatures_t)projectConfig.getInt("ldr_feats", 0);
   this->enabled_features.water_Level_features =
       (WaterLevelFeatures_t)projectConfig.getInt("wtr_lvl_feats", 0);
-  this->enabled_features.dht_type.assign(
-      projectConfig.getString("dht_type", "").c_str());
+  this->enabled_features.dht_features =
+      (DHTFeatures_t)projectConfig.getInt("dht_feats", 11U);
   this->enabled_features.dht_pin = projectConfig.getInt("dht_pin");
 }
 
@@ -92,7 +95,6 @@ void GreenHouseConfig::saveMQTT() {
   projectConfig.putInt("mqtt_port", this->mqtt.port);
   projectConfig.putString("mqtt_username", this->mqtt.username.c_str());
   projectConfig.putString("mqtt_password", this->mqtt.password.c_str());
-
   projectConfig.putBool("mqtt_enabled", this->mqtt.enabled);
   projectConfig.putBool("rc_mqtt", this->mqtt.reconnect_mqtt);
   projectConfig.putInt("rc_tries", this->mqtt.reconnect_tries);
@@ -115,7 +117,7 @@ void GreenHouseConfig::saveFeatures() {
                        this->enabled_features.water_Level_features);
 
   projectConfig.putInt("dht_pin", this->enabled_features.dht_pin);
-  projectConfig.putString("dht_type", this->enabled_features.dht_type.c_str());
+  projectConfig.putInt("dht_feats", this->enabled_features.dht_features);
 }
 
 //**********************************************************************************************************************
