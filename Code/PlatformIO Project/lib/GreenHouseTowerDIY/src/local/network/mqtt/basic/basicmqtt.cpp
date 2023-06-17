@@ -26,7 +26,7 @@ void BaseMQTT::begin() {
         _deviceConfig.getMQTTConfig().broker.c_str(),
         _deviceConfig.getMQTTConfig().port);
 
-  if (brokerDiscovery) {
+  if (!_deviceConfig.getMQTTConfig().broker.empty() || brokerDiscovery) {
     //* Generate the MQTT configuration
     //* Configuration for MQTT
     StaticJsonDocument<384> doc;
@@ -66,6 +66,7 @@ void BaseMQTT::begin() {
         _deviceConfig.getMQTTConfig().mqtt_task_stack_size;
 
     serializeJsonPretty(doc, Serial);
+    Serial.println();
     _client.setConfig(mqttConfig);
     //* End MQTT Configuration
     log_i("[BasicMQTT]: Hostname: %s",
@@ -106,6 +107,7 @@ void BaseMQTT::onSubscribed(MQTTClient* thisClient,
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            const std::string& payload) {
+  log_d("[BasicMQTT]: Payload: %s", topic.c_str());
   if (!_client.connected() && !topic.empty()) {
     _client.addTopicSub(topic.c_str(), 2);
   }
@@ -116,6 +118,7 @@ void BaseMQTT::dataHandler(const std::string& topic,
 }
 
 void BaseMQTT::dataHandler(const std::string& topic, float payload) {
+  log_d("[BasicMQTT]: Payload: %s", topic.c_str());
   if (!_client.connected() && !topic.empty()) {
     _client.addTopicSub(topic.c_str(), 2);
   }
@@ -129,6 +132,7 @@ void BaseMQTT::dataHandler(const std::string& topic, float payload) {
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::vector<float> payload) {
+  log_d("[BasicMQTT]: Payload: %s", topic.c_str());
   if (!_client.connected() && !topic.empty()) {
     _client.addTopicSub(topic.c_str(), 2);
   }
@@ -136,6 +140,7 @@ void BaseMQTT::dataHandler(const std::string& topic,
   std::string payloadStr;
   for (auto& i : payload) {
     payloadStr += std::to_string(i) + ",";
+    log_i("[BasicMQTT]: Payload: %s", payloadStr.c_str());
   }
   if (!topic.empty() && !payloadStr.empty()) {
     _client.publish(topic.c_str(), payloadStr.c_str(), payloadStr.length(), 2,
@@ -145,6 +150,7 @@ void BaseMQTT::dataHandler(const std::string& topic,
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::vector<std::string> payload) {
+  log_d("[BasicMQTT]: Payload: %s", topic.c_str());
   if (!_client.connected() && !topic.empty()) {
     _client.addTopicSub(topic.c_str(), 2);
   }
@@ -161,6 +167,7 @@ void BaseMQTT::dataHandler(const std::string& topic,
 
 void BaseMQTT::dataHandler(const std::string& topic,
                            std::unordered_map<std::string, float> payload) {
+  log_d("[BasicMQTT]: Payload: %s", topic.c_str());
   if (!_client.connected() && !topic.empty()) {
     _client.addTopicSub(topic.c_str(), 2);
   }

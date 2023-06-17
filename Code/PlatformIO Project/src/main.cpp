@@ -100,6 +100,6 @@ void setup() {
  */
 void loop() {
   Network_Utilities::checkWiFiState();  // check the WiFi state
-  ota.handleOTAUpdate();                // handle OTA updates
   data.loop();                          // accumulate sensor data
+  ota.handleOTAUpdate();                // handle OTA updates
 }

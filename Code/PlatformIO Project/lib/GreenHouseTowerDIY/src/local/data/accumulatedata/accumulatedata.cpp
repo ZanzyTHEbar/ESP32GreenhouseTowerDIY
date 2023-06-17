@@ -61,14 +61,18 @@ void AccumulateData::loop() {
     //* Pass the data to the mqtt client
     log_i("[Accumulate Data]: Humidity");
 
+    log_i("[Accumulate Data]: %s", _mqtt.mqttConnected() ? "true" : "false");
+
     if (_mqtt.mqttConnected()) {
+      log_i("[Accumulate Data]: NTPTimer MQTT");
       _mqtt.dataHandler(_stringSensorSerializer.sensorName,
                         _stringSensorSerializer.value);
+      log_i("[Accumulate Data]: Tower MQTT");
       _mqtt.dataHandler(_vectorFloatSensorSerializer.sensorName,
-                        _vectorFloatSensorSerializer.value);
-
+                        _vectorFloatSensorSerializer.serializedData);
+      log_i("[Accumulate Data]: Humidity MQTT");
       _mqtt.dataHandler(_humiditySerializer.sensorName,
-                        _humiditySerializer.value);
+                        _humiditySerializer.serializedData);
     }
 
     // append a comma to the json string after each sensor
@@ -106,8 +110,9 @@ void AccumulateData::loop() {
 
       //* Pass the data to the mqtt client
       if (_mqtt.mqttConnected())
-        _mqtt.dataHandler(_floatSensorSerializer.sensorName,
-                          _floatSensorSerializer.value);
+        log_i("[Accumulate Data]: Sensors MQTT");
+      _mqtt.dataHandler(_floatSensorSerializer.sensorName,
+                        _floatSensorSerializer.value);
     }
 
     json.append("}");

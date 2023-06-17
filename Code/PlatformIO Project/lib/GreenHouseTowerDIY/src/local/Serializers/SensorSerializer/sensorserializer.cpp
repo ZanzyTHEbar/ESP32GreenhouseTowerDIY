@@ -40,6 +40,7 @@ void SensorSerializer<std::vector<float>>::visit(
         *it));
   }
   serializedData.append("]");
+  sensorName.assign(sensor->getSensorName());
   value = sensor->read();
 }
 
@@ -61,6 +62,7 @@ void SensorSerializer<std::vector<std::string>>::visit(
         *it));
   }
   serializedData.append("]");
+  sensorName.assign(sensor->getSensorName());
   value = sensor->read();
 }
 
@@ -77,11 +79,12 @@ void SensorSerializer<std::unordered_map<std::string, float>>::visit(
   // iterators instead of index
   for (auto it = sensor->read().begin(); it != sensor->read().end(); ++it) {
     serializedData.append(Helpers::format_string(
-        (sensor->read().size() == 1 || it == sensor->read().end() )
+        (sensor->read().size() == 1 || it == sensor->read().end())
             ? specifier_single
             : specifier_multi,
         it->first.c_str(), it->second));
   }
   serializedData.append("}");
+  sensorName.assign(sensor->getSensorName());
   value = sensor->read();
 }
