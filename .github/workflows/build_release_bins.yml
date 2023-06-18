@@ -59,11 +59,14 @@ jobs:
             echo "::endgroup::"
             echo "::group::copy firmware name file"
             cp tools/firmware_name.txt build/${{ matrix.target_name }}/firmware_name.txt
+            cat build/${{ matrix.target_name }}/firmware_name.txt
             echo "::endgroup::"
       - name: Archive Firmware name File
         # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
         run: |
-          echo "FIRMWARE_NAME=$(cat Code/Platformio_Project/build/${{ matrix.target_name }}/firmware_name.txt)" >> $GITHUB_ENV
+          cd "Code/PlatformIO_Project/"
+          cat build/${{ matrix.target_name }}/firmware_name.txt
+          echo "FIRMWARE_NAME=$(cat build/${{ matrix.target_name }}/firmware_name.txt)" >> $GITHUB_ENV
       - name: Archive Firmware Binaries
         uses: actions/upload-artifact@v3
         with:
