@@ -46,7 +46,7 @@ jobs:
           image: ghcr.io/zanzythebar/piodocker:latest
           options: -v ${{ github.workspace }}:/workspace
           run: |
-            cd "Code/PlatformIO Project/"
+            cd "Code/PlatformIO_Project/"
             export OPENIRIS_CI_BUILD=1
             mkdir build 
             mkdir build/${{ matrix.target_name }}
@@ -69,7 +69,7 @@ jobs:
         with:
           name: ${{ matrix.target_name }}-firmware
           #path: "./ESP/.pio/build/${{ matrix.target_name }}/${{ env.FIRMWARE_NAME }}.bin"
-          path: "Code/Platformio Project/build/${{ matrix.target_name }}/${{ env.FIRMWARE_NAME }}.zip"
+          path: "Code/Platformio_Project/build/${{ matrix.target_name }}/${{ env.FIRMWARE_NAME }}.zip"
           retention-days: 5
           if-no-files-found: error
   release-tower:
@@ -102,7 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sudo apt-get install -y jq
-          chmod +x ./repo-tools/scripts/prepareCMD.sh 
+          chmod +x ./.github/scripts/prepareCMD.sh 
           semantic-release
   cleanup:
     needs: [setup, release-tower]

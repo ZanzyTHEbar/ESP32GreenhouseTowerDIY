@@ -42,7 +42,7 @@ def createZip(source, target, env):
                 print('\nCreating "' + archive.filename + '"', end="\n")
                 parts = []
 
-                name = "OpenIris"
+                name = "ESP32Greenhouse"
                 version = env["PROGNAME"].split("-")[1]
                 new_install_prompt_erase = True
 

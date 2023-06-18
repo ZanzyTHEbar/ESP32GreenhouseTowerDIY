@@ -2,7 +2,7 @@
   "folders": [
     {
       "name": "Source",
-      "path": "./Code/PlatformIO Project"
+      "path": "./Code/PlatformIO_Project"
     },
     {
       "name": "Root",
@@ -11,9 +11,12 @@
   ],
   "settings": {
     "cSpell.words": [
+      "esptool",
+      "esptoolpy",
       "flexbugs",
       "flexsearch",
       "maneger",
+      "PYTHONEXE",
       "roadmap",
       "Specializers",
       "vitepress",
