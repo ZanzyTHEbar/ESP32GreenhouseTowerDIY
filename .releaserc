@@ -148,7 +148,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "./scripts/prepareCMD.sh ${nextRelease.version}",
+        "prepareCmd": "./.github/scripts/prepareCMD.sh ${nextRelease.version}",
         "publishCmd": "ls -l"
       }
     ],
@@ -167,7 +167,7 @@
       "@semantic-release/git",
       {
         "assets": [
-          "Code/PlatformIO Project/lib/GreenHouseTowerDIY/library.json",
+          "Code/PlatformIO_Project/lib/GreenHouseTowerDIY/library.json",
           "LICENSE*",
           "CHANGELOG.md"
         ],
