@@ -6,15 +6,15 @@ This repo is dedicated to the **DIY ESP32** based automated *Aeroponic* or *Hydr
 
 # WHAT IS THIS PROJECT
 
-In the height of COVID my wife and i wanted to grow our own food indoors. This open source project is a culmination of my own work and many inspirations from the internet to develop an easy, approachable and beginner friendly project for hobbyists.
+In the height of COVID I wanted to grow my own food indoors. This open source project is a culmination of my own work and many inspirations from the internet to develop an easy, approachable and beginner friendly project for hobbyists.
 
 This project is designed to be modular and affordable. Featuring a vertical tower system with interlocking parts and an adapter to a common `20L/5gallon` bucket.
 
 The design also features an optional 3D printable Aeroponics Nozzle for converting the system from hydroponic to aeroponics.  
 
-> I decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language".
+> I originally decided to go with an ESP32 using Micropython firmware. While Arduino is perfectly fine, i wanted this project to be approachable to all skill levels, python seemed like the most common first "language". However, I since realized that most people who use this _won't_ be coding themselves and i prefer C++ more than python, so I switched the entire project over and am building a website to flash the boards. Users will not need to download any code themselves. Please stay tuned for the documentation website.  
 >
-> **Note**: I have added Arduino Core support for the ESP32. This is a work in progress and will be the main code-base in the future going forward.It simply has more sensor support and a few more features, plus it runs faster and consumes less power.
+> **Note**: I have added Arduino Core support for the ESP32. This is a work in progress and will is now the main code-base. It simply has more sensor support, a few more features, and it runs faster/consumes less power.
 
 ![tower garden](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/blob/main/3D%20Printing%20Files/Modular%20Hydroponic%20Tower%20Garden/images/IMG_20190523_094749.jpg)
 
@@ -40,6 +40,8 @@ PCBS can be ordered from [JLCPCB](https://jlcpcb.com/) or [PCBWay](https://www.p
 
 ____
 
+> **Warning**: The sections below are experimental docs and are subject to change. Please wait for the documentation website to be finished if you want a consistent experience.
+
 ## How to Setup  - Hardware
 
 Setup is very straight forward, thankfully. You will need to purchase a few components before you begin:
@@ -57,16 +59,14 @@ ____
 
 ## How to Setup - Software
 
-1. Acquire all parts and ESP32 (WROVER and WROOM has both been tested).
+1. Acquire all parts and ESP32 (WROVER and WROOM (S3 versions are supported) have both been tested).
 2. Acquire The remaining sensors and components - assemble
 
 ### ***SETUP***
 
-
 ____
 
-#### Micrpython
-
+#### Micropython
 
 1. Plug ESP32 into computer - open your IDE (i used Thonny for this project) Flash the micropython firmware to the esp32
    1. Upload ESP32MicropytyhonLibraries ---> rename to ESP32Micro
@@ -76,7 +76,6 @@ ____
 
 #### Arduino Core
 
-
 1. Plug ESP32 into computer - navigate to [WebSerial](/ESP32GreenhouseTowerDIY/webserial/)
    1. Configure your chosen sensors and features
    2. Press build and upload, and wait for the green light to turn on - it is safe to unplug the ESP32 at that point.
@@ -84,7 +83,6 @@ ____
 ____
 
 #### MQTT Broker Configuration and Connection
-
 
 If you have chosen the mDNS option, you will need to setup mDNS on your network for MQTT Discovery. The mDNS service on the ESP is already configure, if you chose that feature, and should appear on your network as at the `<name>.tower.local` address.
 
@@ -96,7 +94,6 @@ To enable MQTT discovery on the broker, simply install avahi-daemon.
 
 ##### Option One:
 
-
 If you are using Home Assistant, you can use the MQTT Discovery feature within the firmware, and the MQTT broker will be discovered automatically. Nothing is needed from you for this to work. Simply turn on the ESP32 and have the `mDNS` feature enabled in the firmware.
 
 You can refer to the [ZeroConf Documentation here](https://www.home-assistant.io/integrations/zeroconf/) and [here](https://developers.home-assistant.io/docs/creating_integration_manifest/#zeroconf) for home assistance for more information and troubleshooting.
@@ -104,7 +101,6 @@ You can refer to the [ZeroConf Documentation here](https://www.home-assistant.io
 If for some reason you are unable to use the MQTT Discovery feature, you can still use the mDNS feature to discover the broker, see Option Two below.
 
 ##### Option Two:
-
 
 You will need to install the [avahi](https://avahi.org/) package. For a Raspberry Pi, use the following command:
 
@@ -134,20 +130,3 @@ ____
 ____
 
 ## Safety Considerations
-
-## Important Notes
-
-> **Note**: I have not tested this on a raspberry pi, but i have tested it on a WROOM and WROVER.
->
-> **Warning**: If you receive the error:
->
-> WebAuthentication.cpp:73: undefined reference to mbedtls_md5_starts
-> Please remove the code *within* the `ifdef ESP32` block on line `72`. and paste the following:
->
->```ino
->   mbedtls_md5_init(&_ctx); mbedtls_md5_update_ret (&_ctx,data,len);
->   mbedtls_md5_finish_ret(&_ctx,data);
->   mbedtls_internal_md5_process( &_ctx ,data); // mbedtls_md5_starts(&_ctx); // mbedtls_md5_update(&_ctx, data, len); // mbedtls_md5_finish(&_ctx, _buf);
->```
->
-> the comments are the old-lines.
