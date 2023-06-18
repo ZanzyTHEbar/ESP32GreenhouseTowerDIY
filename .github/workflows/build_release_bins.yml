@@ -67,13 +67,15 @@ jobs:
           cd "Code/PlatformIO_Project/"
           cat build/${{ matrix.target_name }}/firmware_name.txt
           echo "FIRMWARE_NAME=$(cat build/${{ matrix.target_name }}/firmware_name.txt)" >> $GITHUB_ENV
+          ls -l build/${{ matrix.target_name }}
+          ls -l build      
       - name: Archive Firmware Binaries
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.target_name }}-firmware
           #path: "./ESP/.pio/build/${{ matrix.target_name }}/${{ env.FIRMWARE_NAME }}.bin"
           #${{ env.FIRMWARE_NAME }}.zip
-          path: "build/${{ matrix.target_name }}/${{ env.FIRMWARE_NAME }}.zip"
+          path: "Code/PlatformIO_Project/build/${{ matrix.target_name }}/${{ env.FIRMWARE_NAME }}.zip"
           retention-days: 5
           if-no-files-found: error
   release-tower:
