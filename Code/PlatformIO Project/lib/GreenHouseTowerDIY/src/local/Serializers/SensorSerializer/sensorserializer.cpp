@@ -70,21 +70,24 @@ void SensorSerializer<std::vector<std::string>>::visit(
 template <>
 void SensorSerializer<std::unordered_map<std::string, float>>::visit(
     SensorInterface<std::unordered_map<std::string, float>>* sensor) {
-  std::string specifier_multi = "\"%s\":\"%.3f\",";
-  std::string specifier_single = "\"%s\":\"%.3f\"";
+  const char* specifier_multi = "\"%s\":\"%.3f\",";
+  const char* specifier_single = "\"%s\":\"%.3f\"";
 
   serializedData.assign(
       Helpers::format_string("\"%s\":{", sensor->getSensorName().c_str()));
-  // check if the vector is of size 1 or if we are at the last element - and use
-  // iterators instead of index
   for (auto it = sensor->read().begin(); it != sensor->read().end(); ++it) {
     serializedData.append(Helpers::format_string(
-        (sensor->read().size() == 1 || it == sensor->read().end())
-            ? specifier_single
-            : specifier_multi,
+        (sensor->read().size() >= 1) ? specifier_multi : specifier_single,
         it->first.c_str(), it->second));
   }
+  // remove te last comma before the closing bracket
+  // skip the last element and only remove the comma if there is more than one
+  // element
+  if (sensor->read().size() > 1) {
+    serializedData.pop_back();
+  }
   serializedData.append("}");
+
   sensorName.assign(sensor->getSensorName());
   value = sensor->read();
 }
