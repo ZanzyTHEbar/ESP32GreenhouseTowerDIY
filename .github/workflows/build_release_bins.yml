@@ -28,7 +28,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
-        run: echo "matrix={\"target_name\":[\"debug\",\"release\"]}" >> $GITHUB_OUTPUT
+        run: echo "matrix={\"target_name\":[\"esp32dev_debug\",\"esp32dev_release\",\"esp32dev_hardware_debug\",\"esp32s3_debug\",\"esp32s3_release\"]}" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
