@@ -80,14 +80,10 @@ void SensorSerializer<std::unordered_map<std::string, float>>::visit(
         (sensor->read().size() >= 1) ? specifier_multi : specifier_single,
         it->first.c_str(), it->second));
   }
-  // remove te last comma before the closing bracket
-  // skip the last element and only remove the comma if there is more than one
-  // element
-  if (sensor->read().size() > 1) {
-    serializedData.pop_back();
-  }
-  serializedData.append("}");
 
+  // remove the last comma
+  serializedData.pop_back();
+  serializedData.append("}");
   sensorName.assign(sensor->getSensorName());
   value = sensor->read();
 }
