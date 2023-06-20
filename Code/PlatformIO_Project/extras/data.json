@@ -1,13 +1,13 @@
 {
-  "ntp": "23:41:40Z",
-  "temperature": ["0.000"],
+  "ntp": "12:13:10Z",
+  "temperature": [0.0],
   "humidity": {
-    "sht31_2_temp": "0.000",
-    "sht31_2_hum": "0.000",
-    "sht31_1_temp": "0.000",
-    "sht31_1_hum": "0.000",
-    "dht_temp": "0.000",
-    "dht_hum": "0.000"
+    "sht31_2_temp": 0.0,
+    "sht31_2_hum": 0.0,
+    "sht31_1_temp": 0.0,
+    "sht31_1_hum": 0.0,
+    "dht_temp": 0.0,
+    "dht_hum": 0.0
   },
   "ldr": 0.0,
   "water_level_sensor": 0.0,

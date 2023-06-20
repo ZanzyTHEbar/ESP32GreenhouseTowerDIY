@@ -6,16 +6,6 @@ API::API(APIServer& server, GreenHouseConfig& configManager)
 API::~API() {}
 
 void API::setupServer() {
-  /* server.updateCommandHandlers("helloWorld",
-                               [&](AsyncWebServerRequest* request) {
-                                 printHelloWorld();
-                                 request->send(200, "text/plain", "OK");
-                               });
-  server.updateCommandHandlers(
-      "addRelay", [&](AsyncWebServerRequest* request) { addRelay(request); });
-  server.updateCommandHandlers(
-      "removeRelay",
-      [&](AsyncWebServerRequest* request) { removeRelay(request); }); */
   server.begin();
 }
 
