@@ -1,7 +1,10 @@
 // TODO: Implement observer for humidity sensor
 // TODO: Implement pressure sensor for water level
 // TODO: Implement IR sensor for water level
-// FIXME: Fix CI build
+// TODO: Implement Home Assistant MQTT Support
+// TODO: Implement feature flag to enable/disable Home Assistant MQTT Support
+// Note: default to the REST API if no mqtt feature is enabled
+// Note: default to the basic mqtt if HASSIO support is disabled
 
 #include <Arduino.h>
 

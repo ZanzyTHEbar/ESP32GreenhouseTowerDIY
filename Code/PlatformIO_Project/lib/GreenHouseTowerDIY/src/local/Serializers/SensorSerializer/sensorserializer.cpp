@@ -14,10 +14,11 @@ const char* SensorSerializer<float>::fmt = "\"%s\":%.3f";
 template <>
 void SensorSerializer<std::string>::visit(
     SensorInterface<std::string>* sensor) {
-  serializedData.assign(Helpers::format_string("\"%s\":\"%s\"",
-                                               sensor->getSensorName().c_str(),
-                                               sensor->read().c_str()));
-  value = sensor->read();
+  auto read = sensor->read();
+
+  serializedData.assign(Helpers::format_string(
+      "\"%s\":\"%s\"", sensor->getSensorName().c_str(), read.c_str()));
+  value = read;
   sensorName.assign(sensor->getSensorName());
 }
 
@@ -28,20 +29,22 @@ void SensorSerializer<std::vector<float>>::visit(
   std::string specifier_multi = "\"%.3f\",";
   std::string specifier_single = "\"%.3f\"";
 
+  auto read = sensor->read();
+  auto beginning = read.begin();
+  auto end = read.end();
+
   serializedData.assign(
       Helpers::format_string("\"%s\":[", sensor->getSensorName().c_str()));
   // check if the vector is of size 1 or if we are at the last element - and use
   // iterators instead of index
-  for (auto it = sensor->read().begin(); it != sensor->read().end(); ++it) {
+  for (auto it = beginning; it != end; ++it) {
     serializedData.append(Helpers::format_string(
-        (sensor->read().size() == 1 || it == sensor->read().end())
-            ? specifier_single
-            : specifier_multi,
+        (read.size() == 1 || it == end) ? specifier_single : specifier_multi,
         *it));
   }
   serializedData.append("]");
   sensorName.assign(sensor->getSensorName());
-  value = sensor->read();
+  value = read;
 }
 
 //* Specialize for string vectors
@@ -51,19 +54,21 @@ void SensorSerializer<std::vector<std::string>>::visit(
   std::string specifier_multi = "\"%s\",";
   std::string specifier_single = "\"%s\"";
 
+  auto read = sensor->read();
+  auto beginning = read.begin();
+  auto end = read.end();
+
   serializedData.assign(
       Helpers::format_string("\"%s\":[", sensor->getSensorName().c_str()));
   // iterators instead of index
-  for (auto it = sensor->read().begin(); it != sensor->read().end(); ++it) {
+  for (auto it = beginning; it != end; ++it) {
     serializedData.append(Helpers::format_string(
-        (sensor->read().size() == 1 || it == sensor->read().end())
-            ? specifier_single
-            : specifier_multi,
+        (read.size() == 1 || it == end) ? specifier_single : specifier_multi,
         *it));
   }
   serializedData.append("]");
   sensorName.assign(sensor->getSensorName());
-  value = sensor->read();
+  value = read;
 }
 
 //* Specialize for unordered_map<string, float>
@@ -73,11 +78,15 @@ void SensorSerializer<std::unordered_map<std::string, float>>::visit(
   const char* specifier_multi = "\"%s\":\"%.3f\",";
   const char* specifier_single = "\"%s\":\"%.3f\"";
 
+  auto read = sensor->read();
+  auto beginning = read.begin();
+  auto end = read.end();
+
   serializedData.assign(
       Helpers::format_string("\"%s\":{", sensor->getSensorName().c_str()));
-  for (auto it = sensor->read().begin(); it != sensor->read().end(); ++it) {
+  for (auto it = beginning; it != end; ++it) {
     serializedData.append(Helpers::format_string(
-        (sensor->read().size() >= 1) ? specifier_multi : specifier_single,
+        (read.size() >= 1) ? specifier_multi : specifier_single,
         it->first.c_str(), it->second));
   }
 
@@ -85,5 +94,5 @@ void SensorSerializer<std::unordered_map<std::string, float>>::visit(
   serializedData.pop_back();
   serializedData.append("}");
   sensorName.assign(sensor->getSensorName());
-  value = sensor->read();
+  value = read;
 }

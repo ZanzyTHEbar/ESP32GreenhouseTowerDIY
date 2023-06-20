@@ -13,10 +13,12 @@ class SensorSerializer : public Visitor<SensorInterface<T>> {
 
  public:
   void visit(SensorInterface<T>* sensor) override {
+    auto read = sensor->read();
+
     log_d("Serializing %s", sensor->getSensorName().c_str());
-    serializedData.assign(Helpers::format_string(
-        fmt, sensor->getSensorName().c_str(), sensor->read()));
-    value = sensor->read();
+    serializedData.assign(
+        Helpers::format_string(fmt, sensor->getSensorName().c_str(), read));
+    value = read;
     sensorName.assign(sensor->getSensorName());
   };
 

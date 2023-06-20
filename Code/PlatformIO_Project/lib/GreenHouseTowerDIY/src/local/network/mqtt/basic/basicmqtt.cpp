@@ -1,6 +1,10 @@
 #include "basicmqtt.hpp"
 #include <ESPmDNS.h>
 
+// TODO: Implement the MQTT Stack as a base class for all MQTT based sensors
+// Note: reimplement this library with the current Mqtt base class https://github.com/dawidchyrzynski/arduino-home-assistant
+// Note: https://dawidchyrzynski.github.io/arduino-home-assistant/documents/library/discovery.html
+
 //***********************************************************************************************************************
 // * Basic MQTT Stack
 // * This is the basic MQTT stack that is used to connect to a local Mosquitto
