@@ -1,13 +1,11 @@
 #include "api.hpp"
 
-API::API(APIServer& server, GreenHouseConfig& configManager)
-    : configManager(configManager), server(server) {}
+API::API(ProjectConfig& projectConfig, GreenHouseConfig& configManager)
+    : projectConfig(projectConfig),
+      configManager(configManager),
+      server(80, projectConfig, "/control", "/wifimanager", "/tower") {}
 
 API::~API() {}
-
-void API::setupServer() {
-  server.begin();
-}
 
 void API::begin() {
   // handle the WiFi connection state changes
@@ -35,6 +33,18 @@ void API::begin() {
       break;
     }
   }
+}
+
+/**
+ * @brief Setup the API Server
+ * @note Add all the routes and handlers here
+ */
+void API::setupServer() {
+  server.updateCommandHandlers(
+      "/setDHT",
+      [this](AsyncWebServerRequest* request) { this->setDHT(request); });
+
+  server.begin();
 }
 
 void API::setDHT(AsyncWebServerRequest* request) {

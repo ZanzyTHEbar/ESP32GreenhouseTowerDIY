@@ -39,8 +39,6 @@ ConfigHandler configHandler(config);
 GreenHouseConfig greenhouseConfig(config);
 
 //* Network
-APIServer server(80, config, "/control", "/wifimanager", "/tower");
-
 WiFiHandler network(config, WIFI_SSID, WIFI_PASS, 1);
 OTA ota(config);
 MDNSHandler mDNS(config, "_tower", "data", "_tcp", "api_port", "80");
@@ -49,7 +47,7 @@ MQTTClient mqttClient;
 BaseMQTT mqtt(greenhouseConfig, config, mqttClient);
 
 //* API
-API api(server, greenhouseConfig);
+API api(config, greenhouseConfig);
 
 //* Sensors
 TowerTemp tower_temp(greenhouseConfig);

@@ -6,12 +6,13 @@
 #include <local/data/config/config.hpp>
 class API {
  private:
-  APIServer& server;
+  APIServer server;
+  ProjectConfig& projectConfig;
   GreenHouseConfig& configManager;
   void setupServer();
 
  public:
-  API(APIServer& server, GreenHouseConfig& configManager);
+  API(ProjectConfig& projectConfig, GreenHouseConfig& configManager);
   virtual ~API();
   void begin();
   void setTopic(AsyncWebServerRequest* request);
