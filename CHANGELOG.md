@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.1.1](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/compare/v1.1.0...v1.1.1) (2023-06-20)
+
+
+### 🧑‍💻 Code Refactoring
+
+* cleanup serializer ([f33a53d](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/commit/f33a53db516d198f2b167e444611039c36365094))
+
 ## [1.1.0](https://github.com/ZanzyTHEbar/ESP32GreenhouseTowerDIY/compare/v1.0.0...v1.1.0) (2023-06-18)
 
 
