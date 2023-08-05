@@ -1,7 +1,9 @@
 #include "config.hpp"
 
 GreenHouseConfig::GreenHouseConfig(ProjectConfig& projectConfig)
-    : projectConfig(projectConfig) {}
+    : projectConfig(projectConfig) {
+  initConfig();
+}
 
 GreenHouseConfig::~GreenHouseConfig() {}
 

@@ -1,22 +1,26 @@
-#ifndef API_HPP
-#define API_HPP
-#include <EasyNetworkManager.hpp>
-#include <data/statemanager/StateManager.hpp>
-#include <functional>
-#include <local/data/config/config.hpp>
+#pragma once
+
+/**
+ * @brief Base API Methods
+ * @note This class is responsible for handling the API requests
+ * @note We will use the Decorator Pattern to add new clients that consume the
+ * API
+ */
 class API {
- private:
-  APIServer server;
-  ProjectConfig& projectConfig;
-  GreenHouseConfig& configManager;
-  void setupServer();
-
  public:
-  API(ProjectConfig& projectConfig, GreenHouseConfig& configManager);
+  API();
   virtual ~API();
-  void begin();
-  void setTopic(AsyncWebServerRequest* request);
-  void setDHT(AsyncWebServerRequest* request);
-};
 
-#endif  // API_HPP
+  // TODO: Add the API methods here
+
+  /**
+   * @brief What methods do we need?
+   * @note We need to be able to enable and disable features
+   * @note We need to be able to set the configuration for mqtt, wifi, home
+   * assistant, and the pump
+   * @note We need to be able to get the current configuration for mqtt, wifi,
+   * home assistant, and the pump
+   * @note We need to be able to get the current state of the system
+   *
+   */
+};

@@ -51,7 +51,6 @@ class Humidity : public Element<Visitor<SensorInterface<Humidity_Return_t>>>,
   void begin();
   Humidity_Return_t read() override;
   const std::string& getSensorName() override;
-  void accept(
-      Visitor<SensorInterface<Humidity_Return_t>>& visitor) override;
+  void accept(Visitor<SensorInterface<Humidity_Return_t>>& visitor) override;
 };
 #endif

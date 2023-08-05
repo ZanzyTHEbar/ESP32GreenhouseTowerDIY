@@ -3,6 +3,9 @@
 // TODO: Implement IR sensor for water level
 // TODO: Implement Home Assistant MQTT Support
 // TODO: Implement feature flag to enable/disable Home Assistant MQTT Support
+// TODO: Implement interfaces for the API - to use Serial, MQTT, HTTP, etc
+// TODO: Abstract API using the bridge pattern
+// TODO: Implement setting features using the API
 // Note: default to the REST API if no mqtt feature is enabled
 // Note: default to the basic mqtt if HASSIO support is disabled
 
@@ -13,9 +16,8 @@
 #include <utilities/network_utilities.hpp>
 
 //* Network
-#include <local/network/api/api.hpp>
-#include <network/mDNS/MDNSManager.hpp>
-#include <network/ota/OTA.hpp>
+#include <local/network/api/rest_api.hpp>
+#include <network/mdns/mdns_manager.hpp>
 #include "local/network/mqtt/basic/basicmqtt.hpp"
 
 //* Data
@@ -40,14 +42,13 @@ GreenHouseConfig greenhouseConfig(config);
 
 //* Network
 WiFiHandler network(config, WIFI_SSID, WIFI_PASS, 1);
-OTA ota(config);
 MDNSHandler mDNS(config, "_tower", "data", "_tcp", "api_port", "80");
 NetworkNTP ntp;
 MQTTClient mqttClient;
 BaseMQTT mqtt(greenhouseConfig, config, mqttClient);
 
 //* API
-API api(config, greenhouseConfig);
+RestAPI rest_api(config, greenhouseConfig);
 
 //* Sensors
 TowerTemp tower_temp(greenhouseConfig);
@@ -86,9 +87,8 @@ void setup() {
   network.begin();
   mDNS.begin();
   mqtt.begin();
-  api.begin();
+  rest_api.begin();
   ntp.begin();
-  ota.begin();
 }
 
 /**
@@ -102,5 +102,4 @@ void setup() {
 void loop() {
   Network_Utilities::checkWiFiState();  // check the WiFi state
   data.loop();                          // accumulate sensor data
-  ota.handleOTAUpdate();                // handle OTA updates
 }
