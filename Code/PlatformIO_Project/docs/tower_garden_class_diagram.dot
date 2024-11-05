@@ -1,0 +1,58 @@
+digraph TowerGardenSystem {
+    node [shape = plaintext;];
+    
+    ESP32Controller [label = <
+        <table border="0" cellborder="1" cellspacing="0">
+        <tr><td bgcolor="lightblue" colspan="2"><b>ESP32Controller</b></td></tr>
+        <tr><td align="left" colspan="2">+ managePump(): void</td></tr>
+        <tr><td align="left" colspan="2">+ readSensors(): void</td></tr>
+        <tr><td align="left" colspan="2">+ logData(): void</td></tr>
+        <tr><td align="left" colspan="2">+ sendAlert(): void</td></tr>
+        </table>>;];
+    
+    Pump [label = <
+        <table border="0" cellborder="1" cellspacing="0">
+        <tr><td bgcolor="lightyellow" colspan="2"><b>Pump</b></td></tr>
+        <tr><td align="left" colspan="2">+ activate(): void</td></tr>
+        <tr><td align="left" colspan="2">+ deactivate(): void</td></tr>
+        </table>>;];
+    
+    HumiditySensor [label = <
+        <table border="0" cellborder="1" cellspacing="0">
+        <tr><td bgcolor="lightgreen" colspan="2"><b>HumiditySensor</b></td></tr>
+        <tr><td align="left" colspan="2">+ readHumidity(): float</td></tr>
+        </table>>;];
+    
+    TemperatureSensor [label = <
+        <table border="0" cellborder="1" cellspacing="0">
+        <tr><td bgcolor="lightgreen" colspan="2"><b>TemperatureSensor</b></td></tr>
+        <tr><td align="left" colspan="2">+ readTemperature(): float</td></tr>
+        </table>>;];
+    
+    WaterLevelSensor [label = <
+        <table border="0" cellborder="1" cellspacing="0">
+        <tr><td bgcolor="lightgreen" colspan="2"><b>WaterLevelSensor</b></td></tr>
+        <tr><td align="left" colspan="2">+ readWaterLevel(): float</td></tr>
+        </table>>;];
+    
+    Logger [label = <
+        <table border="0" cellborder="1" cellspacing="0">
+        <tr><td bgcolor="lightcoral" colspan="2"><b>Logger</b></td></tr>
+        <tr><td align="left" colspan="2">+ logData(data: string): void</td></tr>
+        </table>>;];
+    
+    WiFiModule [label = <
+        <table border="0" cellborder="1" cellspacing="0">
+        <tr><td bgcolor="lightgrey" colspan="2"><b>WiFiModule</b></td></tr>
+        <tr><td align="left" colspan="2">+ connect(): void</td></tr>
+        <tr><td align="left" colspan="2">+ sendData(data: string): void</td></tr>
+        </table>>;];
+    
+    # Define relationships
+    ESP32Controller -> Pump [label = "controls";];
+    ESP32Controller -> HumiditySensor [label = "reads";];
+    ESP32Controller -> TemperatureSensor [label = "reads";];
+    ESP32Controller -> WaterLevelSensor [label = "reads";];
+    ESP32Controller -> Logger [label = "logs";];
+    ESP32Controller -> WiFiModule [label = "communicates";];
+}
