@@ -10,7 +10,6 @@
 #include <ArduinoJson.h>
 #include <MQTTClient.h>
 #include "local/data/config/config.hpp"
-#include "local/data/visitor.hpp"
 
 /**
  * @brief MQTT Class
